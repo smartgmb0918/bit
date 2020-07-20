@@ -27,10 +27,16 @@
         "mainFile": "index.ts",
         "rootDir": "extensions/bit",
         "origin": "AUTHORED",
-        "exported": false
+        "exported": false,
+        "lanes": []
     },
     "builder": {
         "files": [
+            {
+                "relativePath": "artifact.ts",
+                "test": false,
+                "name": "artifact.ts"
+            },
             {
                 "relativePath": "build-pipe.ts",
                 "test": false,
@@ -42,9 +48,19 @@
                 "name": "builder.extension.ts"
             },
             {
+                "relativePath": "builder.graphql.ts",
+                "test": false,
+                "name": "builder.graphql.ts"
+            },
+            {
                 "relativePath": "builder.service.ts",
                 "test": false,
                 "name": "builder.service.ts"
+            },
+            {
+                "relativePath": "builder.spec.ts",
+                "test": false,
+                "name": "builder.spec.ts"
             },
             {
                 "relativePath": "index.ts",
@@ -70,7 +86,121 @@
         "mainFile": "index.ts",
         "rootDir": "extensions/builder",
         "origin": "AUTHORED",
-        "exported": false
+        "exported": false,
+        "lanes": []
+    },
+    "bundler": {
+        "files": [
+            {
+                "relativePath": "browser-runtime.ts",
+                "test": false,
+                "name": "browser-runtime.ts"
+            },
+            {
+                "relativePath": "bundler.extension.ts",
+                "test": false,
+                "name": "bundler.extension.ts"
+            },
+            {
+                "relativePath": "bundler.ts",
+                "test": false,
+                "name": "bundler.ts"
+            },
+            {
+                "relativePath": "component-server.ts",
+                "test": false,
+                "name": "component-server.ts"
+            },
+            {
+                "relativePath": "dev-server-context.ts",
+                "test": false,
+                "name": "dev-server-context.ts"
+            },
+            {
+                "relativePath": "dev-server.graphql.ts",
+                "test": false,
+                "name": "dev-server.graphql.ts"
+            },
+            {
+                "relativePath": "dev-server.service.ts",
+                "test": false,
+                "name": "dev-server.service.ts"
+            },
+            {
+                "relativePath": "dev-server.ts",
+                "test": false,
+                "name": "dev-server.ts"
+            },
+            {
+                "relativePath": "exceptions/bind-error.ts",
+                "test": false,
+                "name": "bind-error.ts"
+            },
+            {
+                "relativePath": "exceptions/index.ts",
+                "test": false,
+                "name": "index.ts"
+            },
+            {
+                "relativePath": "index.ts",
+                "test": false,
+                "name": "index.ts"
+            },
+            {
+                "relativePath": "select-port.ts",
+                "test": false,
+                "name": "select-port.ts"
+            }
+        ],
+        "mainFile": "index.ts",
+        "rootDir": "extensions/bundler",
+        "origin": "AUTHORED",
+        "exported": false,
+        "lanes": []
+    },
+    "changelog": {
+        "files": [
+            {
+                "relativePath": "changelog.module.scss",
+                "test": false,
+                "name": "changelog.module.scss"
+            },
+            {
+                "relativePath": "changelog.section.tsx",
+                "test": false,
+                "name": "changelog.section.tsx"
+            },
+            {
+                "relativePath": "changelog.ui.tsx",
+                "test": false,
+                "name": "changelog.ui.tsx"
+            },
+            {
+                "relativePath": "index.ts",
+                "test": false,
+                "name": "index.ts"
+            },
+            {
+                "relativePath": "ui/change-log-page.module.scss",
+                "test": false,
+                "name": "change-log-page.module.scss"
+            },
+            {
+                "relativePath": "ui/change-log-page.tsx",
+                "test": false,
+                "name": "change-log-page.tsx"
+            },
+            {
+                "relativePath": "ui/changelog.data.ts",
+                "test": false,
+                "name": "changelog.data.ts"
+            }
+        ],
+        "mainFile": "index.ts",
+        "rootDir": "extensions/changelog",
+        "origin": "AUTHORED",
+        "exported": false,
+        "lanes": []
     },
     "cli": {
         "files": [
@@ -128,7 +258,8 @@
         "mainFile": "index.ts",
         "rootDir": "extensions/cli",
         "origin": "AUTHORED",
-        "exported": false
+        "exported": false,
+        "lanes": []
     },
     "compiler": {
         "files": [
@@ -141,6 +272,11 @@
                 "relativePath": "compile.ts",
                 "test": false,
                 "name": "compile.ts"
+            },
+            {
+                "relativePath": "compiler.cmd.ts",
+                "test": false,
+                "name": "compiler.cmd.ts"
             },
             {
                 "relativePath": "compiler.cmd.tsx",
@@ -166,12 +302,18 @@
                 "relativePath": "types.ts",
                 "test": false,
                 "name": "types.ts"
+            },
+            {
+                "relativePath": "workspace-compiler.ts",
+                "test": false,
+                "name": "workspace-compiler.ts"
             }
         ],
         "mainFile": "index.ts",
         "rootDir": "extensions/compiler",
         "origin": "AUTHORED",
-        "exported": false
+        "exported": false,
+        "lanes": []
     },
     "component": {
         "files": [
@@ -181,14 +323,49 @@
                 "name": "component-factory.extension.ts"
             },
             {
+                "relativePath": "component-factory.ts",
+                "test": false,
+                "name": "component-factory.ts"
+            },
+            {
                 "relativePath": "component-fs.ts",
                 "test": false,
                 "name": "component-fs.ts"
             },
             {
+                "relativePath": "component-map/component-map.ts",
+                "test": false,
+                "name": "component-map.ts"
+            },
+            {
+                "relativePath": "component-map/index.ts",
+                "test": false,
+                "name": "index.ts"
+            },
+            {
+                "relativePath": "component-meta.ts",
+                "test": false,
+                "name": "component-meta.ts"
+            },
+            {
+                "relativePath": "component.extension.ts",
+                "test": false,
+                "name": "component.extension.ts"
+            },
+            {
+                "relativePath": "component.graphql.ts",
+                "test": false,
+                "name": "component.graphql.ts"
+            },
+            {
                 "relativePath": "component.ts",
                 "test": false,
                 "name": "component.ts"
+            },
+            {
+                "relativePath": "component.ui.tsx",
+                "test": false,
+                "name": "component.ui.tsx"
             },
             {
                 "relativePath": "config.ts",
@@ -206,6 +383,11 @@
                 "name": "index.ts"
             },
             {
+                "relativePath": "exceptions/host-not-found.ts",
+                "test": false,
+                "name": "host-not-found.ts"
+            },
+            {
                 "relativePath": "exceptions/index.ts",
                 "test": false,
                 "name": "index.ts"
@@ -214,6 +396,16 @@
                 "relativePath": "exceptions/nothing-to-snap.ts",
                 "test": false,
                 "name": "nothing-to-snap.ts"
+            },
+            {
+                "relativePath": "hash.ts",
+                "test": false,
+                "name": "hash.ts"
+            },
+            {
+                "relativePath": "head.ts",
+                "test": false,
+                "name": "head.ts"
             },
             {
                 "relativePath": "history-graph.ts",
@@ -231,7 +423,37 @@
                 "name": "index.ts"
             },
             {
+                "relativePath": "on-load.ts",
+                "test": false,
+                "name": "on-load.ts"
+            },
+            {
+                "relativePath": "section/index.ts",
+                "test": false,
+                "name": "index.ts"
+            },
+            {
+                "relativePath": "section/section.tsx",
+                "test": false,
+                "name": "section.tsx"
+            },
+            {
                 "relativePath": "snap.ts",
+                "test": false,
+                "name": "snap.ts"
+            },
+            {
+                "relativePath": "snap/author.ts",
+                "test": false,
+                "name": "author.ts"
+            },
+            {
+                "relativePath": "snap/index.ts",
+                "test": false,
+                "name": "index.ts"
+            },
+            {
+                "relativePath": "snap/snap.ts",
                 "test": false,
                 "name": "snap.ts"
             },
@@ -256,15 +478,116 @@
                 "name": "tag.ts"
             },
             {
+                "relativePath": "tag/index.ts",
+                "test": false,
+                "name": "index.ts"
+            },
+            {
+                "relativePath": "tag/tag.ts",
+                "test": false,
+                "name": "tag.ts"
+            },
+            {
                 "relativePath": "types.ts",
                 "test": false,
                 "name": "types.ts"
+            },
+            {
+                "relativePath": "ui/component-model/component-model.ts",
+                "test": false,
+                "name": "component-model.ts"
+            },
+            {
+                "relativePath": "ui/component-model/index.ts",
+                "test": false,
+                "name": "index.ts"
+            },
+            {
+                "relativePath": "ui/component.module.scss",
+                "test": false,
+                "name": "component.module.scss"
+            },
+            {
+                "relativePath": "ui/component.tsx",
+                "test": false,
+                "name": "component.tsx"
+            },
+            {
+                "relativePath": "ui/context/component-context.ts",
+                "test": false,
+                "name": "component-context.ts"
+            },
+            {
+                "relativePath": "ui/context/component-provider.tsx",
+                "test": false,
+                "name": "component-provider.tsx"
+            },
+            {
+                "relativePath": "ui/context/index.ts",
+                "test": false,
+                "name": "index.ts"
+            },
+            {
+                "relativePath": "ui/index.ts",
+                "test": false,
+                "name": "index.ts"
+            },
+            {
+                "relativePath": "ui/top-bar-nav/index.ts",
+                "test": false,
+                "name": "index.ts"
+            },
+            {
+                "relativePath": "ui/top-bar-nav/top-bar-nav.module.scss",
+                "test": false,
+                "name": "top-bar-nav.module.scss"
+            },
+            {
+                "relativePath": "ui/top-bar-nav/top-bar-nav.tsx",
+                "test": false,
+                "name": "top-bar-nav.tsx"
+            },
+            {
+                "relativePath": "ui/top-bar-widget-link/index.ts",
+                "test": false,
+                "name": "index.ts"
+            },
+            {
+                "relativePath": "ui/top-bar-widget-link/top-bar-widget-link.module.scss",
+                "test": false,
+                "name": "top-bar-widget-link.module.scss"
+            },
+            {
+                "relativePath": "ui/top-bar-widget-link/top-bar-widget-link.tsx",
+                "test": false,
+                "name": "top-bar-widget-link.tsx"
+            },
+            {
+                "relativePath": "ui/top-bar/index.ts",
+                "test": false,
+                "name": "index.ts"
+            },
+            {
+                "relativePath": "ui/top-bar/top-bar.module.scss",
+                "test": false,
+                "name": "top-bar.module.scss"
+            },
+            {
+                "relativePath": "ui/top-bar/top-bar.tsx",
+                "test": false,
+                "name": "top-bar.tsx"
+            },
+            {
+                "relativePath": "ui/use-component-query.ts",
+                "test": false,
+                "name": "use-component-query.ts"
             }
         ],
         "mainFile": "index.ts",
         "rootDir": "extensions/component",
         "origin": "AUTHORED",
-        "exported": false
+        "exported": false,
+        "lanes": []
     },
     "component-resolver": {
         "files": [
@@ -297,7 +620,8 @@
         "mainFile": "index.ts",
         "rootDir": "extensions/component-resolver",
         "origin": "AUTHORED",
-        "exported": false
+        "exported": false,
+        "lanes": []
     },
     "compositions": {
         "files": [
@@ -312,12 +636,102 @@
                 "name": "composition-store.preview.ts"
             },
             {
+                "relativePath": "composition.section.tsx",
+                "test": false,
+                "name": "composition.section.tsx"
+            },
+            {
+                "relativePath": "composition.ts",
+                "test": false,
+                "name": "composition.ts"
+            },
+            {
                 "relativePath": "compositions.extension.ts",
                 "test": false,
                 "name": "compositions.extension.ts"
             },
             {
+                "relativePath": "compositions.graphql.ts",
+                "test": false,
+                "name": "compositions.graphql.ts"
+            },
+            {
+                "relativePath": "compositions.module.scss",
+                "test": false,
+                "name": "compositions.module.scss"
+            },
+            {
+                "relativePath": "compositions.preview.ts",
+                "test": false,
+                "name": "compositions.preview.ts"
+            },
+            {
+                "relativePath": "compositions.tsx",
+                "test": false,
+                "name": "compositions.tsx"
+            },
+            {
+                "relativePath": "compositions.ui.tsx",
+                "test": false,
+                "name": "compositions.ui.tsx"
+            },
+            {
                 "relativePath": "index.ts",
+                "test": false,
+                "name": "index.ts"
+            },
+            {
+                "relativePath": "ui/composition-preview.tsx",
+                "test": false,
+                "name": "composition-preview.tsx"
+            },
+            {
+                "relativePath": "ui/compositions-overview/compositions-overview.module.scss",
+                "test": false,
+                "name": "compositions-overview.module.scss"
+            },
+            {
+                "relativePath": "ui/compositions-overview/compositions-overview.tsx",
+                "test": false,
+                "name": "compositions-overview.tsx"
+            },
+            {
+                "relativePath": "ui/compositions-overview/index.ts",
+                "test": false,
+                "name": "index.ts"
+            },
+            {
+                "relativePath": "ui/compositions-panel-node/compositions-panel-node.module.scss",
+                "test": false,
+                "name": "compositions-panel-node.module.scss"
+            },
+            {
+                "relativePath": "ui/compositions-panel-node/compositions-panel-node.tsx",
+                "test": false,
+                "name": "compositions-panel-node.tsx"
+            },
+            {
+                "relativePath": "ui/compositions-panel-node/index.ts",
+                "test": false,
+                "name": "index.ts"
+            },
+            {
+                "relativePath": "ui/compositions-panel/compositions-panel.module.scss",
+                "test": false,
+                "name": "compositions-panel.module.scss"
+            },
+            {
+                "relativePath": "ui/compositions-panel/compositions-panel.tsx",
+                "test": false,
+                "name": "compositions-panel.tsx"
+            },
+            {
+                "relativePath": "ui/compositions-panel/index.ts",
+                "test": false,
+                "name": "index.ts"
+            },
+            {
+                "relativePath": "ui/index.ts",
                 "test": false,
                 "name": "index.ts"
             }
@@ -325,7 +739,8 @@
         "mainFile": "index.ts",
         "rootDir": "extensions/compositions",
         "origin": "AUTHORED",
-        "exported": false
+        "exported": false,
+        "lanes": []
     },
     "config": {
         "files": [
@@ -378,7 +793,8 @@
         "mainFile": "index.ts",
         "rootDir": "extensions/config",
         "origin": "AUTHORED",
-        "exported": false
+        "exported": false,
+        "lanes": []
     },
     "core": {
         "files": [
@@ -398,6 +814,11 @@
                 "name": "core.ts"
             },
             {
+                "relativePath": "extension-descriptor.ts",
+                "test": false,
+                "name": "extension-descriptor.ts"
+            },
+            {
                 "relativePath": "index.ts",
                 "test": false,
                 "name": "index.ts"
@@ -406,7 +827,8 @@
         "mainFile": "index.ts",
         "rootDir": "extensions/core",
         "origin": "AUTHORED",
-        "exported": false
+        "exported": false,
+        "lanes": []
     },
     "create": {
         "files": [
@@ -449,7 +871,8 @@
         "mainFile": "index.ts",
         "rootDir": "extensions/create",
         "origin": "AUTHORED",
-        "exported": false
+        "exported": false,
+        "lanes": []
     },
     "dependency-resolver": {
         "files": [
@@ -482,7 +905,8 @@
         "mainFile": "index.ts",
         "rootDir": "extensions/dependency-resolver",
         "origin": "AUTHORED",
-        "exported": false
+        "exported": false,
+        "lanes": []
     },
     "docs": {
         "files": [
@@ -492,9 +916,29 @@
                 "name": "docs-store.tsx"
             },
             {
+                "relativePath": "docs.data.tsx",
+                "test": false,
+                "name": "docs.data.tsx"
+            },
+            {
                 "relativePath": "docs.extension.ts",
                 "test": false,
                 "name": "docs.extension.ts"
+            },
+            {
+                "relativePath": "docs.preview.tsx",
+                "test": false,
+                "name": "docs.preview.tsx"
+            },
+            {
+                "relativePath": "docs.service.ts",
+                "test": false,
+                "name": "docs.service.ts"
+            },
+            {
+                "relativePath": "docs.ts",
+                "test": false,
+                "name": "docs.ts"
             },
             {
                 "relativePath": "docs.ui.tsx",
@@ -505,12 +949,28 @@
                 "relativePath": "index.ts",
                 "test": false,
                 "name": "index.ts"
+            },
+            {
+                "relativePath": "overview.section.tsx",
+                "test": false,
+                "name": "overview.section.tsx"
+            },
+            {
+                "relativePath": "overview/index.ts",
+                "test": false,
+                "name": "index.ts"
+            },
+            {
+                "relativePath": "overview/overview.tsx",
+                "test": false,
+                "name": "overview.tsx"
             }
         ],
         "mainFile": "index.ts",
         "rootDir": "extensions/docs",
         "origin": "AUTHORED",
-        "exported": false
+        "exported": false,
+        "lanes": []
     },
     "environments": {
         "files": [
@@ -588,7 +1048,8 @@
         "mainFile": "index.ts",
         "rootDir": "extensions/environments",
         "origin": "AUTHORED",
-        "exported": false
+        "exported": false,
+        "lanes": []
     },
     "extension-env": {
         "files": [
@@ -611,7 +1072,8 @@
         "mainFile": "index.ts",
         "rootDir": "extensions/extension-env",
         "origin": "AUTHORED",
-        "exported": false
+        "exported": false,
+        "lanes": []
     },
     "flows": {
         "files": [
@@ -729,7 +1191,8 @@
         "mainFile": "index.ts",
         "rootDir": "extensions/flows",
         "origin": "AUTHORED",
-        "exported": false
+        "exported": false,
+        "lanes": []
     },
     "git": {
         "files": [
@@ -742,7 +1205,8 @@
         "mainFile": "index.ts",
         "rootDir": "extensions/git",
         "origin": "AUTHORED",
-        "exported": false
+        "exported": false,
+        "lanes": []
     },
     "graph": {
         "files": [
@@ -795,10 +1259,16 @@
         "mainFile": "index.ts",
         "rootDir": "extensions/graph",
         "origin": "AUTHORED",
-        "exported": false
+        "exported": false,
+        "lanes": []
     },
     "graphql": {
         "files": [
+            {
+                "relativePath": "create-link.ts",
+                "test": false,
+                "name": "create-link.ts"
+            },
             {
                 "relativePath": "graphql-provider/graphql-provider.tsx",
                 "test": false,
@@ -823,12 +1293,18 @@
                 "relativePath": "index.ts",
                 "test": false,
                 "name": "index.ts"
+            },
+            {
+                "relativePath": "schema.ts",
+                "test": false,
+                "name": "schema.ts"
             }
         ],
         "mainFile": "index.ts",
         "rootDir": "extensions/graphql",
         "origin": "AUTHORED",
-        "exported": false
+        "exported": false,
+        "lanes": []
     },
     "insights": {
         "files": [
@@ -896,7 +1372,8 @@
         "mainFile": "index.ts",
         "rootDir": "extensions/insights",
         "origin": "AUTHORED",
-        "exported": false
+        "exported": false,
+        "lanes": []
     },
     "isolator": {
         "files": [
@@ -969,7 +1446,8 @@
         "mainFile": "index.ts",
         "rootDir": "extensions/isolator",
         "origin": "AUTHORED",
-        "exported": false
+        "exported": false,
+        "lanes": []
     },
     "jest": {
         "files": [
@@ -997,7 +1475,8 @@
         "mainFile": "index.ts",
         "rootDir": "extensions/jest",
         "origin": "AUTHORED",
-        "exported": false
+        "exported": false,
+        "lanes": []
     },
     "logger": {
         "files": [
@@ -1030,7 +1509,47 @@
         "mainFile": "index.ts",
         "rootDir": "extensions/logger",
         "origin": "AUTHORED",
-        "exported": false
+        "exported": false,
+        "lanes": []
+    },
+    "panel-ui": {
+        "files": [
+            {
+                "relativePath": "index.ts",
+                "test": false,
+                "name": "index.ts"
+            },
+            {
+                "relativePath": "panel-ui.extension.ts",
+                "test": false,
+                "name": "panel-ui.extension.ts"
+            },
+            {
+                "relativePath": "ui/panel-container.tsx",
+                "test": false,
+                "name": "panel-container.tsx"
+            },
+            {
+                "relativePath": "ui/panel.module.scss",
+                "test": false,
+                "name": "panel.module.scss"
+            },
+            {
+                "relativePath": "ui/tabs.module.scss",
+                "test": false,
+                "name": "tabs.module.scss"
+            },
+            {
+                "relativePath": "ui/tabs.tsx",
+                "test": false,
+                "name": "tabs.tsx"
+            }
+        ],
+        "mainFile": "index.ts",
+        "rootDir": "extensions/panel-ui",
+        "origin": "AUTHORED",
+        "exported": false,
+        "lanes": []
     },
     "pkg": {
         "files": [
@@ -1083,7 +1602,72 @@
         "mainFile": "index.ts",
         "rootDir": "extensions/pkg",
         "origin": "AUTHORED",
-        "exported": false
+        "exported": false,
+        "lanes": []
+    },
+    "preview": {
+        "files": [
+            {
+                "relativePath": "exceptions/index.ts",
+                "test": false,
+                "name": "index.ts"
+            },
+            {
+                "relativePath": "exceptions/preview-not-found.ts",
+                "test": false,
+                "name": "preview-not-found.ts"
+            },
+            {
+                "relativePath": "generate-link.ts",
+                "test": false,
+                "name": "generate-link.ts"
+            },
+            {
+                "relativePath": "index.ts",
+                "test": false,
+                "name": "index.ts"
+            },
+            {
+                "relativePath": "preview-type.ts",
+                "test": false,
+                "name": "preview-type.ts"
+            },
+            {
+                "relativePath": "preview.extension.ts",
+                "test": false,
+                "name": "preview.extension.ts"
+            },
+            {
+                "relativePath": "preview.preview.tsx",
+                "test": false,
+                "name": "preview.preview.tsx"
+            },
+            {
+                "relativePath": "preview.runtime.ts",
+                "test": false,
+                "name": "preview.runtime.ts"
+            },
+            {
+                "relativePath": "ui/component-preview/index.ts",
+                "test": false,
+                "name": "index.ts"
+            },
+            {
+                "relativePath": "ui/component-preview/preview.tsx",
+                "test": false,
+                "name": "preview.tsx"
+            },
+            {
+                "relativePath": "ui/index.ts",
+                "test": false,
+                "name": "index.ts"
+            }
+        ],
+        "mainFile": "index.ts",
+        "rootDir": "extensions/preview",
+        "origin": "AUTHORED",
+        "exported": false,
+        "lanes": []
     },
     "react": {
         "files": [
@@ -1106,6 +1690,96 @@
                 "relativePath": "docs.tpl.ts",
                 "test": false,
                 "name": "docs.tpl.ts"
+            },
+            {
+                "relativePath": "docs/base.module.scss",
+                "test": false,
+                "name": "base.module.scss"
+            },
+            {
+                "relativePath": "docs/base.tsx",
+                "test": false,
+                "name": "base.tsx"
+            },
+            {
+                "relativePath": "docs/component-overview/component-overview.tsx",
+                "test": false,
+                "name": "component-overview.tsx"
+            },
+            {
+                "relativePath": "docs/component-overview/index.ts",
+                "test": false,
+                "name": "index.ts"
+            },
+            {
+                "relativePath": "docs/compositions-summary/compositions-summary.tsx",
+                "test": false,
+                "name": "compositions-summary.tsx"
+            },
+            {
+                "relativePath": "docs/compositions-summary/index.ts",
+                "test": false,
+                "name": "index.ts"
+            },
+            {
+                "relativePath": "docs/examples-overview/examples-overview.module.scss",
+                "test": false,
+                "name": "examples-overview.module.scss"
+            },
+            {
+                "relativePath": "docs/examples-overview/examples-overview.tsx",
+                "test": false,
+                "name": "examples-overview.tsx"
+            },
+            {
+                "relativePath": "docs/examples-overview/index.ts",
+                "test": false,
+                "name": "index.ts"
+            },
+            {
+                "relativePath": "docs/index.tsx",
+                "test": false,
+                "name": "index.tsx"
+            },
+            {
+                "relativePath": "docs/playground/index.ts",
+                "test": false,
+                "name": "index.ts"
+            },
+            {
+                "relativePath": "docs/playground/playground.tsx",
+                "test": false,
+                "name": "playground.tsx"
+            },
+            {
+                "relativePath": "docs/properties/index.ts",
+                "test": false,
+                "name": "index.ts"
+            },
+            {
+                "relativePath": "docs/properties/properties.tsx",
+                "test": false,
+                "name": "properties.tsx"
+            },
+            {
+                "relativePath": "docs/react-docs-model.ts",
+                "test": false,
+                "name": "react-docs-model.ts"
+            },
+            {
+                "relativePath": "docs/symlink-component-list.md",
+                "test": false,
+                "name": "symlink-component-list.md"
+            },
+            {
+                "relativePath": "docs/theme-context/index.ts",
+                "test": false,
+                "name": "index.ts"
+            },
+            {
+                "relativePath": "docs/theme-context/theme-context.tsx",
+                "test": false,
+                "name": "theme-context.tsx"
             },
             {
                 "relativePath": "html.js",
@@ -1143,6 +1817,11 @@
                 "name": "transformer.js"
             },
             {
+                "relativePath": "mount.tsx",
+                "test": false,
+                "name": "mount.tsx"
+            },
+            {
                 "relativePath": "preview/index.tsx",
                 "test": false,
                 "name": "index.tsx"
@@ -1163,6 +1842,16 @@
                 "name": "react.extension.ts"
             },
             {
+                "relativePath": "react.graphql.ts",
+                "test": false,
+                "name": "react.graphql.ts"
+            },
+            {
+                "relativePath": "typescript/style.d.ts",
+                "test": false,
+                "name": "style.d.ts"
+            },
+            {
                 "relativePath": "typescript/tsconfig.json",
                 "test": false,
                 "name": "tsconfig.json"
@@ -1171,12 +1860,67 @@
                 "relativePath": "webpack.config.js",
                 "test": false,
                 "name": "webpack.config.js"
+            },
+            {
+                "relativePath": "webpack/html.js",
+                "test": false,
+                "name": "html.js"
+            },
+            {
+                "relativePath": "webpack/webpack.config.js",
+                "test": false,
+                "name": "webpack.config.js"
             }
         ],
         "mainFile": "index.ts",
         "rootDir": "extensions/react",
         "origin": "AUTHORED",
-        "exported": false
+        "exported": false,
+        "lanes": []
+    },
+    "react-router": {
+        "files": [
+            {
+                "relativePath": "extend-path/extend-path.spec.ts",
+                "test": false,
+                "name": "extend-path.spec.ts"
+            },
+            {
+                "relativePath": "extend-path/extend-path.tsx",
+                "test": false,
+                "name": "extend-path.tsx"
+            },
+            {
+                "relativePath": "extend-path/index.ts",
+                "test": false,
+                "name": "index.ts"
+            },
+            {
+                "relativePath": "index.ts",
+                "test": false,
+                "name": "index.ts"
+            },
+            {
+                "relativePath": "react-router.ui.tsx",
+                "test": false,
+                "name": "react-router.ui.tsx"
+            },
+            {
+                "relativePath": "route.ts",
+                "test": false,
+                "name": "route.ts"
+            },
+            {
+                "relativePath": "slot-router.tsx",
+                "test": false,
+                "name": "slot-router.tsx"
+            }
+        ],
+        "mainFile": "index.ts",
+        "rootDir": "extensions/react-router",
+        "origin": "AUTHORED",
+        "exported": false,
+        "lanes": []
     },
     "reporter": {
         "files": [
@@ -1224,10 +1968,70 @@
         "mainFile": "index.ts",
         "rootDir": "extensions/reporter",
         "origin": "AUTHORED",
-        "exported": false
+        "exported": false,
+        "lanes": []
+    },
+    "schema": {
+        "files": [
+            {
+                "relativePath": "exceptions/index.ts",
+                "test": false,
+                "name": "index.ts"
+            },
+            {
+                "relativePath": "exceptions/parser-not-found.ts",
+                "test": false,
+                "name": "parser-not-found.ts"
+            },
+            {
+                "relativePath": "index.ts",
+                "test": false,
+                "name": "index.ts"
+            },
+            {
+                "relativePath": "parser.ts",
+                "test": false,
+                "name": "parser.ts"
+            },
+            {
+                "relativePath": "schema.extension.ts",
+                "test": false,
+                "name": "schema.extension.ts"
+            },
+            {
+                "relativePath": "schemas/export.ts",
+                "test": false,
+                "name": "export.ts"
+            },
+            {
+                "relativePath": "schemas/index.ts",
+                "test": false,
+                "name": "index.ts"
+            },
+            {
+                "relativePath": "schemas/module.ts",
+                "test": false,
+                "name": "module.ts"
+            }
+        ],
+        "mainFile": "index.ts",
+        "rootDir": "extensions/schema",
+        "origin": "AUTHORED",
+        "exported": false,
+        "lanes": []
     },
     "scope": {
         "files": [
+            {
+                "relativePath": "exceptions/component-not-found.ts",
+                "test": false,
+                "name": "component-not-found.ts"
+            },
+            {
+                "relativePath": "exceptions/index.ts",
+                "test": false,
+                "name": "index.ts"
+            },
             {
                 "relativePath": "index.ts",
                 "test": false,
@@ -1237,12 +2041,546 @@
                 "relativePath": "scope.extension.ts",
                 "test": false,
                 "name": "scope.extension.ts"
+            },
+            {
+                "relativePath": "scope.graphql.ts",
+                "test": false,
+                "name": "scope.graphql.ts"
+            },
+            {
+                "relativePath": "scope.ui-root.ts",
+                "test": false,
+                "name": "scope.ui-root.ts"
+            },
+            {
+                "relativePath": "scope.ui.tsx",
+                "test": false,
+                "name": "scope.ui.tsx"
+            },
+            {
+                "relativePath": "ui/scope-context.ts",
+                "test": false,
+                "name": "scope-context.ts"
+            },
+            {
+                "relativePath": "ui/scope-model/index.ts",
+                "test": false,
+                "name": "index.ts"
+            },
+            {
+                "relativePath": "ui/scope-model/scope.model.ts",
+                "test": false,
+                "name": "scope.model.ts"
+            },
+            {
+                "relativePath": "ui/scope-provider.tsx",
+                "test": false,
+                "name": "scope-provider.tsx"
+            },
+            {
+                "relativePath": "ui/scope.module.scss",
+                "test": false,
+                "name": "scope.module.scss"
+            },
+            {
+                "relativePath": "ui/scope.tsx",
+                "test": false,
+                "name": "scope.tsx"
             }
         ],
         "mainFile": "index.ts",
         "rootDir": "extensions/scope",
         "origin": "AUTHORED",
-        "exported": false
+        "exported": false,
+        "lanes": []
+    },
+    "stage-components": {
+        "files": [
+            {
+                "relativePath": "corner/corner.module.scss",
+                "test": false,
+                "name": "corner.module.scss"
+            },
+            {
+                "relativePath": "corner/corner.tsx",
+                "test": false,
+                "name": "corner.tsx"
+            },
+            {
+                "relativePath": "corner/index.ts",
+                "test": false,
+                "name": "index.ts"
+            },
+            {
+                "relativePath": "side-bar/component-tree/component-nodes/component-nodes.module.scss",
+                "test": false,
+                "name": "component-nodes.module.scss"
+            },
+            {
+                "relativePath": "side-bar/component-tree/component-nodes/component-nodes.tsx",
+                "test": false,
+                "name": "component-nodes.tsx"
+            },
+            {
+                "relativePath": "side-bar/component-tree/component-nodes/index.ts",
+                "test": false,
+                "name": "index.ts"
+            },
+            {
+                "relativePath": "side-bar/component-tree/component-tree-context.tsx",
+                "test": false,
+                "name": "component-tree-context.tsx"
+            },
+            {
+                "relativePath": "side-bar/component-tree/component-tree.module.scss",
+                "test": false,
+                "name": "component-tree.module.scss"
+            },
+            {
+                "relativePath": "side-bar/component-tree/component-tree.tsx",
+                "test": false,
+                "name": "component-tree.tsx"
+            },
+            {
+                "relativePath": "side-bar/component-tree/component-view/component-view.module.scss",
+                "test": false,
+                "name": "component-view.module.scss"
+            },
+            {
+                "relativePath": "side-bar/component-tree/component-view/component-view.tsx",
+                "test": false,
+                "name": "component-view.tsx"
+            },
+            {
+                "relativePath": "side-bar/component-tree/component-view/index.ts",
+                "test": false,
+                "name": "index.ts"
+            },
+            {
+                "relativePath": "side-bar/component-tree/indent/indent.module.scss",
+                "test": false,
+                "name": "indent.module.scss"
+            },
+            {
+                "relativePath": "side-bar/component-tree/indent/indent.tsx",
+                "test": false,
+                "name": "indent.tsx"
+            },
+            {
+                "relativePath": "side-bar/component-tree/indent/index.ts",
+                "test": false,
+                "name": "index.ts"
+            },
+            {
+                "relativePath": "side-bar/component-tree/index.ts",
+                "test": false,
+                "name": "index.ts"
+            },
+            {
+                "relativePath": "side-bar/component-tree/inflate-paths.ts",
+                "test": false,
+                "name": "inflate-paths.ts"
+            },
+            {
+                "relativePath": "side-bar/component-tree/recursive-tree/default-tree-node.tsx",
+                "test": false,
+                "name": "default-tree-node.tsx"
+            },
+            {
+                "relativePath": "side-bar/component-tree/recursive-tree/index.tsx",
+                "test": false,
+                "name": "index.tsx"
+            },
+            {
+                "relativePath": "side-bar/component-tree/recursive-tree/tree-layer.tsx",
+                "test": false,
+                "name": "tree-layer.tsx"
+            },
+            {
+                "relativePath": "side-bar/component-tree/recursive-tree/tree-node-context.tsx",
+                "test": false,
+                "name": "tree-node-context.tsx"
+            },
+            {
+                "relativePath": "side-bar/component-tree/recursive-tree/tree-types.ts",
+                "test": false,
+                "name": "tree-types.ts"
+            },
+            {
+                "relativePath": "side-bar/component-tree/utils/get-name.tsx",
+                "test": false,
+                "name": "get-name.tsx"
+            },
+            {
+                "relativePath": "side-bar/index.ts",
+                "test": false,
+                "name": "index.ts"
+            },
+            {
+                "relativePath": "side-bar/side-bar.tsx",
+                "test": false,
+                "name": "side-bar.tsx"
+            },
+            {
+                "relativePath": "side-bar/styles.module.scss",
+                "test": false,
+                "name": "styles.module.scss"
+            },
+            {
+                "relativePath": "workspace-components/Avatar/avatar-colors.module.scss",
+                "test": false,
+                "name": "avatar-colors.module.scss"
+            },
+            {
+                "relativePath": "workspace-components/Avatar/avatar.tsx",
+                "test": false,
+                "name": "avatar.tsx"
+            },
+            {
+                "relativePath": "workspace-components/Avatar/default-avatar.tsx",
+                "test": false,
+                "name": "default-avatar.tsx"
+            },
+            {
+                "relativePath": "workspace-components/Avatar/index.ts",
+                "test": false,
+                "name": "index.ts"
+            },
+            {
+                "relativePath": "workspace-components/Avatar/org-avatar.tsx",
+                "test": false,
+                "name": "org-avatar.tsx"
+            },
+            {
+                "relativePath": "workspace-components/Avatar/styles.module.scss",
+                "test": false,
+                "name": "styles.module.scss"
+            },
+            {
+                "relativePath": "workspace-components/Avatar/user-avatar.tsx",
+                "test": false,
+                "name": "user-avatar.tsx"
+            },
+            {
+                "relativePath": "workspace-components/Avatar/utils.ts",
+                "test": false,
+                "name": "utils.ts"
+            },
+            {
+                "relativePath": "workspace-components/accordion/accordion.module.scss",
+                "test": false,
+                "name": "accordion.module.scss"
+            },
+            {
+                "relativePath": "workspace-components/accordion/accordion.tsx",
+                "test": false,
+                "name": "accordion.tsx"
+            },
+            {
+                "relativePath": "workspace-components/accordion/index.ts",
+                "test": false,
+                "name": "index.ts"
+            },
+            {
+                "relativePath": "workspace-components/anchor/anchor.module.scss",
+                "test": false,
+                "name": "anchor.module.scss"
+            },
+            {
+                "relativePath": "workspace-components/anchor/anchor.simulation.tsx",
+                "test": false,
+                "name": "anchor.simulation.tsx"
+            },
+            {
+                "relativePath": "workspace-components/anchor/anchor.tsx",
+                "test": false,
+                "name": "anchor.tsx"
+            },
+            {
+                "relativePath": "workspace-components/anchor/index.ts",
+                "test": false,
+                "name": "index.ts"
+            },
+            {
+                "relativePath": "workspace-components/commit-details/commit-details.module.scss",
+                "test": false,
+                "name": "commit-details.module.scss"
+            },
+            {
+                "relativePath": "workspace-components/commit-details/commit-details.tsx",
+                "test": false,
+                "name": "commit-details.tsx"
+            },
+            {
+                "relativePath": "workspace-components/commit-details/index.ts",
+                "test": false,
+                "name": "index.ts"
+            },
+            {
+                "relativePath": "workspace-components/copy-box/copy-box.module.scss",
+                "test": false,
+                "name": "copy-box.module.scss"
+            },
+            {
+                "relativePath": "workspace-components/copy-box/copy-box.simulation.tsx",
+                "test": false,
+                "name": "copy-box.simulation.tsx"
+            },
+            {
+                "relativePath": "workspace-components/copy-box/copy-box.tsx",
+                "test": false,
+                "name": "copy-box.tsx"
+            },
+            {
+                "relativePath": "workspace-components/copy-box/index.ts",
+                "test": false,
+                "name": "index.ts"
+            },
+            {
+                "relativePath": "workspace-components/install-methods/index.ts",
+                "test": false,
+                "name": "index.ts"
+            },
+            {
+                "relativePath": "workspace-components/install-methods/install-methods.module.scss",
+                "test": false,
+                "name": "install-methods.module.scss"
+            },
+            {
+                "relativePath": "workspace-components/install-methods/install-methods.tsx",
+                "test": false,
+                "name": "install-methods.tsx"
+            },
+            {
+                "relativePath": "workspace-components/label/index.ts",
+                "test": false,
+                "name": "index.ts"
+            },
+            {
+                "relativePath": "workspace-components/label/label.module.scss",
+                "test": false,
+                "name": "label.module.scss"
+            },
+            {
+                "relativePath": "workspace-components/label/label.simulation.tsx",
+                "test": false,
+                "name": "label.simulation.tsx"
+            },
+            {
+                "relativePath": "workspace-components/label/label.tsx",
+                "test": false,
+                "name": "label.tsx"
+            },
+            {
+                "relativePath": "workspace-components/middle-dot/index.ts",
+                "test": false,
+                "name": "index.ts"
+            },
+            {
+                "relativePath": "workspace-components/middle-dot/middle-dot.module.scss",
+                "test": false,
+                "name": "middle-dot.module.scss"
+            },
+            {
+                "relativePath": "workspace-components/middle-dot/middle-dot.tsx",
+                "test": false,
+                "name": "middle-dot.tsx"
+            },
+            {
+                "relativePath": "workspace-components/separator/index.ts",
+                "test": false,
+                "name": "index.ts"
+            },
+            {
+                "relativePath": "workspace-components/separator/separator.module.scss",
+                "test": false,
+                "name": "separator.module.scss"
+            },
+            {
+                "relativePath": "workspace-components/separator/separator.tsx",
+                "test": false,
+                "name": "separator.tsx"
+            },
+            {
+                "relativePath": "workspace-components/status/index.ts",
+                "test": false,
+                "name": "index.ts"
+            },
+            {
+                "relativePath": "workspace-components/status/status-colors.module.scss",
+                "test": false,
+                "name": "status-colors.module.scss"
+            },
+            {
+                "relativePath": "workspace-components/status/status.module.scss",
+                "test": false,
+                "name": "status.module.scss"
+            },
+            {
+                "relativePath": "workspace-components/status/status.tsx",
+                "test": false,
+                "name": "status.tsx"
+            },
+            {
+                "relativePath": "workspace-components/time-ago/index.ts",
+                "test": false,
+                "name": "index.ts"
+            },
+            {
+                "relativePath": "workspace-components/time-ago/time-ago.module.scss",
+                "test": false,
+                "name": "time-ago.module.scss"
+            },
+            {
+                "relativePath": "workspace-components/time-ago/time-ago.tsx",
+                "test": false,
+                "name": "time-ago.tsx"
+            },
+            {
+                "relativePath": "workspace-components/title/index.ts",
+                "test": false,
+                "name": "index.ts"
+            },
+            {
+                "relativePath": "workspace-components/title/title.module.scss",
+                "test": false,
+                "name": "title.module.scss"
+            },
+            {
+                "relativePath": "workspace-components/title/title.tsx",
+                "test": false,
+                "name": "title.tsx"
+            },
+            {
+                "relativePath": "workspace-components/version-tag/index.ts",
+                "test": false,
+                "name": "index.ts"
+            },
+            {
+                "relativePath": "workspace-components/version-tag/version-tag.module.scss",
+                "test": false,
+                "name": "version-tag.module.scss"
+            },
+            {
+                "relativePath": "workspace-components/version-tag/version-tag.simulations.tsx",
+                "test": false,
+                "name": "version-tag.simulations.tsx"
+            },
+            {
+                "relativePath": "workspace-components/version-tag/version-tag.tsx",
+                "test": false,
+                "name": "version-tag.tsx"
+            },
+            {
+                "relativePath": "workspace-page/change-log.data.ts",
+                "test": false,
+                "name": "change-log.data.ts"
+            },
+            {
+                "relativePath": "workspace-page/index.ts",
+                "test": false,
+                "name": "index.ts"
+            },
+            {
+                "relativePath": "workspace-page/workspace-page.module.scss",
+                "test": false,
+                "name": "workspace-page.module.scss"
+            },
+            {
+                "relativePath": "workspace-page/workspace-page.tsx",
+                "test": false,
+                "name": "workspace-page.tsx"
+            },
+            {
+                "relativePath": "workspace-sections/docs-section/docs-frame.tsx",
+                "test": false,
+                "name": "docs-frame.tsx"
+            },
+            {
+                "relativePath": "workspace-sections/docs-section/docs-section.module.scss",
+                "test": false,
+                "name": "docs-section.module.scss"
+            },
+            {
+                "relativePath": "workspace-sections/docs-section/docs-section.tsx",
+                "test": false,
+                "name": "docs-section.tsx"
+            },
+            {
+                "relativePath": "workspace-sections/docs-section/index.ts",
+                "test": false,
+                "name": "index.ts"
+            },
+            {
+                "relativePath": "workspace-sections/version-block/index.ts",
+                "test": false,
+                "name": "index.ts"
+            },
+            {
+                "relativePath": "workspace-sections/version-block/version-block.module.scss",
+                "test": false,
+                "name": "version-block.module.scss"
+            },
+            {
+                "relativePath": "workspace-sections/version-block/version-block.tsx",
+                "test": false,
+                "name": "version-block.tsx"
+            }
+        ],
+        "mainFile": "corner/index.ts",
+        "rootDir": "extensions/stage-components",
+        "origin": "AUTHORED",
+        "exported": false,
+        "lanes": []
+    },
+    "stencil": {
+        "files": [
+            {
+                "relativePath": "index.ts",
+                "test": false,
+                "name": "index.ts"
+            },
+            {
+                "relativePath": "stencil.compiler.ts",
+                "test": false,
+                "name": "stencil.compiler.ts"
+            },
+            {
+                "relativePath": "stencil.dev-server.ts",
+                "test": false,
+                "name": "stencil.dev-server.ts"
+            },
+            {
+                "relativePath": "stencil.env.ts",
+                "test": false,
+                "name": "stencil.env.ts"
+            },
+            {
+                "relativePath": "stencil.extension.ts",
+                "test": false,
+                "name": "stencil.extension.ts"
+            },
+            {
+                "relativePath": "stencil.tester.ts",
+                "test": false,
+                "name": "stencil.tester.ts"
+            },
+            {
+                "relativePath": "typescript/tsconfig.json",
+                "test": false,
+                "name": "tsconfig.json"
+            },
+            {
+                "relativePath": "webpack/webpack.config.js",
+                "test": false,
+                "name": "webpack.config.js"
+            }
+        ],
+        "mainFile": "index.ts",
+        "rootDir": "extensions/stencil",
+        "origin": "AUTHORED",
+        "exported": false,
+        "lanes": []
     },
     "tester": {
         "files": [
@@ -1277,6 +2615,16 @@
                 "name": "tester.ts"
             },
             {
+                "relativePath": "tester.ui.tsx",
+                "test": false,
+                "name": "tester.ui.tsx"
+            },
+            {
+                "relativePath": "ui/tests-page.tsx",
+                "test": false,
+                "name": "tests-page.tsx"
+            },
+            {
                 "relativePath": "utils/detect-spec-files.ts",
                 "test": false,
                 "name": "detect-spec-files.ts"
@@ -1290,7 +2638,8 @@
         "mainFile": "index.ts",
         "rootDir": "extensions/tester",
         "origin": "AUTHORED",
-        "exported": false
+        "exported": false,
+        "lanes": []
     },
     "types": {
         "files": [
@@ -1298,6 +2647,11 @@
                 "relativePath": "component-host.ts",
                 "test": false,
                 "name": "component-host.ts"
+            },
+            {
+                "relativePath": "css.d.ts",
+                "test": false,
+                "name": "css.d.ts"
             },
             {
                 "relativePath": "index.ts",
@@ -1313,10 +2667,16 @@
         "mainFile": "index.ts",
         "rootDir": "extensions/types",
         "origin": "AUTHORED",
-        "exported": false
+        "exported": false,
+        "lanes": []
     },
     "typescript": {
         "files": [
+            {
+                "relativePath": "compiler-options.ts",
+                "test": false,
+                "name": "compiler-options.ts"
+            },
             {
                 "relativePath": "index.ts",
                 "test": false,
@@ -1336,15 +2696,41 @@
                 "relativePath": "typescript.extension.ts",
                 "test": false,
                 "name": "typescript.extension.ts"
+            },
+            {
+                "relativePath": "typescript.parser.ts",
+                "test": false,
+                "name": "typescript.parser.ts"
             }
         ],
         "mainFile": "index.ts",
         "rootDir": "extensions/typescript",
         "origin": "AUTHORED",
-        "exported": false
+        "exported": false,
+        "lanes": []
     },
     "ui": {
         "files": [
+            {
+                "relativePath": "create-root.ts",
+                "test": false,
+                "name": "create-root.ts"
+            },
+            {
+                "relativePath": "env-console.tsx",
+                "test": false,
+                "name": "env-console.tsx"
+            },
+            {
+                "relativePath": "exceptions/index.ts",
+                "test": false,
+                "name": "index.ts"
+            },
+            {
+                "relativePath": "exceptions/unknown-ui.ts",
+                "test": false,
+                "name": "unknown-ui.ts"
+            },
             {
                 "relativePath": "index.ts",
                 "test": false,
@@ -1354,6 +2740,26 @@
                 "relativePath": "start.cmd.tsx",
                 "test": false,
                 "name": "start.cmd.tsx"
+            },
+            {
+                "relativePath": "ui-root.tsx",
+                "test": false,
+                "name": "ui-root.tsx"
+            },
+            {
+                "relativePath": "ui-root.ui.ts",
+                "test": false,
+                "name": "ui-root.ui.ts"
+            },
+            {
+                "relativePath": "ui-runtime.ts",
+                "test": false,
+                "name": "ui-runtime.ts"
+            },
+            {
+                "relativePath": "ui-server.ts",
+                "test": false,
+                "name": "ui-server.ts"
             },
             {
                 "relativePath": "ui.cli.rt.tsx",
@@ -1376,6 +2782,51 @@
                 "name": "ui.ui.tsx"
             },
             {
+                "relativePath": "ui/client-context.tsx",
+                "test": false,
+                "name": "client-context.tsx"
+            },
+            {
+                "relativePath": "ui/data/use-data-query.tsx",
+                "test": false,
+                "name": "use-data-query.tsx"
+            },
+            {
+                "relativePath": "ui/global-loader/index.ts",
+                "test": false,
+                "name": "index.ts"
+            },
+            {
+                "relativePath": "ui/global-loader/loader-context.tsx",
+                "test": false,
+                "name": "loader-context.tsx"
+            },
+            {
+                "relativePath": "ui/global-loader/loader-ribbon/index.ts",
+                "test": false,
+                "name": "index.ts"
+            },
+            {
+                "relativePath": "ui/global-loader/loader-ribbon/loader-ribbon.module.scss",
+                "test": false,
+                "name": "loader-ribbon.module.scss"
+            },
+            {
+                "relativePath": "ui/global-loader/loader-ribbon/loader-ribbon.tsx",
+                "test": false,
+                "name": "loader-ribbon.tsx"
+            },
+            {
+                "relativePath": "ui/global-loader/use-loader-api.tsx",
+                "test": false,
+                "name": "use-loader-api.tsx"
+            },
+            {
+                "relativePath": "ui/global-loader/use-loader.tsx",
+                "test": false,
+                "name": "use-loader.tsx"
+            },
+            {
                 "relativePath": "webpack/html.js",
                 "test": false,
                 "name": "html.js"
@@ -1389,10 +2840,21 @@
         "mainFile": "index.ts",
         "rootDir": "extensions/ui",
         "origin": "AUTHORED",
-        "exported": false
+        "exported": false,
+        "lanes": []
     },
     "utils": {
         "files": [
+            {
+                "relativePath": "capitalize/capitalize.ts",
+                "test": false,
+                "name": "capitalize.ts"
+            },
+            {
+                "relativePath": "capitalize/index.ts",
+                "test": false,
+                "name": "index.ts"
+            },
             {
                 "relativePath": "load-extensions/constants.ts",
                 "test": false,
@@ -1422,12 +2884,23 @@
                 "relativePath": "resolved-component/resolved-component.ts",
                 "test": false,
                 "name": "resolved-component.ts"
+            },
+            {
+                "relativePath": "to-identifier/index.ts",
+                "test": false,
+                "name": "index.ts"
+            },
+            {
+                "relativePath": "to-identifier/to-identifier.ts",
+                "test": false,
+                "name": "to-identifier.ts"
             }
         ],
-        "mainFile": "load-extensions/index.ts",
+        "mainFile": "capitalize/index.ts",
         "rootDir": "extensions/utils",
         "origin": "AUTHORED",
-        "exported": false
+        "exported": false,
+        "lanes": []
     },
     "variants": {
         "files": [
@@ -1465,10 +2938,16 @@
         "mainFile": "index.ts",
         "rootDir": "extensions/variants",
         "origin": "AUTHORED",
-        "exported": false
+        "exported": false,
+        "lanes": []
     },
     "watch": {
         "files": [
+            {
+                "relativePath": "REFACTOR_GUIDE.md",
+                "test": false,
+                "name": "REFACTOR_GUIDE.md"
+            },
             {
                 "relativePath": "index.ts",
                 "test": false,
@@ -1493,15 +2972,31 @@
                 "relativePath": "watch.ts",
                 "test": false,
                 "name": "watch.ts"
+            },
+            {
+                "relativePath": "watcher.ts",
+                "test": false,
+                "name": "watcher.ts"
             }
         ],
         "mainFile": "index.ts",
         "rootDir": "extensions/watch",
         "origin": "AUTHORED",
-        "exported": false
+        "exported": false,
+        "lanes": []
     },
     "webpack": {
         "files": [
+            {
+                "relativePath": "config/html.js",
+                "test": false,
+                "name": "html.js"
+            },
+            {
+                "relativePath": "config/webpack.config.js",
+                "test": false,
+                "name": "webpack.config.js"
+            },
             {
                 "relativePath": "index.ts",
                 "test": false,
@@ -1516,10 +3011,21 @@
         "mainFile": "index.ts",
         "rootDir": "extensions/webpack",
         "origin": "AUTHORED",
-        "exported": false
+        "exported": false,
+        "lanes": []
     },
     "workspace": {
         "files": [
+            {
+                "relativePath": "capsule-create.cmd.ts",
+                "test": false,
+                "name": "capsule-create.cmd.ts"
+            },
+            {
+                "relativePath": "capsule-list.cmd.ts",
+                "test": false,
+                "name": "capsule-list.cmd.ts"
+            },
             {
                 "relativePath": "component-config-file/component-config-file.ts",
                 "test": false,
@@ -1566,6 +3072,11 @@
                 "name": "list.cmd.tsx"
             },
             {
+                "relativePath": "on-component-load.ts",
+                "test": false,
+                "name": "on-component-load.ts"
+            },
+            {
                 "relativePath": "types.ts",
                 "test": false,
                 "name": "types.ts"
@@ -1601,6 +3112,41 @@
                 "name": "workspace.tsx"
             },
             {
+                "relativePath": "ui/workspace/default-component.ts",
+                "test": false,
+                "name": "default-component.ts"
+            },
+            {
+                "relativePath": "ui/workspace/index.ts",
+                "test": false,
+                "name": "index.ts"
+            },
+            {
+                "relativePath": "ui/workspace/workspace-context.tsx",
+                "test": false,
+                "name": "workspace-context.tsx"
+            },
+            {
+                "relativePath": "ui/workspace/workspace-model.ts",
+                "test": false,
+                "name": "workspace-model.ts"
+            },
+            {
+                "relativePath": "ui/workspace/workspace-provider.tsx",
+                "test": false,
+                "name": "workspace-provider.tsx"
+            },
+            {
+                "relativePath": "ui/workspace/workspace.module.scss",
+                "test": false,
+                "name": "workspace.module.scss"
+            },
+            {
+                "relativePath": "ui/workspace/workspace.tsx",
+                "test": false,
+                "name": "workspace.tsx"
+            },
+            {
                 "relativePath": "utils.ts",
                 "test": false,
                 "name": "utils.ts"
@@ -1626,6 +3172,11 @@
                 "name": "workspace.ts"
             },
             {
+                "relativePath": "workspace.ui-root.ts",
+                "test": false,
+                "name": "workspace.ui-root.ts"
+            },
+            {
                 "relativePath": "workspace.ui.tsx",
                 "test": false,
                 "name": "workspace.ui.tsx"
@@ -1634,7 +3185,8 @@
         "mainFile": "index.ts",
         "rootDir": "extensions/workspace",
         "origin": "AUTHORED",
-        "exported": false
+        "exported": false,
+        "lanes": []
     },
     "version": "14.8.8"
 }
