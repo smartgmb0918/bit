@@ -18,8 +18,8 @@ export class TesterService implements EnvService {
     const components = detectTestFiles(context.components);
 
     const testMatch = components.reduce((acc: string[], component: any) => {
-      const specs = component.specs.map(specFile =>
-        join(this.workspace.path, component.state._consumer.componentMap?.getComponentDir(), specFile)
+      const specs = component.specs.map((specFile) =>
+        join(this.workspace.componentDir(component.id, { ignoreVersion: true }, { relative: true }) || '', specFile)
       );
 
       acc = acc.concat(specs);
@@ -30,7 +30,7 @@ export class TesterService implements EnvService {
       release: false,
       specFiles: testMatch,
       rootPath: this.workspace.path,
-      workspace: this.workspace
+      workspace: this.workspace,
     });
 
     return tester.test(testerContext);

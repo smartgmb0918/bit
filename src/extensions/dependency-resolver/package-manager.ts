@@ -21,11 +21,11 @@ import { installOpts } from './types';
 let emitter = null;
 export function onCapsuleInstalled(cb) {
   // @ts-ignore - this is a hack
-  emitter.on('capsuleInstalled', componentName => cb(componentName));
+  emitter.on('capsuleInstalled', (componentName) => cb(componentName));
 }
 export function beforeInstallingCapsules(cb) {
   // @ts-ignore - this is a hack
-  emitter.on('beforeInstallingCapsules', numCapsules => cb(numCapsules));
+  emitter.on('beforeInstallingCapsules', (numCapsules) => cb(numCapsules));
 }
 
 export default class PackageManager {
@@ -77,9 +77,9 @@ export default class PackageManager {
         logPublisher.info(componentId, '');
         // installProc.stdout!.on('data', d => console.log(componentId, d.toString()));
         // installProc.stderr!.on('data', d => console.log(componentId, d.toString()));
-        installProc.stdout!.on('data', d => logPublisher.info(componentId, d.toString()));
-        installProc.stderr!.on('data', d => logPublisher.warn(componentId, d.toString()));
-        installProc.on('error', e => {
+        installProc.stdout!.on('data', (d) => logPublisher.info(componentId, d.toString()));
+        installProc.stderr!.on('data', (d) => logPublisher.warn(componentId, d.toString()));
+        installProc.on('error', (e) => {
           console.log('error:', e); // eslint-disable-line no-console
           logPublisher.error(componentId, e);
         });
@@ -109,13 +109,13 @@ export default class PackageManager {
       logPublisher.info(folder, '');
       await new Promise((resolve, reject) => {
         // @ts-ignore
-        child.stdout.on('data', d => logPublisher.info(folder, d.toString()));
+        child.stdout.on('data', (d) => logPublisher.info(folder, d.toString()));
         // @ts-ignore
-        child.stderr.on('data', d => logPublisher.warn(folder, d.toString()));
-        child.on('error', e => {
+        child.stderr.on('data', (d) => logPublisher.warn(folder, d.toString()));
+        child.on('error', (e) => {
           reject(e);
         });
-        child.on('close', exitStatus => {
+        child.on('close', (exitStatus) => {
           if (exitStatus) {
             reject(new Error(`${folder}`));
           } else {

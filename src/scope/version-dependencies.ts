@@ -31,7 +31,7 @@ export default class VersionDependencies {
     repo: Repository,
     manipulateDirData: ManipulateDirItem[] | null | undefined
   ): Promise<ComponentWithDependencies> {
-    const depToConsumer = dep => dep.toConsumer(repo, manipulateDirData);
+    const depToConsumer = (dep) => dep.toConsumer(repo, manipulateDirData);
     const dependenciesP = Promise.all(this.dependencies.map(depToConsumer));
     const devDependenciesP = Promise.all(this.devDependencies.map(depToConsumer));
     const extensionDependenciesP = Promise.all(this.extensionsDependencies.map(depToConsumer));
@@ -40,19 +40,23 @@ export default class VersionDependencies {
       componentP,
       dependenciesP,
       devDependenciesP,
-      extensionDependenciesP
+      extensionDependenciesP,
     ]);
     return new ComponentWithDependencies({
       component,
       dependencies,
       devDependencies,
-      extensionDependencies
+      extensionDependencies,
     });
   }
 
-  toObjects(repo: Repository, clientVersion: string | null | undefined): Promise<ComponentObjects> {
-    const depsP = Promise.all(this.allDependencies.map(dep => dep.toObjects(repo, clientVersion)));
-    const compP = this.component.toObjects(repo, clientVersion);
+  toObjects(
+    repo: Repository,
+    clientVersion: string | null | undefined,
+    collectParents: boolean
+  ): Promise<ComponentObjects> {
+    const depsP = Promise.all(this.allDependencies.map((dep) => dep.toObjects(repo, clientVersion, collectParents)));
+    const compP = this.component.toObjects(repo, clientVersion, collectParents);
 
     return Promise.all([compP, depsP]).then(([component, dependencies]) => {
       const flattened = dependencies.reduce((array, compObjects) => {

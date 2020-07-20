@@ -10,6 +10,7 @@ import Component from '../../consumer/component/consumer-component';
 import { Version } from '../models';
 import { getAllFlattenedDependencies } from './get-flattened-dependencies';
 import { buildComponentsGraphForComponentsAndVersion } from '../graph/components-graph';
+import { isTag } from '../../version/version-parser';
 
 const removeNils = R.reject(R.isNil);
 
@@ -39,9 +40,10 @@ export type AutoTagResult = { component: ModelComponent; triggeredBy: BitIds; ve
 export async function bumpDependenciesVersions(
   scope: Scope,
   potentialComponents: BitIds,
-  taggedComponents: Component[]
+  taggedComponents: Component[],
+  shouldSnap = false // when user tags it should auto-tag, when user snaps it should auto-snap
 ): Promise<AutoTagResult[]> {
-  const taggedComponentsIds = BitIds.fromArray(taggedComponents.map(c => c.id));
+  const taggedComponentsIds = BitIds.fromArray(taggedComponents.map((c) => c.id));
   // @ts-ignore AUTO-ADDED-AFTER-MIGRATION-PLEASE-FIX!
   const allComponents = new BitIds(...potentialComponents, ...taggedComponentsIds);
   const componentsAndVersions: ComponentsAndVersions[] = await scope.getComponentsAndVersions(allComponents);
@@ -52,11 +54,20 @@ export async function bumpDependenciesVersions(
     taggedComponentsIds,
     taggedComponentsIds,
     false,
-    graph
+    graph,
+    shouldSnap
   );
   if (updatedComponents.length) {
     const ids = updatedComponents.map(({ component }) => component.toBitIdWithLatestVersion());
-    await updateComponents(componentsAndVersions, scope, taggedComponentsIds, BitIds.fromArray(ids), true, graph);
+    await updateComponents(
+      componentsAndVersions,
+      scope,
+      taggedComponentsIds,
+      BitIds.fromArray(ids),
+      true,
+      graph,
+      shouldSnap
+    );
   }
   await rewriteFlattenedDependencies(updatedComponents, componentsAndVersions, scope);
   return updatedComponents;
@@ -78,9 +89,9 @@ async function rewriteFlattenedDependencies(
   scope: Scope
 ) {
   // get "componentsAndVersions" updated with the recently added versions
-  updatedComponents.forEach(updatedComponent => {
+  updatedComponents.forEach((updatedComponent) => {
     const id = updatedComponent.component.toBitId();
-    const componentAndVersion = componentsAndVersions.find(c => c.component.toBitId().isEqualWithoutVersion(id));
+    const componentAndVersion = componentsAndVersions.find((c) => c.component.toBitId().isEqualWithoutVersion(id));
     if (!componentAndVersion) throw new Error(`rewriteFlattenedDependencies failed finding id ${id.toString()}`);
     componentAndVersion.version = updatedComponent.version;
     componentAndVersion.versionStr = updatedComponent.versionStr;
@@ -89,7 +100,7 @@ async function rewriteFlattenedDependencies(
   const allDependenciesGraphs = buildComponentsGraphForComponentsAndVersion(componentsAndVersions);
   const dependenciesCache = {};
   const notFoundDependencies = new BitIds();
-  const updateAll = updatedComponents.map(async updatedComponent => {
+  const updateAll = updatedComponents.map(async (updatedComponent) => {
     const id = updatedComponent.component.toBitId().changeVersion(updatedComponent.versionStr);
     const { flattenedDependencies, flattenedDevDependencies } = await getAllFlattenedDependencies(
       scope,
@@ -110,8 +121,10 @@ async function updateComponents(
   taggedComponents: BitIds,
   changedComponents: BitIds,
   isRound2 = false,
-  graph: Graph
+  graph: Graph,
+  shouldSnap: boolean
 ): Promise<AutoTagResult[]> {
+  const currentLaneObj = await scope.lanes.getCurrentLaneObject();
   const autoTagResults: AutoTagResult[] = [];
   const componentsToUpdateP = componentsAndVersions.map(async ({ component, version }) => {
     let pendingUpdate = false;
@@ -132,11 +145,19 @@ async function updateComponents(
       // @ts-ignore AUTO-ADDED-AFTER-MIGRATION-PLEASE-FIX!
       const dependencyId: BitId = graph.node(dependency);
       const changedComponentId = changedComponents.searchWithoutVersion(dependencyId);
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      if (changedComponentId && semver.gt(changedComponentId.version!, dependencyId.version!)) {
-        updateDependencies(version, dependencyId, changedComponentId);
-        pendingUpdate = true;
-        triggeredBy.push(dependencyId);
+      if (changedComponentId) {
+        if (
+          (isTag(changedComponentId.version) &&
+            isTag(dependencyId.version) &&
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            semver.gt(changedComponentId.version!, dependencyId.version!)) ||
+          changedComponentId.version !== dependencyId.version
+        ) {
+          // read the comments in getAutoTagPending() in this file to understand the logic better
+          updateDependencies(version, dependencyId, changedComponentId);
+          pendingUpdate = true;
+          triggeredBy.push(dependencyId);
+        }
       }
     });
     if (pendingUpdate) {
@@ -156,12 +177,13 @@ async function updateComponents(
           }
         }
         // it's round 1 or it's round2 but wasn't updated before. create a new version
+        if (shouldSnap) return component.getSnapToAdd();
         // @ts-ignore AUTO-ADDED-AFTER-MIGRATION-PLEASE-FIX!
         return component.getVersionToAdd();
       };
       const versionToAdd = getVersionToAdd();
       autoTagResults.push({ component, triggeredBy, version, versionStr: versionToAdd });
-      return scope.sources.putAdditionalVersion(component, version, message, versionToAdd);
+      return scope.sources.putAdditionalVersion(component, version, message, versionToAdd, currentLaneObj);
     }
     return null;
   });
@@ -174,7 +196,7 @@ function updateDependencies(version: Version, edgeId: BitId, changedComponentId:
   version.updateFlattenedDependency(edgeId, edgeId.changeVersion(changedComponentId.version));
   const dependencyToUpdate = version
     .getAllDependencies()
-    .find(dependency => dependency.id.isEqualWithoutVersion(edgeId));
+    .find((dependency) => dependency.id.isEqualWithoutVersion(edgeId));
   if (dependencyToUpdate) {
     // it's a direct dependency
     dependencyToUpdate.id = dependencyToUpdate.id.changeVersion(changedComponentId.version);
@@ -183,7 +205,7 @@ function updateDependencies(version: Version, edgeId: BitId, changedComponentId:
 
 function buildGraph(componentsAndVersions: ComponentsAndVersions[]): Graph {
   const graph = new Graph();
-  const componentsIds = BitIds.fromArray(componentsAndVersions.map(c => c.component.toBitId()));
+  const componentsIds = BitIds.fromArray(componentsAndVersions.map((c) => c.component.toBitId()));
   componentsAndVersions.forEach(({ component, version, versionStr }) => {
     const id = component.id();
     version.getAllDependencies().forEach((dependency: Dependency) => {
@@ -214,18 +236,35 @@ export async function getAutoTagPending(
     const bitId = component.toBitId();
     const idStr = bitId.toStringWithoutVersion();
     if (!graph.hasNode(idStr)) return null;
+    // edges are dependencies. we loop over the dependencies of a component
     // @ts-ignore
     const edges = graphlib.alg.preorder(graph, idStr);
-    const isAutoTagPending = edges.some(edge => {
+    const isAutoTagPending = edges.some((edge) => {
       const edgeId: BitId = graph.node(edge);
       const changedComponentId = changedComponents.searchWithoutVersion(edgeId);
-      if (!changedComponentId) return false;
-      if (changedComponents.searchWithoutVersion(bitId)) return false;
+      if (!changedComponentId) {
+        // the dependency hasn't changed, so the component is not auto-tag pending
+        return false;
+      }
+      if (changedComponents.searchWithoutVersion(bitId)) {
+        // the dependency has changed but also the component itself, so it's going to be tagged anyway
+        return false;
+      }
       // we only check whether a modified component may cause auto-tagging
       // since it's only modified on the file-system, its version might be the same as the version stored in its
       // dependents. That's why "semver.gte" is used instead of "semver.gt".
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      return semver.gte(changedComponentId.version!, edgeId.version!);
+      // the case when it returns false is when the changedComponentId.version is smaller than
+      // edgeId.version. it happens for example, when A => B (A depends on B), B has changed, A is
+      // a candidate. A has the B dependency saved in the model with version 2.0.0 and B is now
+      // tagged with 1.0.1. So, because A has B with a higher version already, we don't want to
+      // auto-tag it and downgrade its B version.
+      if (isTag(changedComponentId.version) && isTag(edgeId.version)) {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        return semver.gte(changedComponentId.version!, edgeId.version!);
+      }
+      // when they're not tags but snaps, it is impossible to snap from a detached head so a
+      // component is always candidate when its dependencies have changed.
+      return true;
     });
     return isAutoTagPending ? component : null;
   });

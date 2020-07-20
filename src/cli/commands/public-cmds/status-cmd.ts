@@ -7,6 +7,7 @@ import Component from '../../../consumer/component';
 import { immutableUnshift, isString } from '../../../utils';
 import { formatBitString, formatNewBit } from '../../chalk-box';
 import { getInvalidComponentLabel, formatMissing } from '../../templates/component-issues-template';
+import { ModelComponent } from '../../../scope/models';
 import { BASE_DOCS_DOMAIN, IMPORT_PENDING_MSG } from '../../../constants';
 
 const TROUBLESHOOTING_MESSAGE = `${chalk.yellow(
@@ -42,19 +43,23 @@ export default class Status implements LegacyCommand {
     importPendingComponents,
     autoTagPendingComponents,
     invalidComponents,
-    outdatedComponents
+    outdatedComponents,
+    mergePendingComponents,
+    componentsDuringMergeState,
   }: StatusResult): string {
     if (this.json) {
       return JSON.stringify(
         {
           newComponents,
-          modifiedComponent: modifiedComponent.map(c => c.id.toString()),
-          stagedComponents: stagedComponents.map(c => c.id()),
-          componentsWithMissingDeps: componentsWithMissingDeps.map(c => c.id.toString()),
-          importPendingComponents: importPendingComponents.map(id => id.toString()),
+          modifiedComponent: modifiedComponent.map((c) => c.id.toString()),
+          stagedComponents: stagedComponents.map((c) => c.id()),
+          componentsWithMissingDeps: componentsWithMissingDeps.map((c) => c.id.toString()),
+          importPendingComponents: importPendingComponents.map((id) => id.toString()),
           autoTagPendingComponents,
           invalidComponents,
-          outdatedComponents: outdatedComponents.map(c => c.id.toString())
+          outdatedComponents: outdatedComponents.map((c) => c.id.toString()),
+          mergePendingComponents: mergePendingComponents.map((c) => c.id.toString()),
+          componentsDuringMergeState: componentsDuringMergeState.map((id) => id.toString()),
         },
         null,
         2
@@ -64,7 +69,7 @@ export default class Status implements LegacyCommand {
     // troubleshooting doc
     let showTroubleshootingLink = false;
 
-    function format(component: string | Component, showVersions = false, message?: string): string {
+    function format(component: string | Component | ModelComponent, showVersions = false, message?: string): string {
       const missing = componentsWithMissingDeps.find((missingComp: Component) => {
         // @ts-ignore AUTO-ADDED-AFTER-MIGRATION-PLEASE-FIX!
         // @ts-ignore AUTO-ADDED-AFTER-MIGRATION-PLEASE-FIX!
@@ -78,7 +83,7 @@ export default class Status implements LegacyCommand {
       let bitFormatted = `${formatNewBit(component)}`;
       if (showVersions) {
         // @ts-ignore AUTO-ADDED-AFTER-MIGRATION-PLEASE-FIX!
-        const localVersions = component.getLocalVersions();
+        const localVersions = component.getLocalTagsOrHashes();
         bitFormatted += `. versions: ${localVersions.join(', ')}`;
       }
       bitFormatted += ' ... ';
@@ -89,16 +94,16 @@ export default class Status implements LegacyCommand {
 
     const importPendingWarning = importPendingComponents.length ? chalk.yellow(`${IMPORT_PENDING_MSG}.\n`) : '';
 
-    const splitByMissing = R.groupBy(component => {
+    const splitByMissing = R.groupBy((component) => {
       return component.includes(statusFailureMsg) ? 'missing' : 'nonMissing';
     });
-    const { missing, nonMissing } = splitByMissing(newComponents.map(c => format(c)));
+    const { missing, nonMissing } = splitByMissing(newComponents.map((c) => format(c)));
 
     const outdatedTitle = chalk.underline.white('pending updates');
     const outdatedDesc =
       '(use "bit checkout [version] [component_id]" to merge changes)\n(use "bit diff [component_id] [new_version]" to compare changes)\n(use "bit log [component_id]" to list all available versions)\n';
     const outdatedComps = outdatedComponents
-      .map(component => {
+      .map((component) => {
         return `    > ${chalk.cyan(component.id.toStringWithoutVersion())} current: ${component.id.version} latest: ${
           // @ts-ignore AUTO-ADDED-AFTER-MIGRATION-PLEASE-FIX!
           component.latestVersion
@@ -107,6 +112,33 @@ export default class Status implements LegacyCommand {
       .join('');
 
     const outdatedStr = outdatedComponents.length ? [outdatedTitle, outdatedDesc, outdatedComps].join('\n') : '';
+
+    const pendingMergeTitle = chalk.underline.white('pending merge');
+    const pendingMergeDesc = '(use "bit merge <remote-name>/<lane-name> [component-id]" to merge changes)\n';
+    const pendingMergeComps = mergePendingComponents
+      .map((component) => {
+        return `    > ${chalk.cyan(component.id.toString())} local and remote have diverged and have ${
+          component.diverge.snapsOnLocalOnly.length
+        } and ${component.diverge.snapsOnRemoteOnly.length} different snaps each, respectively\n`;
+      })
+      .join('');
+
+    const pendingMergeStr = pendingMergeComps.length
+      ? [pendingMergeTitle, pendingMergeDesc, pendingMergeComps].join('\n')
+      : '';
+
+    const compWithConflictsTitle = chalk.underline.white('components during merge state');
+    const compWithConflictsDesc = `(use "bit merge [component-id] --resolve" to mark them as resolved and snap the changes
+or use "bit merge [component-id] --abort" to cancel the merge operation)\n`;
+    const compWithConflictsComps = componentsDuringMergeState
+      .map((id) => {
+        return `    > ${chalk.cyan(id.toString())}`;
+      })
+      .join('');
+
+    const compWithConflictsStr = compWithConflictsComps.length
+      ? [compWithConflictsTitle, compWithConflictsDesc, compWithConflictsComps].join('\n')
+      : '';
 
     const newComponentDescription = '\n(use "bit tag --all [version]" to lock a version with all your changes)\n';
     const newComponentsTitle = newComponents.length
@@ -117,14 +149,14 @@ export default class Status implements LegacyCommand {
 
     const modifiedDesc = '(use "bit diff" to compare changes)\n';
     const modifiedComponentOutput = immutableUnshift(
-      modifiedComponent.map(c => format(c)),
+      modifiedComponent.map((c) => format(c)),
       modifiedComponent.length
         ? chalk.underline.white('modified components') + newComponentDescription + modifiedDesc
         : ''
     ).join('\n');
 
     const autoTagPendingOutput = immutableUnshift(
-      autoTagPendingComponents.map(c => format(c)),
+      autoTagPendingComponents.map((c) => format(c)),
       autoTagPendingComponents.length
         ? chalk.underline.white('components pending to be tagged automatically (when their dependencies are tagged)')
         : ''
@@ -132,14 +164,14 @@ export default class Status implements LegacyCommand {
 
     const invalidDesc = '\nthese components were failed to load.\n';
     const invalidComponentOutput = immutableUnshift(
-      invalidComponents.map(c => format(c.id.toString(), true, getInvalidComponentLabel(c.error))).sort(),
+      invalidComponents.map((c) => format(c.id.toString(), true, getInvalidComponentLabel(c.error))).sort(),
       invalidComponents.length ? chalk.underline.white(statusInvalidComponentsMsg) + invalidDesc : ''
     ).join('\n');
 
     const stagedDesc = '\n(use "bit export <remote_scope> to push these components to a remote scope")\n';
     const stagedComponentsOutput = immutableUnshift(
       // @ts-ignore AUTO-ADDED-AFTER-MIGRATION-PLEASE-FIX!
-      stagedComponents.map(c => format(c, true)),
+      stagedComponents.map((c) => format(c, true)),
       stagedComponents.length ? chalk.underline.white('staged components') + stagedDesc : ''
     ).join('\n');
 
@@ -149,13 +181,15 @@ export default class Status implements LegacyCommand {
       importPendingWarning +
         [
           outdatedStr,
+          pendingMergeStr,
+          compWithConflictsStr,
           newComponentsOutput,
           modifiedComponentOutput,
           stagedComponentsOutput,
           autoTagPendingOutput,
-          invalidComponentOutput
+          invalidComponentOutput,
         ]
-          .filter(x => x)
+          .filter((x) => x)
           .join(chalk.underline('\n                         \n') + chalk.white('\n')) +
         troubleshootingStr || chalk.yellow(statusWorkspaceIsCleanMsg)
     );

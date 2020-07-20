@@ -28,7 +28,7 @@ export class ComponentStatusLoader {
 
   async getManyComponentsStatuses(ids: BitId[]): Promise<ComponentStatusResult[]> {
     const results: ComponentStatusResult[] = [];
-    await BluebirdPromise.mapSeries(ids, async id => {
+    await BluebirdPromise.mapSeries(ids, async (id) => {
       const status = await this.getComponentStatusById(id);
       results.push({ id, status });
     });
@@ -91,7 +91,8 @@ export class ComponentStatusLoader {
       return status;
     }
 
-    status.staged = componentFromModel.isLocallyChanged();
+    const lane = await this.consumer.getCurrentLaneObject();
+    status.staged = await componentFromModel.isLocallyChanged(lane, this.consumer.scope.objects);
     const versionFromFs = componentFromFileSystem.id.version;
     const idStr = id.toString();
     if (!componentFromFileSystem.id.hasVersion()) {
@@ -100,7 +101,7 @@ export class ComponentStatusLoader {
     // TODO: instead of doing that like this we should use:
     // const versionFromModel = await componentFromModel.loadVersion(versionFromFs, this.consumer.scope.objects);
     // it looks like it's exactly the same code but it's not working from some reason
-    const versionRef = componentFromModel.versions[versionFromFs];
+    const versionRef = componentFromModel.getRef(versionFromFs);
     if (!versionRef) throw new ShowDoctorError(`version ${versionFromFs} was not found in ${idStr}`);
     const versionFromModel = await this.consumer.scope.getObject(versionRef.hash);
     if (!versionFromModel) {

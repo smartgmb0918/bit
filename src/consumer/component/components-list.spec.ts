@@ -3,16 +3,16 @@ import ComponentsList from './components-list';
 import { ModelComponent } from '../../scope/models';
 import { BitId, BitIds } from '../../bit-id';
 
-describe('ComponentList', function() {
+describe('ComponentList', function () {
   this.timeout(0);
   // @ts-ignore AUTO-ADDED-AFTER-MIGRATION-PLEASE-FIX!
   const getModelComponent = () => ModelComponent.fromBitId({ name: 'myName', scope: 'scope' });
-  const getScope = modelComponent => ({
+  const getScope = (modelComponent) => ({
     listLocal: () => {
       return modelComponent ? Promise.resolve([modelComponent]) : Promise.resolve([]);
-    }
+    },
   });
-  describe('listLocalScope', function() {
+  describe('listLocalScope', function () {
     let modelComponent;
     before(() => {
       this.timeout(0);
@@ -48,14 +48,14 @@ describe('ComponentList', function() {
     const scope = {};
     before(() => {
       const bitMap = { getAuthoredAndImportedBitIds: () => new BitIds() };
-      const consumer = { scope, bitMap };
+      const consumer = { scope, bitMap, getCurrentLaneId: () => {} };
       // @ts-ignore AUTO-ADDED-AFTER-MIGRATION-PLEASE-FIX!
       componentList = new ComponentsList(consumer);
     });
     it('should return results with the correct id', async () => {
       const modelComponent = getModelComponent();
       // @ts-ignore AUTO-ADDED-AFTER-MIGRATION-PLEASE-FIX!
-      scope.list = async () => [modelComponent];
+      scope.listIncludeRemoteHead = async () => [modelComponent];
       const results = await componentList.listScope(false, true);
       const result = results[0];
       expect(result).to.have.property('id');
@@ -72,13 +72,13 @@ describe('ComponentList', function() {
           BitId.parse('utils/fs/read'),
           BitId.parse('utils/fs/write'),
           BitId.parse('bar/foo'),
-          BitId.parse('vuz/vuz')
+          BitId.parse('vuz/vuz'),
         ];
       });
       const expectToMatch = (idWithWildCard, expectedResults) => {
         const results = ComponentsList.filterComponentsByWildcard(bitIds, idWithWildCard);
-        const resultsStr = results.map(result => result.toString());
-        expectedResults.forEach(expectedResult => expect(resultsStr).to.include(expectedResult));
+        const resultsStr = results.map((result) => result.toString());
+        expectedResults.forEach((expectedResult) => expect(resultsStr).to.include(expectedResult));
         expect(results.length).to.equal(expectedResults.length);
       };
       it('should match utils/is/*', () => {
@@ -94,7 +94,7 @@ describe('ComponentList', function() {
           'utils/fs/read',
           'utils/fs/write',
           'bar/foo',
-          'vuz/vuz'
+          'vuz/vuz',
         ]);
       });
       it('should match */fs/*', () => {

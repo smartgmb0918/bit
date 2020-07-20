@@ -3,7 +3,6 @@ import os from 'os';
 import * as path from 'path';
 import format from 'string-format';
 import { PathOsBased } from './utils/path';
-import { ComponentOrigin } from './consumer/bit-map/component-map';
 
 const userHome = require('user-home');
 const packageFile = require('../package.json');
@@ -46,16 +45,19 @@ export const BIT_MAP = '.bitmap';
 
 export const OLD_BIT_MAP = '.bit.map.json';
 
+// Hack to prevent reference from constants to component map
+type origins = 'IMPORTED' | 'AUTHORED' | 'NESTED';
+
 export const COMPONENT_ORIGINS = {
-  IMPORTED: 'IMPORTED' as ComponentOrigin,
-  AUTHORED: 'AUTHORED' as ComponentOrigin,
-  NESTED: 'NESTED' as ComponentOrigin // which is a nested dependency
+  IMPORTED: 'IMPORTED' as origins,
+  AUTHORED: 'AUTHORED' as origins,
+  NESTED: 'NESTED' as origins,
 };
 
 export const TESTS_FORK_LEVEL = {
   NONE: 'NONE',
   ONE: 'ONE',
-  COMPONENT: 'COMPONENT'
+  COMPONENT: 'COMPONENT',
 };
 
 export const DEFAULT_INDEX_NAME = 'index';
@@ -103,6 +105,10 @@ export const DEFAULT_SEPARATOR = '/';
 export const LATEST_BIT_VERSION = 'latest';
 
 export const OBJECTS_DIR = 'objects';
+
+export const REMOTE_REFS_DIR = path.join('refs', 'remotes');
+
+export const WORKSPACE_LANES_DIR = path.join('workspace', 'lanes');
 
 export const NULL_BYTE = '\u0000';
 
@@ -160,7 +166,7 @@ export const IGNORE_LIST = [
   '**/node_modules/**',
   '**/package-lock.json',
   '**/yarn.lock',
-  '**/LICENSE'
+  '**/LICENSE',
 ];
 
 /**
@@ -297,7 +303,7 @@ export const HOOKS_NAMES = [
   POST_DEPRECATE_REMOTE,
   POST_UNDEPRECATE_REMOTE,
   PRE_REMOVE_REMOTE,
-  POST_REMOVE_REMOTE
+  POST_REMOVE_REMOTE,
 ];
 
 /**
@@ -411,6 +417,12 @@ export const CURRENT_UPSTREAM = 'current';
 
 export const DEPENDENCIES_FIELDS = ['dependencies', 'devDependencies', 'peerDependencies'];
 
+export const HASH_SIZE = 40;
+
+// @todo: decide how the delimiter should look like
+export const LANE_REMOTE_DELIMITER = '/';
+
+export const DEFAULT_LANE = 'master';
 const MISSING_DEPS_SPACE_COUNT = 10;
 export const MISSING_DEPS_SPACE = ' '.repeat(MISSING_DEPS_SPACE_COUNT);
 export const MISSING_NESTED_DEPS_SPACE = ' '.repeat(MISSING_DEPS_SPACE_COUNT + 2);
@@ -426,5 +438,7 @@ export const IMPORT_PENDING_MSG =
 
 export enum Extensions {
   dependencyResolver = '@teambit/dependency-resolver',
-  pkg = '@teambit/pkg'
+  pkg = '@teambit/pkg',
+  compiler = '@teambit/compiler',
+  envs = '@teambit/envs',
 }

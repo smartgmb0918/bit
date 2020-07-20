@@ -57,16 +57,16 @@ export type MergeResultsThreeWay = {
 export default (async function threeWayMergeVersions({
   consumer,
   otherComponent,
-  otherVersion,
+  otherLabel,
   currentComponent,
-  currentVersion,
-  baseComponent
+  currentLabel,
+  baseComponent,
 }: {
   consumer: Consumer;
   otherComponent: Component;
-  otherVersion: string;
+  otherLabel: string;
   currentComponent: Version;
-  currentVersion: string;
+  currentLabel: string;
   baseComponent: Version;
 }): Promise<MergeResultsThreeWay> {
   // baseFiles and currentFiles come from the model, therefore their paths include the
@@ -107,36 +107,27 @@ export default (async function threeWayMergeVersions({
     if (fsFileHash === currentFileHash) {
       // no need to check also for fsFileHash === baseFileHash, as long as fs == current, no need to take any action
       // @ts-ignore AUTO-ADDED-AFTER-MIGRATION-PLEASE-FIX!
-      // @ts-ignore AUTO-ADDED-AFTER-MIGRATION-PLEASE-FIX!
       results.unModifiedFiles.push({ filePath, fsFile });
       return;
     }
     if (fsFileHash === baseFileHash) {
-      // @ts-ignore AUTO-ADDED-AFTER-MIGRATION-PLEASE-FIX!
       // @ts-ignore AUTO-ADDED-AFTER-MIGRATION-PLEASE-FIX!
       results.overrideFiles.push({ filePath, fsFile });
       return;
     }
     // it was changed in both, there is a chance for conflict
     // @ts-ignore it's a hack to pass the data, version is not a valid attribute.
-    fsFile.version = otherVersion;
+    fsFile.label = otherLabel;
     // @ts-ignore it's a hack to pass the data, version is not a valid attribute.
-    baseFile.version = otherVersion;
-    // @ts-ignore it's a hack to pass the data, version is not a valid attribute.
-    currentFile.version = currentVersion;
-    // @ts-ignore AUTO-ADDED-AFTER-MIGRATION-PLEASE-FIX!
-    // @ts-ignore AUTO-ADDED-AFTER-MIGRATION-PLEASE-FIX!
-    // @ts-ignore AUTO-ADDED-AFTER-MIGRATION-PLEASE-FIX!
-    // @ts-ignore AUTO-ADDED-AFTER-MIGRATION-PLEASE-FIX!
-    // @ts-ignore AUTO-ADDED-AFTER-MIGRATION-PLEASE-FIX!
+    currentFile.label = currentLabel;
     // @ts-ignore AUTO-ADDED-AFTER-MIGRATION-PLEASE-FIX!
     results.modifiedFiles.push({ filePath, fsFile, baseFile, currentFile, output: null, conflict: null });
   };
 
-  fsFiles.forEach(fsFile => {
+  fsFiles.forEach((fsFile) => {
     const relativePath = pathNormalizeToLinux(fsFile.relative);
-    const baseFile = baseFiles.find(file => file.relativePath === relativePath);
-    const currentFile = currentFiles.find(file => file.relativePath === relativePath);
+    const baseFile = baseFiles.find((file) => file.relativePath === relativePath);
+    const currentFile = currentFiles.find((file) => file.relativePath === relativePath);
     getFileResult(fsFile, baseFile, currentFile);
   });
 
@@ -145,7 +136,7 @@ export default (async function threeWayMergeVersions({
   const conflictResults = await getMergeResults(consumer, results.modifiedFiles);
   conflictResults.forEach((conflictResult: MergeFileResult) => {
     // @ts-ignore AUTO-ADDED-AFTER-MIGRATION-PLEASE-FIX!
-    const modifiedFile = results.modifiedFiles.find(file => file.filePath === conflictResult.filePath);
+    const modifiedFile = results.modifiedFiles.find((file) => file.filePath === conflictResult.filePath);
     if (!modifiedFile) throw new GeneralError(`unable to find ${conflictResult.filePath} in modified files array`);
     // @ts-ignore AUTO-ADDED-AFTER-MIGRATION-PLEASE-FIX!
     modifiedFile.output = conflictResult.output;
@@ -162,7 +153,7 @@ async function getMergeResults(
   modifiedFiles: MergeResultsThreeWay['modifiedFiles']
 ): Promise<MergeFileResult[]> {
   const tmp = new Tmp(consumer.scope);
-  const conflictResultsP = modifiedFiles.map(async modifiedFile => {
+  const conflictResultsP = modifiedFiles.map(async (modifiedFile) => {
     // @ts-ignore AUTO-ADDED-AFTER-MIGRATION-PLEASE-FIX!
     const fsFilePathP = tmp.save(modifiedFile.fsFile.contents);
     const writeFile = async (file: SourceFileModel): Promise<PathOsBased> => {
@@ -175,23 +166,23 @@ async function getMergeResults(
     const [fsFilePath, baseFilePath, currentFilePath] = await Promise.all([
       fsFilePathP,
       baseFilePathP,
-      currentFilePathP
+      currentFilePathP,
     ]);
     const mergeFilesParams: MergeFileParams = {
       filePath: modifiedFile.filePath,
       currentFile: {
         // @ts-ignore
-        label: modifiedFile.currentFile.version,
-        path: currentFilePath
+        label: modifiedFile.currentFile.label,
+        path: currentFilePath,
       },
       baseFile: {
-        path: baseFilePath
+        path: baseFilePath,
       },
       otherFile: {
         // @ts-ignore
-        label: `${modifiedFile.fsFile.version} modified`,
-        path: fsFilePath
-      }
+        label: modifiedFile.fsFile.label,
+        path: fsFilePath,
+      },
     };
     return mergeFiles(mergeFilesParams);
   });

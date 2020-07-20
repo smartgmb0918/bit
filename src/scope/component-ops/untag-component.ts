@@ -4,6 +4,7 @@ import logger from '../../logger/logger';
 import { Scope } from '..';
 import GeneralError from '../../error/general-error';
 import ComponentsList from '../../consumer/component/components-list';
+import { getAllVersionsObjects } from './traverse-versions';
 
 export type untagResult = { id: BitId; versions: string[]; component: ModelComponent };
 
@@ -21,8 +22,11 @@ export async function removeLocalVersion(
   const localVersions = component.getLocalVersions();
   const idStr = id.toString();
   if (!localVersions.length) throw new GeneralError(`unable to untag ${idStr}, the component is not staged`);
-  if (version && !component.hasVersion(version)) {
-    throw new GeneralError(`unable to untag ${idStr}, the version ${version} does not exist`);
+  if (version) {
+    const hasVersion = await component.hasVersion(version, scope.objects);
+    if (!hasVersion) {
+      throw new GeneralError(`unable to untag ${idStr}, the version ${version} does not exist`);
+    }
   }
   if (version && !localVersions.includes(version)) {
     throw new GeneralError(`unable to untag ${idStr}, the version ${version} was exported already`);
@@ -32,7 +36,7 @@ export async function removeLocalVersion(
   if (!force) {
     const dependencyGraph = await scope.getDependencyGraph();
 
-    versionsToRemove.forEach(versionToRemove => {
+    versionsToRemove.forEach((versionToRemove) => {
       const idWithVersion = component.toBitId().changeVersion(versionToRemove);
       const dependents = dependencyGraph.getImmediateDependentsPerId(idWithVersion);
       if (dependents.length) {
@@ -45,7 +49,8 @@ export async function removeLocalVersion(
     });
   }
 
-  scope.sources.removeComponentVersions(component, versionsToRemove);
+  const allVersionsObjects = await getAllVersionsObjects(component, scope.objects);
+  scope.sources.removeComponentVersions(component, versionsToRemove, allVersionsObjects);
 
   return { id, versions: versionsToRemove, component };
 }
@@ -88,15 +93,15 @@ async function removeLocalVersionsForMultipleComponents(
   // if no version is given, there is risk of deleting dependencies version without their dependents.
   if (!force && version) {
     const dependencyGraph = await scope.getDependencyGraph();
-    const candidateComponentsIds = componentsToUntag.map(component => {
+    const candidateComponentsIds = componentsToUntag.map((component) => {
       const bitId = component.toBitId();
       return bitId.changeVersion(version);
     });
-    const candidateComponentsIdsStr = candidateComponentsIds.map(id => id.toString());
+    const candidateComponentsIdsStr = candidateComponentsIds.map((id) => id.toString());
     candidateComponentsIds.forEach((bitId: BitId) => {
       const dependents = dependencyGraph.getImmediateDependentsPerId(bitId);
       // @ts-ignore AUTO-ADDED-AFTER-MIGRATION-PLEASE-FIX!
-      const dependentsNotCandidates = dependents.filter(dependent => !candidateComponentsIdsStr.includes(dependent));
+      const dependentsNotCandidates = dependents.filter((dependent) => !candidateComponentsIdsStr.includes(dependent));
       if (dependentsNotCandidates.length) {
         throw new GeneralError( // $FlowFixMe
           `unable to untag ${bitId}, the version ${version} has the following dependent(s) ${dependents.join(', ')}`
@@ -105,7 +110,9 @@ async function removeLocalVersionsForMultipleComponents(
     });
   }
   logger.debug(`found ${componentsToUntag.length} components to untag`);
-  return Promise.all(componentsToUntag.map(component => removeLocalVersion(scope, component.toBitId(), version, true)));
+  return Promise.all(
+    componentsToUntag.map((component) => removeLocalVersion(scope, component.toBitId(), version, true))
+  );
 }
 
 async function getComponentsWithOptionToUntag(scope, version): Promise<ModelComponent[]> {

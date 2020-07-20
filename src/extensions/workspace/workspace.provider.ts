@@ -1,7 +1,7 @@
-import { Harmony } from '@teambit/harmony';
+import { Harmony, SlotRegistry } from '@teambit/harmony';
 import { ScopeExtension } from '../scope';
 import Workspace from './workspace';
-import { ComponentFactory } from '../component';
+import { ComponentExtension } from '../component';
 import { loadConsumerIfExist } from '../../consumer';
 import { IsolatorExtension } from '../isolator';
 import { Logger } from '../logger';
@@ -10,21 +10,31 @@ import { DependencyResolverExtension } from '../dependency-resolver';
 import { Variants } from '../variants';
 import { WorkspaceExtConfig } from './types';
 import { GraphQLExtension } from '../graphql';
-import workspaceSchema from './workspace.graphql';
+import getWorkspaceSchema from './workspace.graphql';
 import InstallCmd from './install.cmd';
 import { CLIExtension } from '../cli';
 import EjectConfCmd from './eject-conf.cmd';
+import { UIExtension } from '../ui';
+import { WorkspaceUIRoot } from './workspace.ui-root';
+import { BundlerExtension } from '../bundler';
+import { CapsuleListCmd } from './capsule-list.cmd';
+import { CapsuleCreateCmd } from './capsule-create.cmd';
+import { OnComponentLoad } from './on-component-load';
 
 export type WorkspaceDeps = [
   CLIExtension,
   ScopeExtension,
-  ComponentFactory,
+  ComponentExtension,
   IsolatorExtension,
   DependencyResolverExtension,
   Variants,
   Logger,
-  GraphQLExtension
+  GraphQLExtension,
+  UIExtension,
+  BundlerExtension
 ];
+
+export type OnComponentLoadSlot = SlotRegistry<OnComponentLoad>;
 
 export type WorkspaceCoreConfig = {
   /**
@@ -42,9 +52,9 @@ export type WorkspaceCoreConfig = {
 };
 
 export default async function provideWorkspace(
-  [cli, scope, component, isolator, dependencyResolver, variants, logger, graphql]: WorkspaceDeps,
+  [cli, scope, component, isolator, dependencyResolver, variants, logger, graphql, ui, bundler]: WorkspaceDeps,
   config: WorkspaceExtConfig,
-  _slots,
+  [onComponentLoadSlot]: [OnComponentLoadSlot],
   harmony: Harmony
 ) {
   // don't use loadConsumer() here because the consumer might not be available.
@@ -68,23 +78,35 @@ export default async function provideWorkspace(
         variants,
         logger.createLogPublisher('workspace'), // TODO: get the 'worksacpe' name in a better way
         undefined,
-        harmony
+        harmony,
+        onComponentLoadSlot
       );
-      // ConsumerComponent.registerOnComponentConfigLegacyLoading(
-      //   'workspace',
-      //   async (id, componentConfig: ComponentConfig) => {
-      //     return workspace.loadExtensions(componentConfig.extensions);
-      //   }
-      // );
-      ConsumerComponent.registerOnComponentConfigLoading('workspace', async id => {
-        const wsComponentConfig = await workspace.workspaceComponentConfig(id);
-        await workspace.loadExtensions(wsComponentConfig.componentExtensions);
-        return wsComponentConfig;
+
+      ConsumerComponent.registerOnComponentConfigLoading('workspace', async (id) => {
+        const componentId = await workspace.resolveComponentId(id);
+        // We call here directly workspace.scope.get instead of workspace.get because part of the workspace get is loading consumer component
+        // which in turn run this event, which will make and infinite loop
+        const componentFromScope = await workspace.scope.get(componentId);
+        const extensions = await workspace.componentExtensions(componentId, componentFromScope);
+        const defaultScope = await workspace.componentDefaultScope(componentId);
+        await workspace.loadExtensions(extensions);
+        return {
+          defaultScope,
+          extensions,
+        };
       });
 
-      graphql.register(workspaceSchema(workspace));
+      const workspaceSchema = getWorkspaceSchema(workspace);
+      ui.registerUiRoot(new WorkspaceUIRoot(workspace, bundler));
+      graphql.register(workspaceSchema);
       cli.register(new InstallCmd(workspace));
       cli.register(new EjectConfCmd(workspace));
+
+      const capsuleListCmd = new CapsuleListCmd(isolator);
+      const capsuleCreateCmd = new CapsuleCreateCmd(workspace);
+      cli.register(capsuleListCmd);
+      cli.register(capsuleCreateCmd);
+      component.registerHost(workspace);
 
       return workspace;
     }

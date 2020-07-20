@@ -11,6 +11,7 @@ import { DependencyResolver, updateDependenciesVersions } from './dependencies/d
 import { getScopeRemotes } from '../../scope/scope-remotes';
 import { ModelComponent } from '../../scope/models';
 import ComponentsPendingImport from '../component-ops/exceptions/components-pending-import';
+import CompsAndLanesObjects from '../../scope/comps-and-lanes-objects';
 
 export default class ComponentLoader {
   _componentsCache: { [idStr: string]: Component } = {}; // cache loaded components
@@ -25,7 +26,7 @@ export default class ComponentLoader {
 
   async loadForCapsule(id: BitId): Promise<Component> {
     logger.debugAndAddBreadCrumb('ComponentLoader', 'loadForCapsule, id: {id}', {
-      id: id.toString()
+      id: id.toString(),
     });
     const idWithVersion: BitId = getLatestVersionNumber(this.consumer.bitmapIds, id);
     const idStr = idWithVersion.toString();
@@ -36,7 +37,7 @@ export default class ComponentLoader {
     }
 
     logger.debugAndAddBreadCrumb('ComponentLoader', 'loadForCapsule finished loading the component "{id}"', {
-      id: id.toString()
+      id: id.toString(),
     });
     return this._componentsCacheForCapsule[idStr];
   }
@@ -46,7 +47,7 @@ export default class ComponentLoader {
     throwOnFailure = true
   ): Promise<{ components: Component[]; invalidComponents: InvalidComponent[] }> {
     logger.debugAndAddBreadCrumb('ComponentLoader', 'loading consumer-components from the file-system, ids: {ids}', {
-      ids: ids.toString()
+      ids: ids.toString(),
     });
     const alreadyLoadedComponents: Component[] = [];
     const idsToProcess: BitId[] = [];
@@ -66,7 +67,7 @@ export default class ComponentLoader {
     logger.debugAndAddBreadCrumb(
       'ComponentLoader',
       `the following ${alreadyLoadedComponents.length} components have been already loaded, get them from the cache. {idsStr}`,
-      { idsStr: alreadyLoadedComponents.map(c => c.id.toString()).join(', ') }
+      { idsStr: alreadyLoadedComponents.map((c) => c.id.toString()).join(', ') }
     );
     if (!idsToProcess.length) return { components: alreadyLoadedComponents, invalidComponents };
 
@@ -76,7 +77,7 @@ export default class ComponentLoader {
       if (component) {
         this._componentsCache[component.id.toString()] = component;
         logger.debugAndAddBreadCrumb('ComponentLoader', 'Finished loading the component "{id}"', {
-          id: component.id.toString()
+          id: component.id.toString(),
         });
         allComponents.push(component);
       }
@@ -92,11 +93,11 @@ export default class ComponentLoader {
       bitDir = path.join(bitDir, componentMap.rootDir);
     }
     let component: Component;
-    const handleError = error => {
+    const handleError = (error) => {
       if (throwOnFailure) throw error;
 
       logger.errorAndAddBreadCrumb('component-loader.loadOne', 'failed loading {id} from the file-system', {
-        id: id.toString()
+        id: id.toString(),
       });
       if (Component.isComponentInvalidByErrorType(error)) {
         invalidComponents.push({ id, error, component });
@@ -109,7 +110,7 @@ export default class ComponentLoader {
         bitDir,
         componentMap,
         id,
-        consumer: this.consumer
+        consumer: this.consumer,
       });
     } catch (err) {
       return handleError(err);
@@ -180,9 +181,10 @@ export default class ComponentLoader {
   async _throwPendingImportIfNeeded(currentId: BitId) {
     if (currentId.hasScope()) {
       const remoteComponent: ModelComponent | null | undefined = await this._getRemoteComponent(currentId);
-      // $FlowFixMe version is set here
-      // @ts-ignore AUTO-ADDED-AFTER-MIGRATION-PLEASE-FIX!
-      if (remoteComponent && remoteComponent.hasVersion(currentId.version)) {
+      // @todo-lanes: make it work with lanes. It needs to go through the objects one by one and check
+      // whether one of the hashes exist.
+      // @ts-ignore version is set here
+      if (remoteComponent && remoteComponent.hasTag(currentId.version)) {
         throw new ComponentsPendingImport();
       }
     }
@@ -190,14 +192,14 @@ export default class ComponentLoader {
 
   async _getRemoteComponent(id: BitId): Promise<ModelComponent | null | undefined> {
     const remotes = await getScopeRemotes(this.consumer.scope);
-    let componentsObjects;
+    let compsAndLanesObjects: CompsAndLanesObjects;
     try {
       // @ts-ignore AUTO-ADDED-AFTER-MIGRATION-PLEASE-FIX!
-      componentsObjects = await remotes.fetch([id], this.consumer.scope, false);
+      compsAndLanesObjects = await remotes.fetch([id], this.consumer.scope, false);
     } catch (err) {
       return null; // probably doesn't exist
     }
-    const remoteComponent = await componentsObjects[0].toObjectsAsync(this.consumer.scope.objects);
+    const remoteComponent = await compsAndLanesObjects.componentsObjects[0].toObjectsAsync();
     return remoteComponent.component;
   }
 

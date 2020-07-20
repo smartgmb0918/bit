@@ -12,9 +12,9 @@ import {
   AuthenticationFailed,
   PermissionDenied,
   SSHInvalidResponse,
-  OldClientVersion
+  OldClientVersion,
 } from '../exceptions';
-import { BitIds, BitId } from '../../../bit-id';
+import { BitId } from '../../../bit-id';
 import { toBase64, packCommand, buildCommandMessage, unpackCommand } from '../../../utils';
 import ComponentNotFound from '../../../scope/exceptions/component-not-found';
 import { ScopeDescriptor } from '../../scope';
@@ -33,8 +33,11 @@ import CustomError from '../../../error/custom-error';
 import ExportAnotherOwnerPrivate from '../exceptions/export-another-owner-private';
 import DependencyGraph from '../../graph/scope-graph';
 import globalFlags from '../../../cli/global-flags';
+import CompsAndLanesObjects from '../../comps-and-lanes-objects';
 import * as globalConfig from '../../../api/consumer/lib/global-config';
 import { ComponentLogs } from '../../models/model-component';
+import { LaneData } from '../../lanes/lanes';
+import { RemoteLaneId } from '../../../lane-id/lane-id';
 
 const checkVersionCompatibility = R.once(checkVersionCompatibilityFunction);
 const AUTH_FAILED_MESSAGE = 'All configured authentication methods failed';
@@ -66,7 +69,7 @@ export const DEFAULT_READ_STRATEGIES: SSHConnectionStrategyName[] = [
   'ssh-agent',
   'ssh-key',
   'anonymous',
-  'user-password'
+  'user-password',
 ];
 export default class SSH implements Network {
   connection: SSH2 | null | undefined;
@@ -97,7 +100,7 @@ export default class SSH implements Network {
       anonymous: this._anonymousAuthentication,
       'ssh-agent': this._sshAgentAuthentication,
       'ssh-key': this._sshKeyAuthentication,
-      'user-password': this._userPassAuthentication
+      'user-password': this._userPassAuthentication,
     };
     const strategiesFailures: string[] = [];
     for (const strategyName of strategiesNames) {
@@ -177,7 +180,7 @@ export default class SSH implements Network {
       host: this.host,
       port: this.port,
       passphrase,
-      readyTimeout: DEFAULT_SSH_READY_TIMEOUT
+      readyTimeout: DEFAULT_SSH_READY_TIMEOUT,
     };
   }
   _composeTokenAuthObject(): Record<string, any> | null | undefined {
@@ -213,7 +216,7 @@ export default class SSH implements Network {
       const conn = new SSH2();
       return new Promise((resolve, reject) => {
         conn
-          .on('error', err => {
+          .on('error', (err) => {
             reject(err);
           })
           .on('ready', () => {
@@ -296,10 +299,10 @@ export default class SSH implements Network {
           stream.stdin.end();
         }
         stream
-          .on('data', response => {
+          .on('data', (response) => {
             res += response.toString();
           })
-          .on('exit', code => {
+          .on('exit', (code) => {
             logger.debug(`ssh: exit. Exit code: ${code}`);
             const promiseExit = () => {
               return code && code !== 0 ? reject(this.errorHandler(code, err)) : resolve(clean(res));
@@ -317,7 +320,7 @@ export default class SSH implements Network {
             // connections. Same bugs occur when running "this.connection.end()" on "end" or "exit" events.
             return code && code !== 0 ? reject(this.errorHandler(code, err)) : resolve(clean(res));
           })
-          .stderr.on('data', response => {
+          .stderr.on('data', (response) => {
             err = response.toString();
             logger.error(`ssh: got an error, ${err}`);
           });
@@ -348,8 +351,11 @@ export default class SSH implements Network {
         return new RemoteScopeNotFound((parsedError && parsedError.name) || err);
       case 130:
         return new PermissionDenied(`${this.host}:${this.path}`);
-      case 131:
-        return new MergeConflictOnRemote(parsedError && parsedError.idsAndVersions ? parsedError.idsAndVersions : []);
+      case 131: {
+        const idsWithConflicts = parsedError && parsedError.idsAndVersions ? parsedError.idsAndVersions : [];
+        const idsNeedUpdate = parsedError && parsedError.idsNeedUpdate ? parsedError.idsNeedUpdate : [];
+        return new MergeConflictOnRemote(idsWithConflicts, idsNeedUpdate);
+      }
       case 132:
         return new CustomError(parsedError && parsedError.message ? parsedError.message : err);
       case 133:
@@ -373,10 +379,10 @@ export default class SSH implements Network {
     }
   }
 
-  pushMany(manyComponentObjects: ComponentObjects[], context?: Record<string, any>): Promise<string[]> {
+  pushMany(compsAndLanesObjects: CompsAndLanesObjects, context?: Record<string, any>): Promise<string[]> {
     // This ComponentObjects.manyToString will handle all the base64 stuff so we won't send this payload
     // to the pack command (to prevent duplicate base64)
-    return this.exec('_put', ComponentObjects.manyToString(manyComponentObjects), context).then((data: string) => {
+    return this.exec('_put', compsAndLanesObjects.toString(), context).then((data: string) => {
       const { payload, headers } = this._unpack(data);
       checkVersionCompatibility(headers.version);
       return payload.ids;
@@ -386,13 +392,15 @@ export default class SSH implements Network {
   deleteMany(
     ids: string[],
     force: boolean,
-    context?: Record<string, any>
+    context?: Record<string, any>,
+    idsAreLanes?: boolean
   ): Promise<ComponentObjects[] | RemovedObjects> {
     return this.exec(
       '_delete',
       {
         bitIds: ids,
-        force
+        force,
+        lanes: idsAreLanes,
       },
       context
     ).then((data: string) => {
@@ -404,7 +412,7 @@ export default class SSH implements Network {
     return this.exec(
       '_deprecate',
       {
-        ids
+        ids,
       },
       context
     ).then((data: string) => {
@@ -416,7 +424,7 @@ export default class SSH implements Network {
     return this.exec(
       '_undeprecate',
       {
-        ids
+        ids,
       },
       context
     ).then((data: string) => {
@@ -424,13 +432,10 @@ export default class SSH implements Network {
       return payload;
     });
   }
-  push(componentObjects: ComponentObjects): Promise<string[]> {
-    return this.pushMany([componentObjects]);
-  }
 
   describeScope(): Promise<ScopeDescriptor> {
     return this.exec('_scope')
-      .then(data => {
+      .then((data) => {
         const { payload, headers } = this._unpack(data);
         checkVersionCompatibility(headers.version);
         return payload;
@@ -444,15 +449,26 @@ export default class SSH implements Network {
     return this.exec('_list', namespacesUsingWildcards).then(async (str: string) => {
       const { payload, headers } = this._unpack(str);
       checkVersionCompatibility(headers.version);
-      payload.forEach(result => {
+      payload.forEach((result) => {
         result.id = new BitId(result.id);
       });
       return payload;
     });
   }
 
+  async listLanes(name?: string, mergeData?: boolean): Promise<LaneData[]> {
+    const options = mergeData ? '--merge-data' : '';
+    const str = await this.exec(`_lanes ${options}`, name);
+    const { payload, headers } = this._unpack(str);
+    checkVersionCompatibility(headers.version);
+    return payload.map((result) => ({
+      ...result,
+      components: result.components.map((component) => ({ id: new BitId(component.id), head: component.head })),
+    }));
+  }
+
   latestVersions(componentIds: BitId[]): Promise<string[]> {
-    const componentIdsStr = componentIds.map(componentId => componentId.toString());
+    const componentIdsStr = componentIds.map((componentId) => componentId.toString());
     return this.exec('_latest', componentIdsStr).then((str: string) => {
       const { payload, headers } = this._unpack(str);
       checkVersionCompatibility(headers.version);
@@ -461,7 +477,7 @@ export default class SSH implements Network {
   }
 
   search(query: string, reindex: boolean) {
-    return this.exec('_search', { query, reindex: reindex.toString() }).then(data => {
+    return this.exec('_search', { query, reindex: reindex.toString() }).then((data) => {
       const { payload, headers } = this._unpack(data);
       checkVersionCompatibility(headers.version);
       return payload;
@@ -493,10 +509,16 @@ export default class SSH implements Network {
     });
   }
 
-  async fetch(ids: BitIds, noDeps = false, context?: Record<string, any>): Promise<ComponentObjects[]> {
+  async fetch(
+    ids: Array<BitId | RemoteLaneId>,
+    noDeps = false,
+    idsAreLanes = false,
+    context?: Record<string, any>
+  ): Promise<CompsAndLanesObjects> {
     let options = '';
-    const idsStr = ids.serialize();
+    const idsStr = ids.map((id) => id.toString());
     if (noDeps) options = '--no-dependencies';
+    if (idsAreLanes) options += ' --lanes';
     return this.exec(`_fetch ${options}`, idsStr, context).then((str: string) => {
       const parseResponse = () => {
         try {
@@ -508,7 +530,7 @@ export default class SSH implements Network {
       };
       const { payload, headers } = parseResponse();
       checkVersionCompatibility(headers.version);
-      const componentObjects = ComponentObjects.manyFromString(payload);
+      const componentObjects = CompsAndLanesObjects.fromString(payload);
       return componentObjects;
     });
   }

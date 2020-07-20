@@ -22,7 +22,7 @@ export default class Put implements LegacyCommand {
     checkVersionCompatibilityOnTheServer(headers.version);
     return new Promise((resolve, reject) => {
       process.stdin
-        .on('data', chunk => {
+        .on('data', (chunk) => {
           data += chunk.toString();
         })
         .on('end', () => {
@@ -30,7 +30,7 @@ export default class Put implements LegacyCommand {
           const scopePath = fromBase64(path);
           return migrate(scopePath, false)
             .then(() => {
-              return put({ componentObjects: data, path: fromBase64(path) }, headers);
+              return put({ compsAndLanesObjects: data, path: fromBase64(path) }, headers);
             })
             .then(resolve)
             .catch(reject);

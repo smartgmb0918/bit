@@ -2,19 +2,19 @@ module.exports = {
   parser: '@typescript-eslint/parser',
   settings: {
     react: {
-      version: 'detect'
+      version: 'detect',
     },
     'import/resolver': {
       node: {
-        extensions: ['.js', '.jsx', '.ts', '.tsx']
-      }
-    }
+        extensions: ['.js', '.jsx', '.ts', '.tsx'],
+      },
+    },
   },
   parserOptions: {
     project: './tsconfig.json',
     ecmaFeatures: {
-      jsx: true // Allows for the parsing of JSX
-    }
+      jsx: true, // Allows for the parsing of JSX
+    },
   },
   extends: [
     'airbnb-typescript/base',
@@ -26,12 +26,12 @@ module.exports = {
     // 'plugin:unicorn/recommended',
     // 'plugin:mocha/recommended',
     'prettier',
-    'prettier/@typescript-eslint'
+    'prettier/@typescript-eslint',
   ],
   plugins: [
     '@typescript-eslint',
     // 'eslint-comments',
-    'promise'
+    'promise',
     // 'mocha',
     // 'unicorn'
   ],
@@ -41,7 +41,7 @@ module.exports = {
     '@typescript-eslint/no-unused-vars': ['error', { args: 'after-used' }],
     '@typescript-eslint/no-use-before-define': [
       'error',
-      { functions: false, classes: true, variables: true, typedefs: true }
+      { functions: false, classes: true, variables: true, typedefs: true },
     ],
 
     // ERRORS OF plugin:@typescript-eslint/recommended
@@ -54,7 +54,7 @@ module.exports = {
     'promise/always-return': 'off',
     'promise/no-nesting': 'off',
     // END ERRORS OF 'plugin:promise/recommended'
-
+    'import/prefer-default-export': 'off', // typescript works better without default export
     'import/export': 'off', // typescript does allow multiple export default when overloading. not sure why it's enabled here. rule source: https://github.com/benmosher/eslint-plugin-import/blob/master/docs/rules/export.md
     'prefer-object-spread': 'off',
     'import/no-duplicates': 'off',
@@ -81,11 +81,14 @@ module.exports = {
         ignoreComments: true,
         ignoreRegExpLiterals: true,
         ignoreStrings: true,
-        ignoreTemplateLiterals: true
-      }
+        ignoreTemplateLiterals: true,
+      },
     ],
     'max-lines': [2, 1800],
-    'func-names': [0]
+    'func-names': [0],
+
+    // ERRORS OF plugin:react/recommended
+    'react/no-unescaped-entities': 'off',
   },
   // return the no-cycle once "import type" is working
   // overrides: [
@@ -99,6 +102,6 @@ module.exports = {
   env: {
     browser: true,
     node: true,
-    mocha: true
-  }
+    mocha: true,
+  },
 };

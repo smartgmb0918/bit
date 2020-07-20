@@ -3,12 +3,12 @@ import { packageNameToComponentId } from './package-name-to-component-id';
 import { Consumer } from '../../consumer';
 import { BitIds, BitId } from '../../bit-id';
 
-describe('packageNameToComponentId', function() {
+describe('packageNameToComponentId', function () {
   this.timeout(0);
   let consumer: Consumer;
   before(() => {
     // @ts-ignore
-    consumer = new Consumer({ projectPath: '', config: {} });
+    consumer = new Consumer({ projectPath: '', config: {}, scope: { lanes: { getCurrentLaneName: () => '' } } });
   });
   describe('when a packageName has no dots', () => {
     it('should return bitId with no-scope when it is on bitmap', () => {

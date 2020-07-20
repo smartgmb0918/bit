@@ -21,7 +21,10 @@ export async function build(
 
 export async function buildAll(noCache: boolean, verbose: boolean): Promise<Record<string, any>> {
   const consumer: Consumer = await loadConsumer();
-  const authoredAndImportedIds = consumer.bitMap.getAllBitIds([COMPONENT_ORIGINS.IMPORTED, COMPONENT_ORIGINS.AUTHORED]);
+  const authoredAndImportedIds = consumer.bitMap.getAllIdsAvailableOnLane([
+    COMPONENT_ORIGINS.IMPORTED,
+    COMPONENT_ORIGINS.AUTHORED,
+  ]);
   if (R.isEmpty(authoredAndImportedIds)) {
     return {};
   }
@@ -32,7 +35,7 @@ export async function buildAll(noCache: boolean, verbose: boolean): Promise<Reco
   const allComponents = await consumer.scope.buildMultiple(components, consumer, noCache, verbose);
   const componentsObj = {};
   // @ts-ignore AUTO-ADDED-AFTER-MIGRATION-PLEASE-FIX!
-  allComponents.forEach(component => {
+  allComponents.forEach((component) => {
     componentsObj[component.component] = component.buildResults;
   });
   await consumer.onDestroy();

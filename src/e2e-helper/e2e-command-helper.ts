@@ -10,7 +10,8 @@ import { removeChalkCharacters } from '../utils';
 import runInteractive from '../interactive/utils/run-interactive-cmd';
 import { InteractiveInputs } from '../interactive/utils/run-interactive-cmd';
 import ScopesData from './e2e-scopes';
-import { CURRENT_UPSTREAM } from '../constants';
+import { CURRENT_UPSTREAM, LANE_REMOTE_DELIMITER } from '../constants';
+import { NOTHING_TO_SNAP_MSG } from '../cli/commands/public-cmds/snap-cmd';
 import { ENV_VAR_FEATURE_TOGGLE } from '../api/consumer/lib/feature-toggle';
 
 const DEFAULT_DEFAULT_INTERVAL_BETWEEN_INPUTS = 200;
@@ -102,12 +103,16 @@ export default class CommandHelper {
     const result = this.runCmd(`bit cat-component ${id} --json`, cwd);
     return parse ? JSON.parse(result) : result;
   }
+  catLane(id: string, cwd?: string): Record<string, any> {
+    const result = this.runCmd(`bit cat-lane ${id}`, cwd);
+    return JSON.parse(result);
+  }
   addComponent(filePaths: string, options: Record<string, any> | string = {}, cwd: string = this.scopes.localPath) {
     const value =
       typeof options === 'string'
         ? options
         : Object.keys(options)
-            .map(key => `-${key} ${options[key]}`)
+            .map((key) => `-${key} ${options[key]}`)
             .join(' ');
     return this.runCmd(`bit add ${filePaths} ${value}`, cwd);
   }
@@ -156,11 +161,62 @@ export default class CommandHelper {
   tagScope(version: string, message = 'tag-message', options = '') {
     return this.runCmd(`bit tag -s ${version} -m ${message} ${options}`);
   }
+  snapComponent(id: string, tagMsg = 'snap-message', options = '') {
+    return this.runCmd(`bit snap ${id} -m ${tagMsg} ${options}`);
+  }
+  snapAllComponents(options = '', assertSnapped = true) {
+    const result = this.runCmd(`bit snap -a ${options} `);
+    if (assertSnapped) expect(result).to.not.have.string(NOTHING_TO_SNAP_MSG);
+    return result;
+  }
+  createLane(laneName = 'dev') {
+    return this.runCmd(`bit switch ${laneName} --create`);
+  }
+  removeLane(laneName = 'dev', options = '') {
+    return this.runCmd(`bit remove ${laneName} ${options} --lane --silent`);
+  }
+  removeRemoteLane(laneName = 'dev', options = '') {
+    return this.runCmd(`bit remove ${this.scopes.remote}/${laneName} ${options} --remote --lane --silent`);
+  }
+  showLanes(options = '') {
+    const results = this.runCmd(`bit lane ${options}`);
+    return removeChalkCharacters(results) as string;
+  }
+  showOneLane(name: string) {
+    return this.runCmd(`bit lane ${name}`);
+  }
+  showLanesParsed(options = '') {
+    const results = this.runCmd(`bit lane ${options} --json`);
+    return JSON.parse(results);
+  }
+  showRemoteLanesParsed(options = '') {
+    const results = this.runCmd(`bit lane --remote ${this.scopes.remote} ${options} --json`);
+    return JSON.parse(results);
+  }
+  showOneLaneParsed(name: string) {
+    const results = this.runCmd(`bit lane ${name} --json`);
+    const parsed = JSON.parse(results);
+    return parsed.lanes[0];
+  }
+  getHead(id: string) {
+    const comp = this.catComponent(id);
+    return comp.head;
+  }
+  getHeadOfLane(laneName: string, componentName: string) {
+    const lane = this.catLane(laneName);
+    const component = lane.components.find((c) => c.id.name === componentName);
+    return component.head;
+  }
   untag(id: string) {
     return this.runCmd(`bit untag ${id}`);
   }
   exportComponent(id: string, scope: string = this.scopes.remote, assert = true, flags = '') {
     const result = this.runCmd(`bit export ${scope} ${id} ${flags}`);
+    if (assert) expect(result).to.not.have.string('nothing to export');
+    return result;
+  }
+  exportLane(laneName: string, scope: string = this.scopes.remote, assert = true) {
+    const result = this.runCmd(`bit export ${scope} ${laneName} --force --lanes`);
     if (assert) expect(result).to.not.have.string('nothing to export');
     return result;
   }
@@ -190,15 +246,23 @@ export default class CommandHelper {
   importComponent(id: string) {
     return this.runCmd(`bit import ${this.scopes.remote}/${id}`);
   }
-
+  fetchLane(id: string) {
+    return this.runCmd(`bit fetch ${id} --lanes`);
+  }
+  fetchRemoteLane(id: string) {
+    return this.runCmd(`bit fetch ${this.scopes.remote}${LANE_REMOTE_DELIMITER}${id} --lanes`);
+  }
+  fetchAllLanes() {
+    return this.runCmd(`bit fetch --lanes`);
+  }
   importManyComponents(ids: string[]) {
-    const idsWithRemote = ids.map(id => `${this.scopes.remote}/${id}`);
+    const idsWithRemote = ids.map((id) => `${this.scopes.remote}/${id}`);
     return this.runCmd(`bit import ${idsWithRemote.join(' ')}`);
   }
 
   importComponentWithOptions(id = 'bar/foo.js', options: Record<string, any>) {
     const value = Object.keys(options)
-      .map(key => `-${key} ${options[key]}`)
+      .map((key) => `-${key} ${options[key]}`)
       .join(' ');
     return this.runCmd(`bit import ${this.scopes.remote}/${id} ${value}`);
   }
@@ -209,7 +273,7 @@ export default class CommandHelper {
 
   isolateComponent(id: string, flags: string): string {
     const isolatedEnvOutput = this.runCmd(`bit isolate ${this.scopes.remote}/${id} ${this.scopes.remotePath} ${flags}`);
-    const isolatedEnvOutputArray = isolatedEnvOutput.split('\n').filter(str => str);
+    const isolatedEnvOutputArray = isolatedEnvOutput.split('\n').filter((str) => str);
     return isolatedEnvOutputArray[isolatedEnvOutputArray.length - 1];
   }
 
@@ -223,10 +287,10 @@ export default class CommandHelper {
   createCapsuleHarmony(id: string): string {
     const output = this.runCmd(`bit capsule-create ${id} --json`);
     const capsules = JSON.parse(output);
-    const capsule = capsules.find(c => c.id === id);
+    const capsule = capsules.find((c) => c.id.includes(id));
     if (!capsule)
       throw new Error(
-        `createCapsuleHarmony unable to find capsule for ${id}, inside ${capsules.map(c => c.id).join(', ')}`
+        `createCapsuleHarmony unable to find capsule for ${id}, inside ${capsules.map((c) => c.id).join(', ')}`
       );
     return capsule.path;
   }
@@ -234,7 +298,7 @@ export default class CommandHelper {
   getCapsuleOfComponent(id: string) {
     const capsulesJson = this.runCmd('bit capsule-list -j');
     const capsules = JSON.parse(capsulesJson);
-    const capsulePath = capsules.capsules.find(c => c.endsWith(id));
+    const capsulePath = capsules.capsules.find((c) => c.endsWith(id));
     if (!capsulePath) throw new Error(`unable to find the capsule for ${id}`);
     return capsulePath;
   }
@@ -250,7 +314,7 @@ export default class CommandHelper {
 
   buildComponentWithOptions(id = '', options: Record<string, any>, cwd: string = this.scopes.localPath) {
     const value = Object.keys(options)
-      .map(key => `-${key} ${options[key]}`)
+      .map((key) => `-${key} ${options[key]}`)
       .join(' ');
     return this.runCmd(`bit build ${id} ${value}`, cwd);
   }
@@ -261,7 +325,7 @@ export default class CommandHelper {
 
   testComponentWithOptions(id = '', options: Record<string, any>, cwd: string = this.scopes.localPath) {
     const value = Object.keys(options)
-      .map(key => `-${key} ${options[key]}`)
+      .map((key) => `-${key} ${options[key]}`)
       .join(' ');
     return this.runCmd(`bit test ${id} ${value}`, cwd);
   }
@@ -277,14 +341,14 @@ export default class CommandHelper {
 
   expectStatusToBeClean() {
     const statusJson = this.statusJson();
-    Object.keys(statusJson).forEach(key => {
+    Object.keys(statusJson).forEach((key) => {
       expect(statusJson[key], `status.${key} should be empty`).to.have.lengthOf(0);
     });
   }
 
   expectStatusToNotHaveIssues() {
     const statusJson = this.statusJson();
-    ['componentsWithMissingDeps', 'invalidComponents'].forEach(key => {
+    ['componentsWithMissingDeps', 'invalidComponents'].forEach((key) => {
       expect(statusJson[key], `status.${key} should be empty`).to.have.lengthOf(0);
     });
   }
@@ -310,7 +374,7 @@ export default class CommandHelper {
 
   showComponentWithOptions(id = 'bar/foo', options: Record<string, any>) {
     const value = Object.keys(options)
-      .map(key => `-${key} ${options[key]}`)
+      .map((key) => `-${key} ${options[key]}`)
       .join(' ');
     return this.runCmd(`bit show ${id} ${value}`);
   }
@@ -322,9 +386,23 @@ export default class CommandHelper {
   checkout(values: string) {
     return this.runCmd(`bit checkout ${values}`);
   }
+  switchLocalLane(lane: string, flags?: string) {
+    return this.runCmd(`bit switch ${lane} ${flags || ''}`);
+  }
+  switchRemoteLane(lane: string, flags?: string, getAll = true) {
+    const getAllFlag = getAll ? '--get-all' : '';
+    return this.runCmd(`bit switch ${lane} --remote ${this.scopes.remote} ${getAllFlag} ${flags || ''}`);
+  }
 
   mergeVersion(version: string, ids: string, flags?: string) {
     return this.runCmd(`bit merge ${version} ${ids} ${flags || ''}`);
+  }
+
+  merge(values: string) {
+    return this.runCmd(`bit merge ${values}`);
+  }
+  mergeLane(laneName: string, options = '') {
+    return this.runCmd(`bit merge ${laneName} ${options} --lane`);
   }
 
   // @ts-ignore AUTO-ADDED-AFTER-MIGRATION-PLEASE-FIX!
@@ -359,11 +437,11 @@ export default class CommandHelper {
       o: '',
       p: '',
       k: '',
-      j: ''
+      j: '',
     };
     options = { ...defaultOptions, ...options };
     const value = Object.keys(options)
-      .map(key => `-${key} ${options[key]}`)
+      .map((key) => `-${key} ${options[key]}`)
       .join(' ');
     const result = this.runCmd(`bit pack ${id} ${value}`);
     if (extract) {
@@ -400,7 +478,7 @@ export default class CommandHelper {
   injectConf(id = 'bar/foo', options: Record<string, any> | null | undefined) {
     const value = options
       ? Object.keys(options) // $FlowFixMe
-          .map(key => `-${key} ${options[key]}`)
+          .map((key) => `-${key} ${options[key]}`)
           .join(' ')
       : '';
     return this.runCmd(`bit inject-conf ${id} ${value}`);
@@ -428,7 +506,7 @@ export default class CommandHelper {
   parseOptions(options?: Record<string, any>): string {
     if (!options) return ' ';
     const value = Object.keys(options)
-      .map(key => {
+      .map((key) => {
         const keyStr = key.length === 1 ? `-${key}` : `--${key}`;
         return `${keyStr} ${options[key]}`;
       })
@@ -441,13 +519,13 @@ export default class CommandHelper {
     inputs = [],
     // Options for the process (execa)
     processOpts = {
-      cwd: this.scopes.localPath
+      cwd: this.scopes.localPath,
     },
     // opts for interactive
     opts = {
       defaultIntervalBetweenInputs: DEFAULT_DEFAULT_INTERVAL_BETWEEN_INPUTS,
-      verbose: false
-    }
+      verbose: false,
+    },
   }: {
     args: string[];
     inputs: InteractiveInputs;

@@ -3,12 +3,12 @@ import sinon from 'sinon';
 import Consumer from '../consumer/consumer';
 import { MissingBitMapComponent } from './bit-map/exceptions';
 
-describe('Consumer', function() {
+describe('Consumer', function () {
   this.timeout(0);
   let sandbox;
   const getConsumerInstance = () => {
     // @ts-ignore AUTO-ADDED-AFTER-MIGRATION-PLEASE-FIX!
-    const consumer = new Consumer({ projectPath: '', config: {} });
+    const consumer = new Consumer({ projectPath: '', config: {}, scope: { lanes: { getCurrentLaneName: () => '' } } });
     return consumer;
   };
   describe('getComponentIdFromNodeModulesPath', () => {

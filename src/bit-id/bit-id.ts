@@ -8,7 +8,7 @@ import isValidIdChunk from '../utils/is-valid-id-chunk';
 import isValidScopeName from '../utils/is-valid-scope-name';
 import { PathOsBased } from '../utils/path';
 import GeneralError from '../error/general-error';
-import versionParser from '../version/version-parser';
+import versionParser, { isHash } from '../version/version-parser';
 
 export type BitIdProps = {
   scope?: string | null | undefined;
@@ -128,6 +128,10 @@ export default class BitId {
     return path.join(this.name, this.scope, this.version);
   }
 
+  isVersionSnap() {
+    return isHash(this.version);
+  }
+
   /**
    * Get a string id and return a string without the version part
    * @param {string} id
@@ -167,24 +171,26 @@ export default class BitId {
         const name = id.substring(delimiterIndex + 1);
         return {
           scope,
-          name
+          name,
         };
       }
 
       return {
         scope: undefined,
-        name: id
+        name: id,
       };
     };
     const { scope, name } = getScopeAndName();
 
     if (!isValidIdChunk(name)) throw new InvalidName(name);
-    if (scope && !isValidScopeName(scope)) throw new InvalidScopeName(scope);
+    if (scope && !isValidScopeName(scope)) {
+      throw new InvalidScopeName(scope);
+    }
 
     return new BitId({
       scope,
       name,
-      version
+      version,
     });
   }
 
@@ -206,7 +212,7 @@ export default class BitId {
         scope,
         box,
         name,
-        version
+        version,
       });
     }
 
@@ -218,7 +224,7 @@ export default class BitId {
       return new BitId({
         box,
         name,
-        version
+        version,
       });
     }
 
@@ -229,7 +235,7 @@ export default class BitId {
       }
       return new BitId({
         name,
-        version
+        version,
       });
     }
 
@@ -248,7 +254,7 @@ export default class BitId {
     const suggestedName = scope.toLowerCase();
     let cleanName = suggestedName
       .split('')
-      .map(char => {
+      .map((char) => {
         if (/^[$\-_!.a-z0-9]+$/.test(char)) return char;
         return '';
       })
@@ -279,6 +285,11 @@ export default class BitId {
   }
 
   static isValidVersion(version: string): boolean {
+    // a version can be a tag (semver) or a snap (hash)
+    return BitId.isValidSemver(version) || isHash(version);
+  }
+
+  static isValidSemver(version: string): boolean {
     return Boolean(semver.valid(version));
   }
 }

@@ -11,7 +11,7 @@ const addComponentParamsFixture = {
   componentId: new BitId({ name: 'is-string' }),
   files: [{ name: 'is-string.js', relativePath: 'is-string.js', test: false }],
   mainFile: 'is-string.js',
-  origin: COMPONENT_ORIGINS.AUTHORED
+  origin: COMPONENT_ORIGINS.AUTHORED,
 };
 
 const addComponentParamsImportedFixture = {
@@ -19,10 +19,10 @@ const addComponentParamsImportedFixture = {
   files: [{ name: 'is-string-imported.js', relativePath: 'is-string-imported.js', test: false }],
   mainFile: 'is-string-imported.js',
   origin: COMPONENT_ORIGINS.IMPORTED,
-  rootDir: 'utils'
+  rootDir: 'utils',
 };
 
-describe('BitMap', function() {
+describe('BitMap', function () {
   // @ts-ignore
   logger.debug = () => {};
   // @ts-ignore
@@ -32,7 +32,7 @@ describe('BitMap', function() {
     let bitMap: BitMap;
     let componentMap;
     before(() => {
-      bitMap = BitMap.load(__dirname);
+      bitMap = BitMap.load(__dirname, path.join(__dirname, '.bit'));
       bitMap.addComponent(addComponentParamsFixture);
       const allComponents = bitMap.toObjects();
       componentMap = allComponents['is-string'];
@@ -53,7 +53,7 @@ describe('BitMap', function() {
   });
   describe('getAuthoredExportedComponents', () => {
     it('should return an empty array when there are no authored components', () => {
-      const bitMap = BitMap.load(path.join(bitMapFixtureDir, 'only-imported'));
+      const bitMap = BitMap.load(path.join(bitMapFixtureDir, 'only-imported'), '');
       const results = bitMap.getAuthoredExportedComponents();
       expect(results).to.be.an('array');
       expect(results).to.have.lengthOf(0);

@@ -2,8 +2,10 @@
 import R, { forEachObjIndexed } from 'ramda';
 import { BitId, BitIds } from '../../bit-id';
 import { AbstractVinyl } from '../component/sources';
-import { Source } from '../../scope/models';
 import { Artifact } from '../component/sources/artifact';
+import Source from '../../scope/models/source';
+
+const mergeReducer = (accumulator, currentValue) => R.unionWith(ignoreVersionPredicate, accumulator, currentValue);
 
 export class ExtensionDataEntry {
   constructor(
@@ -12,6 +14,7 @@ export class ExtensionDataEntry {
     public name?: string,
     public config: { [key: string]: any } = {},
     public data: { [key: string]: any } = {},
+    // TODO: rename to files and make sure it only includes abstract vinyl
     public artifacts: Array<AbstractVinyl | { relativePath: string; file: Source }> = []
   ) {}
 
@@ -35,7 +38,7 @@ export class ExtensionDataEntry {
   }
 
   clone(): ExtensionDataEntry {
-    const clonedArtifacts = this.artifacts.map(artifact => {
+    const clonedArtifacts = this.artifacts.map((artifact) => {
       return artifact instanceof Artifact ? artifact.clone() : artifact;
     });
     return new ExtensionDataEntry(
@@ -55,13 +58,13 @@ export class ExtensionDataList extends Array<ExtensionDataEntry> {
     ExtensionDataList.coreExtensionsNames.set(name, '');
   }
   static registerManyCoreExtensionNames(names: string[]) {
-    names.forEach(name => {
+    names.forEach((name) => {
       ExtensionDataList.coreExtensionsNames.set(name, '');
     });
   }
 
   get ids(): string[] {
-    const list = this.map(entry => entry.stringId);
+    const list = this.map((entry) => entry.stringId);
     return list;
   }
 
@@ -69,7 +72,7 @@ export class ExtensionDataList extends Array<ExtensionDataEntry> {
    * returns only new 3rd party extension ids, not core, nor legacy.
    */
   get extensionsBitIds(): BitIds {
-    const bitIds = this.filter(entry => entry.extensionId).map(entry => entry.extensionId) as BitId[];
+    const bitIds = this.filter((entry) => entry.extensionId).map((entry) => entry.extensionId) as BitId[];
     return BitIds.fromArray(bitIds);
   }
 
@@ -77,7 +80,7 @@ export class ExtensionDataList extends Array<ExtensionDataEntry> {
     if (ExtensionDataList.coreExtensionsNames.has(extensionId)) {
       return this.findCoreExtension(extensionId);
     }
-    return this.find(extEntry => {
+    return this.find((extEntry) => {
       if (ignoreVersion && ignoreScope) {
         return extEntry.extensionId?.toStringWithoutScopeAndVersion() === extensionId;
       }
@@ -92,12 +95,12 @@ export class ExtensionDataList extends Array<ExtensionDataEntry> {
   }
 
   findCoreExtension(extensionId: string): ExtensionDataEntry | undefined {
-    return this.find(extEntry => extEntry.name === extensionId);
+    return this.find((extEntry) => extEntry.name === extensionId);
   }
 
   remove(id: BitId) {
     return ExtensionDataList.fromArray(
-      this.filter(entry => {
+      this.filter((entry) => {
         return entry.stringId !== id.toString() && entry.stringId !== id.toStringWithoutVersion();
       })
     );
@@ -105,17 +108,17 @@ export class ExtensionDataList extends Array<ExtensionDataEntry> {
 
   toConfigObject() {
     const res = {};
-    this.forEach(entry => (res[entry.stringId] = entry.config));
+    this.forEach((entry) => (res[entry.stringId] = entry.config));
     return res;
   }
 
   clone(): ExtensionDataList {
-    const extensionDataEntries = this.map(extensionData => extensionData.clone());
+    const extensionDataEntries = this.map((extensionData) => extensionData.clone());
     return new ExtensionDataList(...extensionDataEntries);
   }
 
   _filterLegacy(): ExtensionDataList {
-    return ExtensionDataList.fromArray(this.filter(ext => !ext.isLegacy));
+    return ExtensionDataList.fromArray(this.filter((ext) => !ext.isLegacy));
   }
 
   static fromConfigObject(obj: { [extensionId: string]: any }): ExtensionDataList {
@@ -144,9 +147,12 @@ export class ExtensionDataList extends Array<ExtensionDataEntry> {
   /**
    * Merge a list of ExtensionDataList into one ExtensionDataList
    * In case of entry with the same id appear in more than one list
-   * the later in the list will be taken
+   * the former in the list will be taken
    * see unit tests for examples
    *
+   * Make sure you extension ids are resolved before call this, otherwise you might get unexpected results
+   * for example:
+   * you might have 2 entries like: default-scope/my-extension and my-extension on the same time
    *
    * @static
    * @param {ExtensionDataList[]} list
@@ -154,8 +160,21 @@ export class ExtensionDataList extends Array<ExtensionDataEntry> {
    * @memberof ExtensionDataList
    */
   static mergeConfigs(list: ExtensionDataList[]): ExtensionDataList {
-    const objectsList = list.map(extensions => extensions.toConfigObject());
-    const merged = R.mergeAll(objectsList);
-    return ExtensionDataList.fromConfigObject(merged);
+    if (list.length === 1) {
+      return list[0];
+    }
+
+    const merged = list.reduce(mergeReducer, new ExtensionDataList());
+    return ExtensionDataList.fromArray(merged);
   }
+}
+
+function ignoreVersionPredicate(extensionEntry1: ExtensionDataEntry, extensionEntry2: ExtensionDataEntry) {
+  if (extensionEntry1.extensionId && extensionEntry2.extensionId) {
+    return extensionEntry1.extensionId.isEqualWithoutVersion(extensionEntry2.extensionId);
+  }
+  if (extensionEntry1.name && extensionEntry2.name) {
+    return extensionEntry1.name === extensionEntry2.name;
+  }
+  return false;
 }

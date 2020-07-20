@@ -39,21 +39,20 @@ async function parseValues(consumer: Consumer, values: string[], checkoutProps: 
       `the first argument "${checkoutProps.version}" seems to be a version. however, --reset flag doesn't support a version`
     );
   }
+  if (ids.length && checkoutProps.all) {
+    throw new GeneralError('please specify either [ids...] or --all, not both');
+  }
   if (!checkoutProps.reset && !checkoutProps.version) {
     if (ids.length) throw new GeneralError(`the specified version "${ids[0]}" is not a valid version`);
     else throw new GeneralError('please specify a version');
   }
-  if (ids.length && checkoutProps.all) {
-    throw new GeneralError('please specify either [ids...] or --all, not both');
-  }
-
   if (!ids.length) {
     populateAllIds(consumer, checkoutProps);
   } else {
     const idsHasWildcard = hasWildcard(ids);
     checkoutProps.ids = idsHasWildcard
       ? getIdsMatchedByWildcard(consumer, checkoutProps, ids)
-      : ids.map(id => consumer.getParsedId(id));
+      : ids.map((id) => consumer.getParsedId(id));
   }
 }
 
@@ -76,7 +75,7 @@ function getIdsMatchedByWildcard(consumer: Consumer, checkoutProps: CheckoutProp
 
 function getCandidateIds(consumer: Consumer, checkoutProps: CheckoutProps): BitId[] {
   const idsFromBitMap = consumer.bitMap.getAuthoredAndImportedBitIds();
-  return idsFromBitMap.map(bitId => {
+  return idsFromBitMap.map((bitId) => {
     const version = checkoutProps.latestVersion ? LATEST : bitId.version;
     return bitId.changeVersion(version);
   });

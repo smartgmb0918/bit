@@ -1,4 +1,4 @@
-module.exports = function(api) {
+module.exports = function (api) {
   api.cache(true);
 
   const presets = [
@@ -8,17 +8,19 @@ module.exports = function(api) {
       '@babel/preset-env',
       {
         targets: {
-          node: 8
-        }
-      }
-    ]
+          node: 8,
+        },
+        useBuiltIns: 'usage',
+        corejs: 3,
+      },
+    ],
   ];
   const plugins = [
     [
       '@babel/plugin-transform-modules-commonjs',
       {
-        lazy: () => true
-      }
+        lazy: () => true,
+      },
     ],
     'babel-plugin-transform-typescript-metadata',
     ['@babel/plugin-proposal-decorators', { legacy: true }],
@@ -29,15 +31,15 @@ module.exports = function(api) {
       '@babel/plugin-transform-async-to-generator',
       {
         module: 'bluebird',
-        method: 'coroutine'
-      }
-    ]
+        method: 'coroutine',
+      },
+    ],
   ];
 
   return {
     presets,
     plugins,
     only: ['**/*.ts', '**/*.tsx', 'src/extensions/flows/task/container-script.js'],
-    ignore: ['components/*']
+    ignore: ['components/*'],
   };
 };
