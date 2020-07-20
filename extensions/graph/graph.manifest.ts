@@ -7,5 +7,5 @@ import { ComponentFactoryExt } from '@bit/bit.core.component';
 export default {
   name: 'graph',
   dependencies: [WorkspaceExt, ScopeExtension, ComponentFactoryExt],
-  provider: provide
+  provider: provide,
 } as ExtensionManifest;

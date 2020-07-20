@@ -1,3 +1,4 @@
+import { PathLinux } from 'bit-bin/utils/path';
 import { ExtensionDataList } from 'bit-bin/consumer/config/extension-data';
 import { Compilers, Testers } from 'bit-bin/consumer/config/abstract-config';
 import { ComponentOverridesData } from 'bit-bin/consumer/config/component-overrides';
@@ -20,6 +21,11 @@ type LegacyConfigProps = {
  */
 export default class Config {
   constructor(
+    /**
+     * version main file
+     */
+    readonly main: PathLinux,
+
     /**
      * configured extensions
      */

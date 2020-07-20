@@ -6,8 +6,19 @@ import { Network } from '@bit/bit.core.isolator';
 import { BuildResults } from '@bit/bit.core.builder';
 
 export class TypescriptCompiler implements Compiler {
-  constructor(readonly tsConfig: Record<string, any>) {}
-  compileFile(
+  constructor(
+    /**
+     * typescript config.
+     */
+    readonly tsConfig: Record<string, any>,
+
+    /**
+     * path for .d.ts files to include during build.
+     */
+    private types: string[]
+  ) {}
+
+  transpileFile(
     fileContent: string,
     options: { componentDir: string; filePath: string }
   ): { outputText: string; outputPath: string }[] | null {
@@ -18,50 +29,58 @@ export class TypescriptCompiler implements Compiler {
     }
     const compilerOptionsFromTsconfig = ts.convertCompilerOptionsFromJson(this.tsConfig.compilerOptions, '.');
     if (compilerOptionsFromTsconfig.errors.length) {
+      // :TODO @david replace to a more concrete error type and put in 'exceptions' directory here.
       throw new Error(`failed parsing the tsconfig.json.\n${compilerOptionsFromTsconfig.errors.join('\n')}`);
     }
+
     const compilerOptions = compilerOptionsFromTsconfig.options;
     compilerOptions.sourceRoot = options.componentDir;
     const result = ts.transpileModule(fileContent, {
       compilerOptions,
       fileName: options.filePath,
-      reportDiagnostics: true
+      reportDiagnostics: true,
     });
 
     if (result.diagnostics && result.diagnostics.length) {
       const formatHost = {
-        getCanonicalFileName: p => p,
+        getCanonicalFileName: (p) => p,
         getCurrentDirectory: ts.sys.getCurrentDirectory,
-        getNewLine: () => ts.sys.newLine
+        getNewLine: () => ts.sys.newLine,
       };
       const error = ts.formatDiagnosticsWithColorAndContext(result.diagnostics, formatHost);
 
+      // :TODO @david please replace to a more concrete error type and put in 'exceptions' directory here.
       throw new Error(error);
     }
 
-    const replaceExtToJs = filePath => filePath.replace(new RegExp(`${fileExtension}$`), '.js'); // makes sure it's the last occurrence
+    const replaceExtToJs = (filePath) => filePath.replace(new RegExp(`${fileExtension}$`), '.js'); // makes sure it's the last occurrence
     const outputPath = replaceExtToJs(options.filePath);
     const outputFiles = [{ outputText: result.outputText, outputPath }];
     if (result.sourceMapText) {
       outputFiles.push({
         outputText: result.sourceMapText,
-        outputPath: `${outputPath}.map`
+        outputPath: `${outputPath}.map`,
       });
     }
     return outputFiles;
   }
-  async compileOnCapsules({ capsuleGraph }: { capsuleGraph: Network }): Promise<BuildResults> {
+
+  async build({ capsuleGraph }: { capsuleGraph: Network }): Promise<BuildResults> {
     const capsules = capsuleGraph.capsules;
     const capsuleDirs = capsules.getAllCapsuleDirs();
-    capsuleDirs.forEach(capsuleDir =>
-      fs.writeFileSync(path.join(capsuleDir, 'tsconfig.json'), JSON.stringify(this.tsConfig, undefined, 2))
-    );
+
+    capsuleDirs.forEach((capsuleDir) => {
+      fs.writeFileSync(path.join(capsuleDir, 'tsconfig.json'), JSON.stringify(this.tsConfig, undefined, 2));
+
+      this.writeTypes(capsuleDir);
+    });
+
     const compilerOptionsFromTsconfig = ts.convertCompilerOptionsFromJson(this.tsConfig.compilerOptions, '.');
     if (compilerOptionsFromTsconfig.errors.length) {
       throw new Error(`failed parsing the tsconfig.json.\n${compilerOptionsFromTsconfig.errors.join('\n')}`);
     }
     const diagnostics: ts.Diagnostic[] = [];
-    const diagAccumulator = diag => diagnostics.push(diag);
+    const diagAccumulator = (diag) => diagnostics.push(diag);
     const host = ts.createSolutionBuilderHost(undefined, undefined, diagAccumulator);
     const solutionBuilder = ts.createSolutionBuilder(host, capsuleDirs, { dry: false, verbose: false });
     solutionBuilder.clean();
@@ -70,11 +89,11 @@ export class TypescriptCompiler implements Compiler {
       throw new Error(`typescript exited with status code ${result}, however, no errors are found in the diagnostics`);
     }
     const formatHost = {
-      getCanonicalFileName: p => p,
+      getCanonicalFileName: (p) => p,
       getCurrentDirectory: () => '', // it helps to get the files with absolute paths
-      getNewLine: () => ts.sys.newLine
+      getNewLine: () => ts.sys.newLine,
     };
-    const componentsErrors = diagnostics.map(diagnostic => {
+    const componentsErrors = diagnostics.map((diagnostic) => {
       const errorStr = process.stdout.isTTY
         ? ts.formatDiagnosticsWithColorAndContext([diagnostic], formatHost)
         : ts.formatDiagnostic(diagnostic, formatHost);
@@ -86,12 +105,21 @@ export class TypescriptCompiler implements Compiler {
       if (!componentId) throw new Error(`unable to find the componentId by the filename ${diagnostic.file.fileName}`);
       return { componentId, error: errorStr };
     });
-    const components = capsules.map(capsule => {
+    const components = capsules.map((capsule) => {
       const id = capsule.id;
-      const errors = componentsErrors.filter(c => c.componentId.isEqual(id)).map(c => c.error);
+      const errors = componentsErrors.filter((c) => c.componentId.isEqual(id)).map((c) => c.error);
       return { id, errors };
     });
 
     return { artifacts: [{ dirName: 'dist' }], components };
+  }
+
+  private writeTypes(rootDir: string) {
+    this.types.forEach((typePath) => {
+      const contents = fs.readFileSync(typePath, 'utf8');
+      const filename = path.basename(typePath);
+
+      fs.outputFileSync(path.join(rootDir, 'types', filename), contents);
+    });
   }
 }

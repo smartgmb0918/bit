@@ -8,5 +8,5 @@ import { ConfigExt } from '@bit/bit.core.config';
 export default {
   name: 'core',
   dependencies: [ConfigExt, LoggerExt, WorkspaceExt, ScopeExtension],
-  provider: provideCore
+  provider: provideCore,
 } as ExtensionManifest;

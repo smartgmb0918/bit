@@ -1,5 +1,4 @@
-import { BuildContext } from '@bit/bit.core.builder';
-import { BuildTask, BuildResults } from '@bit/bit.core.builder';
+import { BuildTask, BuildContext, BuildResults } from '@bit/bit.core.builder';
 import { Compiler } from './types';
 
 /**
@@ -10,6 +9,6 @@ export class CompilerTask implements BuildTask {
 
   async execute(context: BuildContext): Promise<BuildResults> {
     const compilerInstance: Compiler = context.env.getCompiler();
-    return compilerInstance.compileOnCapsules(context);
+    return compilerInstance.build(context);
   }
 }

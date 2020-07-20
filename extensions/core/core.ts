@@ -5,6 +5,7 @@ import { Config } from '@bit/bit.core.config';
 import { LogPublisher } from '@bit/bit.core.logger';
 import { ExtensionDataList } from 'bit-bin/consumer/config';
 import { ComponentHost } from '@bit/bit.core.types';
+import { ExtensionDescriptor } from './extension-descriptor';
 
 export default class Core {
   host: ComponentHost;
@@ -42,15 +43,45 @@ export default class Core {
     return '1.0.0';
   }
 
+  getDescriptor(id: string): ExtensionDescriptor {
+    const instance = this.harmony.get<any>(id);
+    const iconFn = instance.icon;
+    const defaultIcon = `
+      <svg width="50" height="50" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="25" cy="25" r="20"/>
+      </svg>`;
+
+    const icon = iconFn ? iconFn() : defaultIcon;
+
+    return {
+      id,
+      icon,
+    };
+  }
+
   /**
    * Load all unloaded extensions (3rd party extensions) registered in the config file
    */
   async init(): Promise<void> {
     if (this.config && this.config.extensions) {
       const extensions = this.config.extensions._filterLegacy();
+      if (this.workspace) {
+        await this.workspace.resolveExtensionsList(extensions);
+      }
+      // We set the configs here also (except it its set as part of config extension) to make sure it set with the correct resolved ids
+      // wec can't resolve the ids before loading the workspace itself
+      // We do need it also as part of the config load because of the core extensions
+      this.setExtensionConfig(extensions);
       return this.loadExtensions(extensions);
     }
     return undefined;
+  }
+
+  setExtensionConfig(extensions: ExtensionDataList): void {
+    // Send all configs to harmony
+    extensions.forEach((extension) => {
+      this.harmony.config.set(extension.stringId, extension.config);
+    });
   }
 
   /**

@@ -22,7 +22,7 @@ export class Flow {
     subject.next({
       type: 'flow:start',
       id,
-      startTime
+      startTime,
     });
     if (this.tasks && this.tasks.length) {
       logger.debug(`flowsExt, flow.execute of ${id}. tasks: ${this.tasks.join(', ')}`);
@@ -57,7 +57,7 @@ export class Flow {
         } else {
           that.handleDone(subject, capsule, start);
         }
-      }
+      },
     });
   }
 
@@ -67,7 +67,7 @@ export class Flow {
         type: 'task:error',
         id: `${capsule.component.id.toString()}:${this.tasks[i]}`,
         value: new Error(`Error by ${data.id}`),
-        errorBy: data
+        errorBy: data,
       });
     }
     const isError = true;
@@ -83,11 +83,11 @@ export class Flow {
       id: capsule.component.id,
       value: {
         capsule,
-        tasks: this.result
+        tasks: this.result,
       },
       code: isError ? 1 : 0,
       startTime,
-      duration: endTime.getTime() - startTime.getTime()
+      duration: endTime.getTime() - startTime.getTime(),
     });
     setTimeout(subject.complete.bind(subject), 0);
     this.result = [];

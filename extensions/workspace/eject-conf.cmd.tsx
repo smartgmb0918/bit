@@ -19,7 +19,7 @@ export default class EjectConfCmd implements Command {
   shortDescription = 'ejecting components configuration';
   options = [
     ['p', 'propagate [boolean]', 'mark propagate true in the config file'],
-    ['o', 'override [boolean]', 'override file if exist']
+    ['o', 'override [boolean]', 'override file if exist'],
   ] as CommandOptions;
 
   constructor(private workspace: Workspace) {}
@@ -52,7 +52,10 @@ export default class EjectConfCmd implements Command {
     if (ejectOptions.override === 'true') {
       ejectOptions.override = true;
     }
-    const results = await this.workspace.ejectConfig(componentId, ejectOptions as EjectConfOptions);
+
+    const id = await this.workspace.resolveComponentId(componentId);
+
+    const results = await this.workspace.ejectConfig(id, ejectOptions as EjectConfOptions);
     return results;
   }
 }

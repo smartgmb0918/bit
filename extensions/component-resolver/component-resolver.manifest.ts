@@ -6,5 +6,5 @@ import { ScopeExtension } from '@bit/bit.core.scope';
 export const ComponentResolverExt: ExtensionManifest = {
   name: 'ComponentResolver',
   dependencies: [WorkspaceExt, ScopeExtension],
-  provider: componentResolverProvider
+  provider: componentResolverProvider,
 };

@@ -1,32 +1,66 @@
 import React from 'react';
-import { Slot, SlotRegistry } from '@teambit/harmony';
+import { Slot } from '@teambit/harmony';
+import { RouteProps } from 'react-router-dom';
 import { Workspace } from './ui';
+import { RouteSlot } from '@bit/bit.core.react-router/slot-router';
+import { UIRoot } from '@bit/bit.core.ui/ui-root.ui';
+import { UIRuntimeExtension } from '@bit/bit.core.ui/ui.ui';
+import ComponentUI from '@bit/bit.core.component/component.ui';
 
 export type MenuItem = {
-  label: string;
-  onClick: () => void;
+  label: JSX.Element | string | null;
 };
 
-export type TopBarSlotRegistry = SlotRegistry<MenuItem>;
-
 export class WorkspaceUI {
-  constructor(private topBarSlot: TopBarSlotRegistry) {}
+  constructor(
+    /**
+     * route slot.
+     */
+    private routeSlot: RouteSlot,
+
+    /**
+     * component ui extension.
+     */
+    private componentUi: ComponentUI
+  ) {}
 
   /**
-   * register a new menu item.
+   * register a route to the workspace.
    */
-  registerMenuItem(menuItem: MenuItem) {
-    this.topBarSlot.register(menuItem);
+  registerRoute(route: RouteProps) {
+    this.routeSlot.register(route);
     return this;
   }
 
-  getMain(): JSX.Element {
-    return <Workspace topBarSlot={this.topBarSlot} />;
+  get root(): UIRoot {
+    this.routeSlot.register({
+      path: this.componentUi.routePath,
+      children: this.componentUi.getComponentUI(WorkspaceUI.id),
+    });
+
+    return {
+      routes: [
+        {
+          path: '/',
+          children: <Workspace routeSlot={this.routeSlot} />,
+        },
+      ],
+    };
   }
 
-  static slots = [Slot.withType<MenuItem>()];
+  static dependencies = [UIRuntimeExtension, ComponentUI];
 
-  static async provider(deps, config, [topBarSlot]: [TopBarSlotRegistry]) {
-    return new WorkspaceUI(topBarSlot);
+  // TODO: @gilad we must automate this.
+  static id = '@teambit/workspace';
+
+  static slots = [Slot.withType<RouteProps>()];
+
+  static async provider([ui, componentUi]: [UIRuntimeExtension, ComponentUI], config, [routeSlot]: [RouteSlot]) {
+    const workspaceUI = new WorkspaceUI(routeSlot, componentUi);
+    ui.registerRoot(workspaceUI.root);
+
+    return workspaceUI;
   }
 }
+
+export default WorkspaceUI;

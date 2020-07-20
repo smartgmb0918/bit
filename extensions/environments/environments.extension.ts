@@ -15,6 +15,16 @@ export type EnvOptions = {};
 
 export class Environments {
   static id = '@teambit/envs';
+
+  /**
+   * icon of the extension.
+   */
+  icon() {
+    return `<svg width="50" height="50" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="25" cy="25" r="20"/>
+    </svg>`;
+  }
+
   static dependencies = [];
 
   constructor(
@@ -30,13 +40,8 @@ export class Environments {
   ) {}
 
   /**
-   * create a development runtime environment.
+   * creates a new runtime environments for a set of components.
    */
-  async dev(components: Component[]): Promise<Runtime> {
-    // :TODO how to standardize this? we need to make sure all validation errors will throw nicely at least.
-    return this.createRuntime(components);
-  }
-
   async createEnvironment(components: Component[]): Promise<Runtime> {
     return this.createRuntime(components);
   }
@@ -84,11 +89,11 @@ export class Environments {
       else
         map[envId] = {
           components: [current],
-          env
+          env,
         };
     }, {});
 
-    return Object.keys(map).map(key => {
+    return Object.keys(map).map((key) => {
       return new EnvRuntime(key, map[key].env, map[key].components);
     });
   }

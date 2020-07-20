@@ -1,61 +1,56 @@
-import webpack from 'webpack';
-import http from 'http';
-import fs from 'fs';
-import { resolve } from 'path';
-import socketIO from 'socket.io';
-import { join } from 'path';
-import WebpackDevServer from 'webpack-dev-server';
+import { resolve, join } from 'path';
 import { Environment } from '@bit/bit.core.environments';
 import { Tester, TesterExtension } from '@bit/bit.core.tester';
-import { Component } from '@bit/bit.core.component';
-import { Workspace } from '@bit/bit.core.workspace';
-import createWebpackConfig from './webpack.config';
-import { LogPublisher } from '@bit/bit.core.logger';
-import { ExtensionDataEntry } from 'bit-bin/consumer/config/extension-data';
-import { docsTemplate } from './docs.tpl';
 import { JestExtension } from '@bit/bit.core.jest';
 import { TypescriptExtension } from '@bit/bit.core.typescript';
 import { BuildTask } from '@bit/bit.core.builder';
-import { Compiler, Compile } from '@bit/bit.core.compiler';
+import { Compiler, CompilerExtension } from '@bit/bit.core.compiler';
+import { WebpackExtension } from '@bit/bit.core.webpack';
+import { DevServer, DevServerContext } from '@bit/bit.core.bundler';
+import webpackConfigFactory from './webpack/webpack.config';
+import { Workspace } from '@bit/bit.core.workspace';
 import { PkgExtension } from '@bit/bit.core.pkg';
 
+/**
+ * a component environment built for [React](https://reactjs.org) .
+ */
 export class ReactEnv implements Environment {
   constructor(
-    private logger: LogPublisher,
+    /**
+     * jest extension
+     */
     private jest: JestExtension,
+
+    /**
+     * typescript extension.
+     */
     private ts: TypescriptExtension,
-    private compiler: Compile,
-    private tester: TesterExtension,
-    private pkg: PkgExtension
+
+    /**
+     * compiler extension.
+     */
+    private compiler: CompilerExtension,
+
+    /**
+     * webpack extension.
+     */
+    private webpack: WebpackExtension,
+
+    /**
+     * workspace extension.
+     */
+    private workspace: Workspace,
+
+    /**
+     * pkg extension.
+     */
+    private pkg: PkgExtension,
+
+    /**
+     * tester extension
+     */
+    private tester: TesterExtension
   ) {}
-
-  // this should happen on component load.
-  patchComponents(components: Component[], workspace: Workspace) {
-    return components.map(component => {
-      const docs = component.filesystem.readdirSync('/').filter(path => path.includes('.docs.'))[0];
-      if (!docs) return component;
-      // @ts-ignore
-      const filepath = join(workspace.path, component.state._consumer.componentMap?.getComponentDir(), docs);
-      component.state.store.push(
-        new ExtensionDataEntry(
-          undefined,
-          undefined,
-          '@teambit/docs',
-          {},
-          {
-            filepath
-          }
-        )
-      );
-
-      return component;
-    });
-  }
-
-  /**
-   * returns the component linter.
-   */
-  getLinter() {}
 
   /**
    * returns a component tester.
@@ -69,112 +64,75 @@ export class ReactEnv implements Environment {
    */
   getCompiler(): Compiler {
     // eslint-disable-next-line global-require
-    const tsConfig = require('./typescript/tsconfig.json');
-    return this.ts.createCompiler(tsConfig);
+    const tsconfig = require('./typescript/tsconfig.json');
+    return this.ts.createCompiler({
+      tsconfig,
+      types: [resolve(join('', __dirname.replace('/dist/', '/src/')), './typescript/style.d.ts')],
+    });
   }
 
+  /**
+   * returns and configures the component linter.
+   */
+  getLinter() {}
+
+  /**
+   * returns and configures the React component dev server.
+   */
+  getDevServer(context: DevServerContext): DevServer {
+    const withDocs = Object.assign(context, {
+      entry: context.entry.concat([require.resolve('./docs')]),
+    });
+
+    return this.webpack.createDevServer(withDocs, webpackConfigFactory(this.workspace.path));
+  }
+
+  /**
+   * return a path to a docs template.
+   */
+  getDocsTemplate() {
+    return require.resolve('./docs');
+  }
+
+  /**
+   * return a function which mounts a given component to DOM
+   */
+  getMounter() {
+    return require.resolve('./mount');
+  }
+
+  /**
+   * define the package json properties to add to each component.
+   */
   getPackageJsonProps() {
-    return TypescriptExtension.getPackageJsonProps();
+    return this.ts.getPackageJsonProps();
   }
 
-  async dependencies() {
+  /**
+   * adds dependencies to all configured components.
+   */
+  async getDependencies() {
     return {
       dependencies: {
-        react: '-'
+        react: '-',
       },
       // TODO: add this only if using ts
       devDependencies: {
-        '@types/react': '^16.9.17'
+        '@types/react': '^16.9.17',
       },
-      // TODO: take version from workspace.json config
+      // TODO: take version from config
       peerDependencies: {
-        react: '^16.12.0'
-      }
+        react: '^16.12.0',
+      },
     };
   }
 
   /**
-   * returns a build pipeline.
+   * returns the component build pipeline.
    */
   getPipe(): BuildTask[] {
     // return BuildPipe.from([this.compiler.task, this.tester.task]);
     // return BuildPipe.from([this.tester.task]);
     return [this.compiler.task, this.pkg.dryRunTask];
-  }
-
-  dev(workspace: Workspace, components: Component[]) {
-    // if (config.compiler.watch) {
-    //   this.typescript.watch();
-    // }
-    // remove once gilad has metadata
-    const patchedComponent = this.patchComponents(components, workspace);
-    const config = createWebpackConfig(workspace.path, this.getEntries(patchedComponent));
-    const compiler = webpack(config);
-
-    const devSever = new WebpackDevServer(compiler, {
-      publicPath: config.output.publicPath,
-      hot: true,
-      historyApiFallback: true,
-      before(app) {
-        const server = new http.Server(app);
-        const io = socketIO(server);
-
-        io.on('connection', () => {
-          io.sockets.emit(
-            'components',
-            patchedComponent.map(component => {
-              // refactor to compositions
-              const docs = component.filesystem.readdirSync('/').filter(path => path.includes('.docs.'))[0];
-              const componentDir = component.state._consumer.componentMap?.getComponentDir();
-              if (!componentDir) throw new Error(`React.dev: component ${component.id.name} is missing componentMap`);
-              return {
-                id: component.id.toString(),
-                docs: docs ? join(workspace.path, componentDir, docs) : null
-              };
-            })
-          );
-        });
-
-        server.listen(4000, () => {
-          // console.log('listening on *:4000');
-        });
-      },
-      proxy: {
-        '/api': {
-          target: 'http://localhost:4000',
-          pathRewrite: { '^/api': '' }
-        },
-        '/socket.io': {
-          target: 'http://localhost:4000',
-          ws: true
-        }
-      }
-    });
-
-    devSever.listen(3000, 'localhost', err => {
-      if (err) {
-        this.logger.error(err);
-      }
-    });
-  }
-
-  private getEntries(components: Component[]) {
-    const docs = docsTemplate(components);
-    const docsPath = resolve(join(__dirname, '/__docs.js'));
-    fs.writeFileSync(docsPath, docs);
-
-    const paths = components.map(component => {
-      const path = join(
-        // :TODO check how it works with david. Feels like a side-effect.
-        // @ts-ignore
-        component.state._consumer.componentMap?.getComponentDir(),
-        // @ts-ignore
-        component.config.main
-      );
-
-      return path;
-    });
-
-    return paths.concat(docsPath);
   }
 }
