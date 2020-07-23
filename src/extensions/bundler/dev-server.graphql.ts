@@ -10,9 +10,9 @@ export function devServerSchema(bundler: BundlerExtension): Schema {
         server: ComponentServer
       }
 
-      extend type ComponentMeta {
-        server: ComponentServer
-      }
+      # extend type ComponentMeta {
+      #   server: ComponentServer
+      # }
 
       type ComponentServer {
         env: String
