@@ -4,7 +4,7 @@ import { State } from './state';
 import { ExtensionDataList } from '../../consumer/config';
 import { BitId } from '../../bit-id';
 
-export interface ComponentFactory {
+export interface ComponentHost {
   resolveComponentId(id: string | ComponentID | BitId): Promise<ComponentID>;
 
   /**
@@ -15,7 +15,7 @@ export interface ComponentFactory {
   /**
    * returns a specific state of a component by hash or semver.
    */
-  getState(id: ComponentID, snapId: string): Promise<State>;
+  getState(id: ComponentID, snapId?: string): Promise<State>;
 
   /**
    * load extension.
@@ -25,5 +25,5 @@ export interface ComponentFactory {
   /**
    * list all components in the host.
    */
-  list(): Component[];
+  list(filter?: { offset: number; limit: number }): Promise<Component[]>;
 }

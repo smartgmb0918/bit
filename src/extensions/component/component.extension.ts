@@ -2,10 +2,10 @@
 import { Slot, SlotRegistry } from '@teambit/harmony';
 import { GraphQLExtension } from '../graphql';
 import { componentSchema } from './component.graphql';
-import { ComponentFactory } from './component-factory';
+import { ComponentHost } from './component-factory';
 import { HostNotFound } from './exceptions';
 
-export type ComponentHostSlot = SlotRegistry<ComponentFactory>;
+export type ComponentHostSlot = SlotRegistry<ComponentHost>;
 
 export class ComponentExtension {
   static id = '@teambit/component';
@@ -20,18 +20,18 @@ export class ComponentExtension {
   /**
    * register a new component host.
    */
-  registerHost(host: ComponentFactory) {
+  registerHost(host: ComponentHost) {
     this.hostSlot.register(host);
     return this;
   }
 
-  getHost(id: string): ComponentFactory {
+  getHost(id: string): ComponentHost {
     const host = this.hostSlot.get(id);
     if (!host) throw new HostNotFound();
     return host;
   }
 
-  static slots = [Slot.withType<ComponentFactory>()];
+  static slots = [Slot.withType<ComponentHost>()];
 
   static dependencies = [GraphQLExtension];
 

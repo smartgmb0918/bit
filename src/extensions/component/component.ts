@@ -3,7 +3,7 @@ import { AnyFS } from '@teambit/any-fs';
 // import { NothingToSnap } from './exceptions';
 import ComponentConfig from './config';
 import ComponentFS from './component-fs';
-import { ComponentFactory } from './component-factory';
+import { ComponentHost } from './component-factory';
 // eslint-disable-next-line import/no-cycle
 import { ComponentID } from './id';
 import { TagMap } from './tag-map';
@@ -12,6 +12,7 @@ import { State } from './state';
 import { Snap } from './snap';
 // import { Author } from './types';
 import { capitalize } from '../utils/capitalize';
+import { Tag } from './tag';
 
 /**
  * in-memory representation of a component.
@@ -31,7 +32,7 @@ export class Component {
     /**
      * state of the component.
      */
-    private _state: State,
+    private _state: State | null = null,
 
     /**
      * tags of the component.
@@ -41,34 +42,44 @@ export class Component {
     /**
      * the component factory
      */
-    private factory: ComponentFactory
+    private factory: ComponentHost
   ) {}
 
-  get state(): State {
-    return this._state;
+  async getState() {
+    // TODO: @guysaar change to head snap when refactor component module to use snaps
+    return this.headTag ? this.factory.getState(this.id, this.headTag.snap.hash) : this.factory.getState(this.id);
   }
 
-  set state(state: State) {
-    this._state = state;
+  set state(state: State | null) {
+    if (state) this._state = state;
+  }
+
+  get state(): State | null {
+    if (this._state) return null;
+    return this._state;
   }
 
   /**
    * component configuration which is later generated to a component `package.json` and `bit.json`.
    */
-  get config(): ComponentConfig {
+  get config(): ComponentConfig | null {
+    if (!this.state) return null;
     return this.state.config;
   }
 
   /**
    * in-memory representation of the component current filesystem.
    */
-  get filesystem(): ComponentFS {
+  get filesystem(): ComponentFS | null {
+    if (!this.state) return null;
     return this.state.filesystem;
   }
 
-  get headTag() {
-    if (!this.head) return undefined;
-    return this.tags.byHash(this.head.hash);
+  get headTag(): Tag | null {
+    if (this.tags.size === 0) return null;
+    const tag = this.tags.getLatest();
+    if (!tag) return null;
+    return tag;
   }
 
   stringify(): string {
@@ -109,9 +120,9 @@ export class Component {
   /**
    * determines whether this component is modified in the workspace.
    */
-  isModified() {
+  async isModified() {
     if (!this.head) return true;
-    return this.state.hash !== this.head.hash;
+    return (await this.getState()).hash !== this.head.hash;
   }
 
   /**

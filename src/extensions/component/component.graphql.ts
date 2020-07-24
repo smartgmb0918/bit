@@ -3,7 +3,7 @@ import { Component } from './component';
 import { ComponentMeta } from './component-meta';
 import componentIdToPackageName from '../../utils/bit/component-id-to-package-name';
 import { ComponentExtension } from './component.extension';
-import { ComponentFactory } from './component-factory';
+import { ComponentHost } from './component-factory';
 
 export function componentSchema(componentExtension: ComponentExtension) {
   return {
@@ -76,9 +76,6 @@ export function componentSchema(componentExtension: ComponentExtension) {
 
         # list of component releases.
         tags: [Tag]!
-
-        # # state of the component
-        # state: State
       }
 
       type ComponentHost {
@@ -111,27 +108,25 @@ export function componentSchema(componentExtension: ComponentExtension) {
         /**
          * :TODO use legacy until @david will move it to the pkg extension.
          */
-        packageName: (component: Component) => {
+        packageName: async (component: Component) => {
           return componentIdToPackageName({
             id: component.id._legacy,
-            bindingPrefix: component.state._consumer.bindingPrefix,
-            defaultScope: component.state._consumer.defaultScope,
+            bindingPrefix: (await component.getState())._consumer.bindingPrefix,
+            defaultScope: (await component.getState())._consumer.defaultScope,
             withPrefix: true,
-            extensions: component.config.extensions,
+            extensions: (await component.getState()).config.extensions,
             isDependency: false,
           });
         },
-        state: () => {
-          return '';
-        },
       },
       ComponentHost: {
-        get: async (host: ComponentFactory, { id, withState }: { id: string; withState: boolean }) => {
+        get: async (host: ComponentHost, { id }: { id: string }) => {
           const componentId = await host.resolveComponentId(id);
-          return host.get(componentId, withState);
+          const comp = await host.get(componentId);
+          return comp;
         },
-        list: async (host: ComponentFactory, { offset, limit }: { offset: number; limit: number }) => {
-          return host.list();
+        list: async (host: ComponentHost, { offset, limit }: { offset: number; limit: number }) => {
+          return host.list({ offset, limit });
         },
       },
       Query: {

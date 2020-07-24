@@ -1,4 +1,6 @@
+import { compact, slice } from 'lodash';
 import { SemVer } from 'semver';
+import BluebirdPromise from 'bluebird';
 import { Slot, SlotRegistry } from '@teambit/harmony';
 import LegacyScope from '../../scope/scope';
 import { PersistOptions } from '../../scope/types';
@@ -7,7 +9,7 @@ import {
   Component,
   ComponentID,
   ComponentExtension,
-  ComponentFactory,
+  ComponentHost,
   State,
   Snap,
   ComponentFS,
@@ -32,7 +34,7 @@ type PostExportRegistry = SlotRegistry<OnPostExport>;
 export type OnTag = (ids: BitId[]) => Promise<any>;
 export type OnPostExport = (ids: BitId[]) => Promise<any>;
 
-export class ScopeExtension implements ComponentFactory {
+export class ScopeExtension implements ComponentHost {
   static id = '@teambit/scope';
 
   constructor(
@@ -109,7 +111,7 @@ export class ScopeExtension implements ComponentFactory {
    * get a component.
    * @param id component id
    */
-  async get(id: ComponentID): Promise<Component | undefined> {
+  async get(id: ComponentID, withState: boolean = true): Promise<Component | undefined> {
     const modelComponent = await this.legacyScope.getModelComponentIfExist(id._legacy);
     if (!modelComponent) return undefined;
 
@@ -121,7 +123,7 @@ export class ScopeExtension implements ComponentFactory {
     return new Component(
       id,
       snap,
-      await this.createStateFromVersion(id, version),
+      withState ? await this.createStateFromVersion(id, version) : null,
       await this.getTagMap(modelComponent),
       this
     );
@@ -130,9 +132,22 @@ export class ScopeExtension implements ComponentFactory {
   /**
    * list all components in the scope.
    */
-  async list(): Promise<ComponentMeta[]> {
+  async list(filter?: { offset: number; limit: number }): Promise<Component[]> {
     const modelComponents = await this.legacyScope.list();
-    return modelComponents.map((component) => this.buildMetaComponent(component));
+    const componentsIds = await Promise.all(
+      modelComponents.map((component) => ComponentID.fromLegacy(component.toBitId()))
+    );
+    return this.getMany(filter ? slice(componentsIds, filter.offset, filter.limit) : componentsIds);
+  }
+
+  async getMany(ids: Array<ComponentID>): Promise<Component[]> {
+    const idsWithoutEmpty = compact(ids);
+    const componentsP = BluebirdPromise.mapSeries(idsWithoutEmpty, async (id: ComponentID) => {
+      return this.get(id);
+    });
+    const components = await componentsP;
+
+    return compact(components);
   }
 
   /**

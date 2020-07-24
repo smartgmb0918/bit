@@ -4,7 +4,7 @@ import { Component } from '../../component';
 import { Dependency } from '../dependency';
 import { Workspace } from '../../workspace';
 import { buildOneGraphForComponents } from '../../../scope/graph/components-graph';
-import { ComponentFactory } from '../../component';
+import { ComponentHost } from '../../component';
 import { DuplicateDependency, VersionSubgraph } from '../duplicate-dependency';
 
 export const DEPENDENCIES_TYPES = ['dependencies', 'devDependencies'];
@@ -18,11 +18,11 @@ export class ComponentGraph extends Graph<Component, Dependency> {
     super(nodes, edges);
     this.versionMap = new Map();
   }
-  static async buildFromLegacy(legacyGraph: LegacyGraph, componentFactory: ComponentFactory): Promise<ComponentGraph> {
+  static async buildFromLegacy(legacyGraph: LegacyGraph, componentHost: ComponentHost): Promise<ComponentGraph> {
     const newGraph = new ComponentGraph();
     const setNodeP = legacyGraph.nodes().map(async (nodeId) => {
-      const componentId = await componentFactory.resolveComponentId(nodeId);
-      const component = await componentFactory.get(componentId);
+      const componentId = await componentHost.resolveComponentId(nodeId);
+      const component = await componentHost.get(componentId);
       if (component) {
         newGraph.setNode(nodeId, component);
       }
@@ -39,11 +39,11 @@ export class ComponentGraph extends Graph<Component, Dependency> {
     return newGraph;
   }
 
-  static async build(workspace: Workspace, componentFactory: ComponentFactory) {
+  static async build(workspace: Workspace, componentHost: ComponentHost) {
     const ids = (await workspace.list()).map((comp) => comp.id);
     const bitIds = ids.map((id) => id._legacy);
     const initialGraph = await buildOneGraphForComponents(bitIds, workspace.consumer);
-    return this.buildFromLegacy(initialGraph, componentFactory);
+    return this.buildFromLegacy(initialGraph, componentHost);
   }
 
   findDuplicateDependencies(): Map<string, DuplicateDependency> {

@@ -1,4 +1,5 @@
 import path from 'path';
+import { slice } from 'lodash';
 import { Harmony } from '@teambit/harmony';
 import BluebirdPromise from 'bluebird';
 import { merge } from 'lodash';
@@ -6,7 +7,7 @@ import { difference } from 'ramda';
 import { compact } from 'ramda-adjunct';
 import { Consumer, loadConsumer } from '../../consumer';
 import { ScopeExtension } from '../scope';
-import { Component, ComponentID, ComponentExtension, State, ComponentFactory, ComponentFS, TagMap } from '../component';
+import { Component, ComponentID, ComponentExtension, State, ComponentHost, ComponentFS, TagMap } from '../component';
 import ComponentsList from '../../consumer/component/components-list';
 import { BitId } from '../../bit-id';
 import { IsolatorExtension, Network } from '../isolator';
@@ -47,7 +48,7 @@ const DEFAULT_VENDOR_DIR = 'vendor';
 /**
  * API of the Bit Workspace
  */
-export default class Workspace implements ComponentFactory {
+export default class Workspace implements ComponentHost {
   owner?: string;
   componentsScopeDirsMap: ComponentScopeDirMap;
 
@@ -132,10 +133,10 @@ export default class Workspace implements ComponentFactory {
   /**
    * list all workspace components.
    */
-  async list(): Promise<Component[]> {
+  async list(filter?: { offset: number; limit: number }): Promise<Component[]> {
     const consumerComponents = await this.componentList.getAuthoredAndImportedFromFS();
     const ids = consumerComponents.map((component) => ComponentID.fromLegacy(component.id));
-    return this.getMany(ids);
+    return this.getMany(filter ? slice(ids, filter.offset, filter.offset) : ids);
   }
 
   /**
@@ -209,21 +210,16 @@ export default class Workspace implements ComponentFactory {
    * @param id component ID
    */
   async get(id: ComponentID, withState: boolean = true): Promise<Component> {
-    const consumerComponent = await this.consumer.loadComponent(id._legacy);
     const component = await this.scope.get(id);
-
-    const state = new State(
-      new Config(consumerComponent.mainFile, await this.componentExtensions(id, component)),
-      ComponentFS.fromVinyls(consumerComponent.files),
-      consumerComponent.dependencies,
-      consumerComponent
-    );
-
     if (!component) {
-      return this.executeLoadSlot(this.newComponentFromState(state));
+      const newComp = new Component(id, null, null, new TagMap(), this);
+      if (withState) {
+        const state = await newComp.getState();
+        newComp.state = state;
+      }
+      return this.executeLoadSlot(newComp);
     }
 
-    component.state = state;
     return this.executeLoadSlot(component);
   }
 
@@ -231,7 +227,7 @@ export default class Workspace implements ComponentFactory {
     const entries = this.onComponentLoadSlot.toArray();
     const promises = entries.map(async ([extension, onLoad]) => {
       const data = await onLoad(component);
-      const existingExtension = component.state.config.extensions.findExtension(extension);
+      const existingExtension = (await component.getState()).config.extensions.findExtension(extension);
       if (existingExtension) existingExtension.data = merge(existingExtension.data, data);
       component.state.config.extensions.push(this.getDataEntry(extension, data));
     });
@@ -265,7 +261,18 @@ export default class Workspace implements ComponentFactory {
     return new Component(ComponentID.fromLegacy(state._consumer.id), null, state, new TagMap(), this);
   }
 
-  getState(id: ComponentID, hash: string) {
+  async getState(id: ComponentID, hash?: string) {
+    if (!hash) {
+      const consumerComponent = await this.consumer.loadComponent(id._legacy);
+      const component = await this.scope.get(id);
+      const state = new State(
+        new Config(consumerComponent.mainFile, await this.componentExtensions(id, component)),
+        ComponentFS.fromVinyls(consumerComponent.files),
+        consumerComponent.dependencies,
+        consumerComponent
+      );
+      return state;
+    }
     return this.scope.getState(id, hash);
   }
 

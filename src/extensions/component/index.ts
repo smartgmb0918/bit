@@ -3,7 +3,7 @@ export { default as ComponentFactoryExt, ComponentExtension } from './component.
 export { ComponentID } from './id';
 export { default as ComponentFS } from './component-fs';
 export { default as ComponentConfig } from './config';
-export { ComponentFactory } from './component-factory';
+export { ComponentHost } from './component-factory';
 // TODO: check why it's not working when using the index in snap dir like this:
 // export { Snap, Author } from './snap';
 export { Snap } from './snap/snap';

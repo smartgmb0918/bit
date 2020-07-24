@@ -7,8 +7,16 @@ export class TagMap extends Map<SemVer, Tag> {
   /**
    * get snap by hash.
    */
-  byHash(hash: Hash) {
+  byHash(hash: Hash): Tag | undefined {
     const tag = Array.from(this.values()).find((currTag) => currTag.snap.hash === hash);
+    return tag;
+  }
+
+  /**
+   * get snap by latest.
+   */
+  getLatest(): Tag | undefined {
+    const tag = Array.from(this.values()).find(Boolean);
     return tag;
   }
 
