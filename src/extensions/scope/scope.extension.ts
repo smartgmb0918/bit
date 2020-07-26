@@ -137,7 +137,7 @@ export class ScopeExtension implements ComponentHost {
     const componentsIds = await Promise.all(
       modelComponents.map((component) => ComponentID.fromLegacy(component.toBitId()))
     );
-    return this.getMany(filter ? slice(componentsIds, filter.offset, filter.limit) : componentsIds);
+    return this.getMany(filter ? slice(componentsIds, filter.offset, filter.offset + filter.limit) : componentsIds);
   }
 
   async getMany(ids: Array<ComponentID>): Promise<Component[]> {

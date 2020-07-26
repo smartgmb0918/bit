@@ -136,7 +136,7 @@ export default class Workspace implements ComponentHost {
   async list(filter?: { offset: number; limit: number }): Promise<Component[]> {
     const consumerComponents = await this.componentList.getAuthoredAndImportedFromFS();
     const ids = consumerComponents.map((component) => ComponentID.fromLegacy(component.id));
-    return this.getMany(filter ? slice(ids, filter.offset, filter.offset) : ids);
+    return this.getMany(filter ? slice(ids, filter.offset, filter.offset + filter.limit) : ids);
   }
 
   /**
