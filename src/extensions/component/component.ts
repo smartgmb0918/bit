@@ -55,7 +55,7 @@ export class Component {
   }
 
   get state(): State | null {
-    if (this._state) return null;
+    if (!this._state) return null;
     return this._state;
   }
 
