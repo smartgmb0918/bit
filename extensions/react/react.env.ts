@@ -1,4 +1,4 @@
-import { resolve, join } from 'path';
+import { resolve } from 'path';
 import { Environment } from '@bit/bit.core.environments';
 import { Tester, TesterExtension } from '@bit/bit.core.tester';
 import { JestExtension } from '@bit/bit.core.jest';
@@ -6,10 +6,13 @@ import { TypescriptExtension } from '@bit/bit.core.typescript';
 import { BuildTask } from '@bit/bit.core.builder';
 import { Compiler, CompilerExtension } from '@bit/bit.core.compiler';
 import { WebpackExtension } from '@bit/bit.core.webpack';
-import { DevServer, DevServerContext } from '@bit/bit.core.bundler';
+import { DevServer, BundlerContext, DevServerContext } from '@bit/bit.core.bundler';
 import webpackConfigFactory from './webpack/webpack.config';
+import previewConfigFactory from './webpack/webpack.preview.config';
 import { Workspace } from '@bit/bit.core.workspace';
 import { PkgExtension } from '@bit/bit.core.pkg';
+import { Bundler } from '@bit/bit.core.bundler/bundler';
+import { pathNormalizeToLinux } from 'bit-bin/utils';
 
 /**
  * a component environment built for [React](https://reactjs.org) .
@@ -67,7 +70,7 @@ export class ReactEnv implements Environment {
     const tsconfig = require('./typescript/tsconfig.json');
     return this.ts.createCompiler({
       tsconfig,
-      types: [resolve(join('', __dirname.replace('/dist/', '/src/')), './typescript/style.d.ts')],
+      types: [resolve(pathNormalizeToLinux(__dirname).replace('/dist/', '/src/'), './typescript/style.d.ts')],
     });
   }
 
@@ -85,6 +88,10 @@ export class ReactEnv implements Environment {
     });
 
     return this.webpack.createDevServer(withDocs, webpackConfigFactory(this.workspace.path));
+  }
+
+  async getBundler(context: BundlerContext): Promise<Bundler> {
+    return this.webpack.createBundler(context, previewConfigFactory());
   }
 
   /**

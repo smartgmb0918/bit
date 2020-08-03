@@ -2,7 +2,7 @@ import { Harmony } from '@teambit/harmony';
 import { Workspace } from '@bit/bit.core.workspace';
 import { ScopeExtension } from '@bit/bit.core.scope';
 import { Config } from '@bit/bit.core.config';
-import { LogPublisher } from '@bit/bit.core.logger';
+import { Logger } from '@bit/bit.core.logger';
 import { ExtensionDataList } from 'bit-bin/consumer/config';
 import { ComponentHost } from '@bit/bit.core.types';
 import { ExtensionDescriptor } from './extension-descriptor';
@@ -15,7 +15,7 @@ export default class Core {
 
     readonly config: Config | undefined,
 
-    private logger: LogPublisher,
+    private logger: Logger,
 
     /**
      * Scope

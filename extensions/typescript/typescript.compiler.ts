@@ -4,6 +4,7 @@ import ts from 'typescript';
 import { Compiler } from '@bit/bit.core.compiler';
 import { Network } from '@bit/bit.core.isolator';
 import { BuildResults } from '@bit/bit.core.builder';
+import { TranspileOpts, TranspileOutput } from '@bit/bit.core.compiler/types';
 
 export class TypescriptCompiler implements Compiler {
   constructor(
@@ -18,13 +19,10 @@ export class TypescriptCompiler implements Compiler {
     private types: string[]
   ) {}
 
-  transpileFile(
-    fileContent: string,
-    options: { componentDir: string; filePath: string }
-  ): { outputText: string; outputPath: string }[] | null {
+  transpileFile(fileContent: string, options: TranspileOpts): TranspileOutput {
     const supportedExtensions = ['.ts', '.tsx'];
     const fileExtension = path.extname(options.filePath);
-    if (!supportedExtensions.includes(fileExtension)) {
+    if (!supportedExtensions.includes(fileExtension) || options.filePath.endsWith('.d.ts')) {
       return null; // file is not supported
     }
     const compilerOptionsFromTsconfig = ts.convertCompilerOptionsFromJson(this.tsConfig.compilerOptions, '.');
@@ -53,8 +51,7 @@ export class TypescriptCompiler implements Compiler {
       throw new Error(error);
     }
 
-    const replaceExtToJs = (filePath) => filePath.replace(new RegExp(`${fileExtension}$`), '.js'); // makes sure it's the last occurrence
-    const outputPath = replaceExtToJs(options.filePath);
+    const outputPath = this.replaceFileExtToJs(options.filePath);
     const outputFiles = [{ outputText: result.outputText, outputPath }];
     if (result.sourceMapText) {
       outputFiles.push({
@@ -69,11 +66,8 @@ export class TypescriptCompiler implements Compiler {
     const capsules = capsuleGraph.capsules;
     const capsuleDirs = capsules.getAllCapsuleDirs();
 
-    capsuleDirs.forEach((capsuleDir) => {
-      fs.writeFileSync(path.join(capsuleDir, 'tsconfig.json'), JSON.stringify(this.tsConfig, undefined, 2));
-
-      this.writeTypes(capsuleDir);
-    });
+    await this.writeTsConfig(capsuleDirs);
+    await this.writeTypes(capsuleDirs);
 
     const compilerOptionsFromTsconfig = ts.convertCompilerOptionsFromJson(this.tsConfig.compilerOptions, '.');
     if (compilerOptionsFromTsconfig.errors.length) {
@@ -111,15 +105,47 @@ export class TypescriptCompiler implements Compiler {
       return { id, errors };
     });
 
-    return { artifacts: [{ dirName: 'dist' }], components };
+    return { artifacts: [{ dirName: this.getDistDir() }], components };
   }
 
-  private writeTypes(rootDir: string) {
-    this.types.forEach((typePath) => {
-      const contents = fs.readFileSync(typePath, 'utf8');
-      const filename = path.basename(typePath);
+  /**
+   * returns the dist directory on the capsule
+   */
+  getDistDir() {
+    return 'dist';
+  }
 
-      fs.outputFileSync(path.join(rootDir, 'types', filename), contents);
-    });
+  /**
+   * given a source file, return its parallel in the dists. e.g. index.ts => dist/index.js
+   */
+  getDistPathBySrcPath(srcPath: string) {
+    const fileWithJSExtIfNeeded = this.replaceFileExtToJs(srcPath);
+    return path.join(this.getDistDir(), fileWithJSExtIfNeeded);
+  }
+
+  isFileSupported(filePath: string): boolean {
+    return (filePath.endsWith('.ts') || filePath.endsWith('.tsx')) && !filePath.endsWith('.d.ts');
+  }
+
+  private async writeTypes(dirs: string[]) {
+    await Promise.all(
+      this.types.map(async (typePath) => {
+        const contents = await fs.readFile(typePath, 'utf8');
+        const filename = path.basename(typePath);
+
+        await Promise.all(dirs.map((dir) => fs.outputFile(path.join(dir, 'types', filename), contents)));
+      })
+    );
+  }
+
+  private async writeTsConfig(dirs: string[]) {
+    const tsconfigStr = JSON.stringify(this.tsConfig, undefined, 2);
+    await Promise.all(dirs.map((capsuleDir) => fs.writeFile(path.join(capsuleDir, 'tsconfig.json'), tsconfigStr)));
+  }
+
+  private replaceFileExtToJs(filePath: string): string {
+    if (!this.isFileSupported(filePath)) return filePath;
+    const fileExtension = path.extname(filePath);
+    return filePath.replace(new RegExp(`${fileExtension}$`), '.js'); // makes sure it's the last occurrence
   }
 }

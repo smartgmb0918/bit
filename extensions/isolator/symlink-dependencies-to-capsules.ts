@@ -6,17 +6,18 @@ import { BitId } from 'bit-bin/bit-id';
 import componentIdToPackageName from 'bit-bin/utils/bit/component-id-to-package-name';
 import Symlink from 'bit-bin/links/symlink';
 import { ComponentID } from '@bit/bit.core.component';
-import logger from 'bit-bin/logger/logger';
+import { Logger } from '@bit/bit.core.logger';
 
-export async function symlinkDependenciesToCapsules(capsules: Capsule[], capsuleList: CapsuleList) {
+export async function symlinkDependenciesToCapsules(capsules: Capsule[], capsuleList: CapsuleList, logger: Logger) {
+  logger.debug(`symlinkDependenciesToCapsules, ${capsules.length} capsules`);
   await Promise.all(
     capsules.map((capsule) => {
-      return symlinkComponent(capsule.component.state._consumer, capsuleList);
+      return symlinkComponent(capsule.component.state._consumer, capsuleList, logger);
     })
   );
 }
 
-async function symlinkComponent(component: ConsumerComponent, capsuleList: CapsuleList) {
+async function symlinkComponent(component: ConsumerComponent, capsuleList: CapsuleList, logger: Logger) {
   const componentCapsule = capsuleList.getCapsuleIgnoreScopeAndVersion(new ComponentID(component.id));
   if (!componentCapsule) throw new Error(`unable to find the capsule for ${component.id.toString()}`);
   const allDeps = component.getAllDependenciesIds();

@@ -1,6 +1,8 @@
 import { Preview } from '@bit/bit.core.preview/preview.preview';
 
 export class CompositionsPreview {
+  static id = '@teambit/compositions';
+
   constructor(
     /**
      * preview extension.
@@ -19,7 +21,7 @@ export class CompositionsPreview {
 
     if (!chosen) {
       // :TODO @uri we should handle more than one file here.
-      return Object.keys(module)[0];
+      return Object.values(module)[0];
     }
     // @uri :TODO move to something more generic in preview extension.
     return module[chosen];

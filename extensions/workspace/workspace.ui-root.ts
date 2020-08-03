@@ -34,6 +34,7 @@ export class WorkspaceUIRoot implements UIRoot {
       require.resolve('@bit/bit.core.component/component.ui'),
       require.resolve('../compositions/compositions.ui'),
       require.resolve('../docs/docs.ui'),
+      require.resolve('../notifications/notification.ui'),
     ];
   }
 
@@ -49,11 +50,12 @@ export class WorkspaceUIRoot implements UIRoot {
     componentId: ComponentID,
     bitMapOptions?: GetBitMapComponentOptions,
     options = { relative: false }
-  ): PathOsBased | undefined {
+  ): PathOsBased {
     return this.workspace.componentDir(componentId, bitMapOptions, options);
   }
 
   async postStart(options: PostStartOptions, uiRoot: UIRoot) {
     await this.bundler.devServer(await this.workspace.byPattern(options.pattern || ''), uiRoot);
+    await this.workspace.watcher.watchAll();
   }
 }

@@ -11,22 +11,22 @@ import { FlowsExt } from '@bit/bit.core.flows';
 // import { GitExt } from '../git';
 import { InsightsExt } from '@bit/bit.core.insights';
 import { IsolatorExtension } from '@bit/bit.core.isolator';
-import { LoggerExt } from '@bit/bit.core.logger';
+import { LoggerExtension } from '@bit/bit.core.logger';
 import { PkgExtension } from '@bit/bit.core.pkg';
 import { ReactExtension } from '@bit/bit.core.react';
-import { ReporterExt } from '@bit/bit.core.reporter';
 import { ScopeExtension } from '@bit/bit.core.scope';
 import { TesterExtension } from '@bit/bit.core.tester';
 import { BuilderExtension } from '@bit/bit.core.builder';
 import { VariantsExt } from '@bit/bit.core.variants';
 import { GraphQLExtension } from '@bit/bit.core.graphql';
-import { WatcherExtension } from '@bit/bit.core.watch';
 import { WorkspaceExt } from '@bit/bit.core.workspace';
 import { UIExtension } from '@bit/bit.core.ui';
 import { PreviewExtension } from '@bit/bit.core.preview/preview.extension';
 import { DocsExtension } from '@bit/bit.core.docs/docs.extension';
 import { StencilExtension } from '@bit/bit.core.stencil';
 import { CompositionsExtension } from '@bit/bit.core.compositions';
+import { DeprecationExtension } from '@bit/bit.core.deprecation';
+import { DefaultEnvExtension } from '@bit/bit.core.default-env/default-env.extension';
 
 export const manifestsMap = {
   [CLIExtension.name]: CLIExtension,
@@ -49,18 +49,18 @@ export const manifestsMap = {
   [DependencyResolverExtension.id]: DependencyResolverExtension,
   [InsightsExt.name]: InsightsExt,
   [IsolatorExtension.id]: IsolatorExtension,
-  [LoggerExt.name]: LoggerExt,
+  [LoggerExtension.id]: LoggerExtension,
   [PkgExtension.id]: PkgExtension,
   // TODO: take from the extension itself & change name to follow convention
   [ReactExtension.name]: ReactExtension,
   [StencilExtension.name]: StencilExtension,
-  [ReporterExt.name]: ReporterExt,
   [ScopeExtension.id]: ScopeExtension,
   // TODO: take from the extension itself & change name to follow convention
   [TesterExtension.id]: TesterExtension,
   // TODO: take from the extension itself & change name to follow convention
   [BuilderExtension.id]: BuilderExtension,
   [VariantsExt.name]: VariantsExt,
-  [WatcherExtension.name]: WatcherExtension,
   [WorkspaceExt.name]: WorkspaceExt,
+  [DeprecationExtension.name]: DeprecationExtension,
+  [DefaultEnvExtension.id]: DefaultEnvExtension,
 };

@@ -14,7 +14,7 @@ import { AbstractVinyl } from 'bit-bin/consumer/component/sources';
 import { Compilers, Testers } from 'bit-bin/consumer/config/abstract-config';
 
 import { EnvType } from 'bit-bin/legacy-extensions/env-extension-types';
-import { isFeatureEnabled, HARMONY_FEATURE } from 'bit-bin/api/consumer/lib/feature-toggle';
+import { isFeatureEnabled, HARMONY_FEATURE, isHarmonyEnabled } from 'bit-bin/api/consumer/lib/feature-toggle';
 import logger from 'bit-bin/logger/logger';
 import { InvalidBitJson } from 'bit-bin/consumer/config/exceptions';
 import { ILegacyWorkspaceConfig, ExtensionDataList } from 'bit-bin/consumer/config';
@@ -88,12 +88,14 @@ export class WorkspaceConfig implements HostConfig {
   isLegacy: boolean;
 
   constructor(private data?: WorkspaceConfigFileProps, private legacyConfig?: LegacyWorkspaceConfig) {
-    if (data) {
+    const isHarmony = data || (isHarmonyEnabled() && !legacyConfig);
+    this.isLegacy = !isHarmony;
+    logger.debug(`workspace-config, isLegacy: ${this.isLegacy}`);
+    Analytics.setExtraData('is_harmony', isHarmony);
+    if (isHarmony) {
       const withoutInternalConfig = omit(INTERNAL_CONFIG_PROPS, data);
       this._extensions = withoutInternalConfig;
-      this.isLegacy = false;
     } else {
-      this.isLegacy = true;
       // We know we have either data or legacy config
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       this._extensions = transformLegacyPropsToExtensions(legacyConfig!);
@@ -107,7 +109,6 @@ export class WorkspaceConfig implements HostConfig {
         };
       }
     }
-    Analytics.setExtraData('is_harmony', !this.isLegacy);
   }
 
   get path(): PathOsBased {
