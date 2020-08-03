@@ -1,7 +1,8 @@
 import execa from 'execa';
+import Bluebird from 'bluebird';
 import { IsolatorExtension, Capsule } from '../isolator';
 import { Scope } from '../../scope';
-import { LogPublisher } from '../types';
+import { Logger } from '../logger';
 import { BitId, BitIds } from '../../bit-id';
 import { ComponentID } from '../component';
 import { PublishPostExportResult } from '../../scope/component-ops/publish-during-export';
@@ -20,13 +21,18 @@ export class Publisher {
   packageManager = 'npm'; // @todo: decide if this is mandatory or using the workspace settings
   constructor(
     private isolator: IsolatorExtension,
-    private logger: LogPublisher,
+    private logger: Logger,
     private scope: Scope,
     private workspace: Workspace,
     public options: PublisherOptions = {}
   ) {}
 
   async publish(componentIds: string[], options: PublisherOptions): Promise<PublishResult[]> {
+    // @todo: replace by `workspace.byPatter` once ready.
+    if (componentIds.length === 1 && componentIds[0] === '*') {
+      const all = this.workspace.consumer.bitMap.getAuthoredAndImportedBitIds();
+      componentIds = all.map((id) => id.toString());
+    }
     this.options = options;
     const capsules = await this.getComponentCapsules(componentIds);
     return this.publishMultipleCapsules(capsules);
@@ -43,8 +49,13 @@ export class Publisher {
   }
 
   public async publishMultipleCapsules(capsules: Capsule[]): Promise<PublishResult[]> {
-    const resultsP = capsules.map((capsule) => this.publishOneCapsule(capsule));
-    return Promise.all(resultsP);
+    const longProcessLogger = this.logger.createLongProcessLogger('publish components', capsules.length);
+    const results = Bluebird.mapSeries(capsules, (capsule) => {
+      longProcessLogger.logProgress(capsule.component.id.toString());
+      return this.publishOneCapsule(capsule);
+    });
+    longProcessLogger.end();
+    return results;
   }
 
   private async publishOneCapsule(capsule: Capsule): Promise<PublishResult> {
@@ -58,14 +69,14 @@ export class Publisher {
     try {
       // @todo: once capsule.exec works properly, replace this
       const { stdout, stderr } = await execa(this.packageManager, publishParams, { cwd });
-      this.logger.debug(componentIdStr, `successfully ran ${this.packageManager} ${publishParamsStr} at ${cwd}`);
-      this.logger.debug(componentIdStr, `stdout: ${stdout}`);
-      this.logger.debug(componentIdStr, `stderr: ${stderr}`);
+      this.logger.debug(`${componentIdStr}, successfully ran ${this.packageManager} ${publishParamsStr} at ${cwd}`);
+      this.logger.debug(`${componentIdStr}, stdout: ${stdout}`);
+      this.logger.debug(`${componentIdStr}, stderr: ${stderr}`);
       data = stdout;
     } catch (err) {
       const errorMsg = `failed running ${this.packageManager} ${publishParamsStr} at ${cwd}`;
-      this.logger.error(componentIdStr, errorMsg);
-      if (err.stderr) this.logger.error(componentIdStr, err.stderr);
+      this.logger.error(`${componentIdStr}, ${errorMsg}`);
+      if (err.stderr) this.logger.error(`${componentIdStr}, ${err.stderr}`);
       errors.push(`${errorMsg}\n${err.stderr}`);
     }
     const id = capsule.component.id;
@@ -79,13 +90,14 @@ export class Publisher {
       return [];
     }
     const idsToPublish = await this.getIdsToPublish(componentIds);
+    this.logger.debug(`total ${idsToPublish.length} to publish out of ${componentIds.length}`);
     const network = await this.workspace.createNetwork(idsToPublish);
     return network.seedersCapsules;
   }
 
   /**
    * only components that use pkg extension and configure "publishConfig" with their own registry
-   * should be published. ignore the rest.
+   * or custom "name", should be published. ignore the rest.
    */
   private async getIdsToPublish(componentIds: string[]): Promise<string[]> {
     const bitIds = await Promise.all(componentIds.map((id) => this.scope.getParsedId(id)));
@@ -100,7 +112,7 @@ export class Publisher {
   public shouldPublish(extensions: ExtensionDataList): boolean {
     const pkgExt = extensions.findExtension('@teambit/pkg');
     if (!pkgExt) return false;
-    return pkgExt.config?.packageJson?.publishConfig;
+    return pkgExt.config?.packageJson?.name || pkgExt.config?.packageJson?.publishConfig;
   }
 
   private async throwForNonStagedOrTaggedComponents(bitIds: BitId[]) {

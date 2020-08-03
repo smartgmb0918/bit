@@ -67,6 +67,7 @@ import { Issues } from './dependencies/dependency-resolver/dependencies-resolver
 import IncorrectRootDir from './exceptions/incorrect-root-dir';
 import { ExtensionDataList } from '../config/extension-data';
 import { isSchemaSupport, SchemaFeature, CURRENT_SCHEMA, SchemaName } from './component-schema';
+import { NoComponentDir } from './exceptions/no-component-dir';
 
 export type CustomResolvedPath = { destinationPath: PathLinux; importSource: string };
 
@@ -840,6 +841,7 @@ export default class Component {
       overrides: this.overrides.componentOverridesData,
       files: this.files,
       docs: this.docs,
+      schema: this.schema,
       dists: this.dists,
       specsResults: this.specsResults ? this.specsResults.map((res) => res.serialize()) : null,
       license: this.license ? this.license.serialize() : null,
@@ -874,6 +876,7 @@ export default class Component {
       ComponentsPendingImport,
       IncorrectRootDir,
       ExtensionFileNotFound,
+      NoComponentDir,
     ];
     return invalidComponentErrors.some((errorType) => err instanceof errorType);
   }
@@ -975,6 +978,7 @@ export default class Component {
       overrides,
       // @ts-ignore AUTO-ADDED-AFTER-MIGRATION-PLEASE-FIX!
       deprecated,
+      schema,
     } = object;
     const compilerProps = compiler ? await CompilerExtension.loadFromSerializedModelObject(compiler) : null;
     // @ts-ignore AUTO-ADDED-AFTER-MIGRATION-PLEASE-FIX!
@@ -1006,6 +1010,7 @@ export default class Component {
       license: license ? License.deserialize(license) : undefined,
       overrides: new ComponentOverrides(overrides),
       deprecated: deprecated || false,
+      schema,
     });
   }
 

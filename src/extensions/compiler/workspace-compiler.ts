@@ -2,7 +2,7 @@
 import path from 'path';
 import BluebirdPromise from 'bluebird';
 import { Workspace } from '../workspace';
-import { DEFAULT_DIST_DIRNAME } from './../../constants';
+import { DEFAULT_DIST_DIRNAME } from '../../constants';
 import ConsumerComponent from '../../consumer/component';
 import { BitId, BitIds } from '../../bit-id';
 import DataToPersist from '../../consumer/component/sources/data-to-persist';
@@ -12,6 +12,11 @@ import { Dist, SourceFile } from '../../consumer/component/sources';
 import componentIdToPackageName from '../../utils/bit/component-id-to-package-name';
 import { Environments } from '../environments';
 import { Compiler } from './types';
+import { ComponentID } from '../component';
+import { Component } from '../component';
+import { PathOsBasedAbsolute, PathOsBasedRelative } from '../../utils/path';
+import { OnComponentChangeResult } from '../workspace/on-component-change';
+import { ConsumerNotFound } from '../../consumer/exceptions';
 
 type BuildResult = { component: string; buildResults: string[] | null | undefined };
 
@@ -32,7 +37,6 @@ export class ComponentCompiler {
   ) {}
 
   async compile(): Promise<BuildResult> {
-    // const { component, compilerName: compilerId, compilerInstance } = componentAndNewCompiler;
     if (!this.compilerInstance.transpileFile) {
       throw new Error(`compiler ${this.compilerId.toString()} doesn't implement "transpileFile" interface`);
     }
@@ -51,37 +55,40 @@ export class ComponentCompiler {
 
   private throwOnCompileErrors() {
     if (this.compileErrors.length) {
+      this.compileErrors.forEach((errorItem) =>
+        logger.error(`compilation error at ${errorItem.path}`, errorItem.error)
+      );
       const formatError = (errorItem) => `${errorItem.path}\n${errorItem.error}`;
       throw new Error(`compilation failed. see the following errors from the compiler
 ${this.compileErrors.map(formatError).join('\n')}`);
     }
   }
 
-  private get distDir() {
+  private get distDir(): PathOsBasedRelative {
     const packageName = componentIdToPackageName(this.component);
     const packageDir = path.join('node_modules', packageName);
     const distDirName = DEFAULT_DIST_DIRNAME;
     return path.join(packageDir, distDirName);
   }
 
-  private get componentDir() {
-    const relativeComponentDir = this.component.componentMap?.getComponentDir();
-    if (!relativeComponentDir)
-      throw new Error(`compileWithNewCompilersOnWorkspace expect to get only components with rootDir`);
-    return path.join(this.workspace.path, relativeComponentDir);
+  private get componentDir(): PathOsBasedAbsolute {
+    return this.workspace.componentDir(new ComponentID(this.component.id));
   }
 
   private async compileOneFileWithNewCompiler(file: SourceFile) {
     const options = { componentDir: this.componentDir, filePath: file.relative };
+    const isFileSupported = this.compilerInstance.isFileSupported(file.path);
     let compileResults;
-    try {
-      compileResults = this.compilerInstance.transpileFile(file.contents.toString(), options);
-    } catch (error) {
-      this.compileErrors.push({ path: file.path, error });
-      return;
+    if (isFileSupported) {
+      try {
+        compileResults = this.compilerInstance.transpileFile(file.contents.toString(), options);
+      } catch (error) {
+        this.compileErrors.push({ path: file.path, error });
+        return;
+      }
     }
     const base = this.distDir;
-    if (compileResults) {
+    if (isFileSupported && compileResults) {
       this.dists.push(
         ...compileResults.map(
           (result) =>
@@ -100,19 +107,32 @@ ${this.compileErrors.map(formatError).join('\n')}`);
 }
 
 export class WorkspaceCompiler {
-  constructor(private workspace: Workspace, private envs: Environments) {}
+  constructor(private workspace: Workspace, private envs: Environments) {
+    if (this.workspace) this.workspace.registerOnComponentChange(this.onComponentChange.bind(this));
+  }
+
+  async onComponentChange(component: Component): Promise<OnComponentChangeResult> {
+    const buildResults = await this.compileComponents([component.id.toString()], {});
+    return {
+      results: buildResults,
+      toString() {
+        return `${buildResults[0]?.buildResults?.join('\n\t')}`;
+      },
+    };
+  }
 
   async compileComponents(
     componentsIds: string[] | BitId[], // when empty, it compiles all
     options: LegacyCompilerOptions
   ): Promise<BuildResult[]> {
-    const bitIds = this.getBitIds(componentsIds);
+    if (!this.workspace) throw new ConsumerNotFound();
+    const bitIds = await this.getBitIds(componentsIds);
     const { components } = await this.workspace.consumer.loadComponents(BitIds.fromArray(bitIds));
     const componentsWithLegacyCompilers: ConsumerComponent[] = [];
     const componentsAndNewCompilers: ComponentCompiler[] = [];
     components.forEach((c) => {
       const environment = this.envs.getEnvFromExtensions(c.extensions);
-      const compilerInstance = environment?.getCompiler();
+      const compilerInstance = environment?.getCompiler?.();
       // if there is no componentDir (e.g. author that added files, not dir), then we can't write the dists
       // inside the component dir.
       if (compilerInstance && c.componentMap?.getComponentDir()) {
@@ -162,12 +182,10 @@ export class WorkspaceCompiler {
     return buildResults;
   }
 
-  private getBitIds(componentsIds: Array<string | BitId>): BitId[] {
-    if (componentsIds.length) {
-      return componentsIds.map((compId) =>
-        compId instanceof BitId ? compId : this.workspace.consumer.getParsedId(compId)
-      );
-    }
-    return this.workspace.consumer.bitMap.getAuthoredAndImportedBitIds();
+  private async getBitIds(componentsIds: Array<string | BitId>): Promise<BitId[]> {
+    const ids: ComponentID[] = componentsIds.length
+      ? await Promise.all(componentsIds.map((compId) => this.workspace.resolveComponentId(compId)))
+      : this.workspace.getAllComponentIds();
+    return ids.map((id) => id._legacy);
   }
 }

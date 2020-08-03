@@ -1,4 +1,5 @@
 import path from 'path';
+import { slice } from 'lodash';
 import { Harmony } from '@teambit/harmony';
 import BluebirdPromise from 'bluebird';
 import { merge } from 'lodash';
@@ -16,7 +17,7 @@ import { PathOsBasedRelative, PathOsBased } from '../../utils/path';
 import { AddActionResults } from '../../consumer/component-ops/add-components/add-components';
 import { DependencyResolverExtension } from '../dependency-resolver';
 import { WorkspaceExtConfig } from './types';
-import { LogPublisher } from '../types';
+import { Logger } from '../logger';
 import { loadResolvedExtensions } from '../utils/load-extensions';
 import { Variants } from '../variants';
 import { ComponentScopeDirMap } from '../config/workspace-config';
@@ -24,13 +25,18 @@ import legacyLogger from '../../logger/logger';
 import { removeExistingLinksInNodeModules, symlinkCapsulesInNodeModules } from './utils';
 import { ComponentConfigFile } from './component-config-file';
 import { ExtensionDataList, ExtensionDataEntry } from '../../consumer/config/extension-data';
-import GeneralError from '../../error/general-error';
 import { GetBitMapComponentOptions } from '../../consumer/bit-map/bit-map';
 import { pathIsInside } from '../../utils';
 import Config from '../component/config';
 import { buildOneGraphForComponents } from '../../scope/graph/components-graph';
-import { OnComponentLoadSlot } from './workspace.provider';
+import { OnComponentLoadSlot, OnComponentChangeSlot } from './workspace.provider';
 import { OnComponentLoad } from './on-component-load';
+import { OnComponentChange, OnComponentChangeResult } from './on-component-change';
+import { IsolateComponentsOptions } from '../isolator/isolator.extension';
+import { ComponentStatus } from './workspace-component/component-status';
+import { WorkspaceComponent } from './workspace-component';
+import { NoComponentDir } from '../../consumer/component/exceptions/no-component-dir';
+import { Watcher } from './watch/watcher';
 
 export type EjectConfResult = {
   configPath: string;
@@ -46,7 +52,7 @@ const DEFAULT_VENDOR_DIR = 'vendor';
 /**
  * API of the Bit Workspace
  */
-export default class Workspace implements ComponentFactory {
+export class Workspace implements ComponentFactory {
   owner?: string;
   componentsScopeDirsMap: ComponentScopeDirMap;
 
@@ -73,7 +79,7 @@ export default class Workspace implements ComponentFactory {
 
     private variants: Variants,
 
-    private logger: LogPublisher,
+    private logger: Logger,
 
     private componentList: ComponentsList = new ComponentsList(consumer),
 
@@ -85,11 +91,21 @@ export default class Workspace implements ComponentFactory {
     /**
      * on component load slot.
      */
-    private onComponentLoadSlot: OnComponentLoadSlot
+    private onComponentLoadSlot: OnComponentLoadSlot,
+
+    /**
+     * on component change slot.
+     */
+    private onComponentChangeSlot: OnComponentChangeSlot
   ) {
     // TODO: refactor - prefer to avoid code inside the constructor.
     this.owner = this.config?.defaultOwner;
   }
+
+  /**
+   * watcher api.
+   */
+  readonly watcher = new Watcher(this);
 
   /**
    * root path of the Workspace.
@@ -100,6 +116,11 @@ export default class Workspace implements ComponentFactory {
 
   onComponentLoad(loadFn: OnComponentLoad) {
     this.onComponentLoadSlot.register(loadFn);
+    return this;
+  }
+
+  registerOnComponentChange(onComponentChangeFunc: OnComponentChange) {
+    this.onComponentChangeSlot.register(onComponentChangeFunc);
     return this;
   }
 
@@ -116,15 +137,18 @@ export default class Workspace implements ComponentFactory {
   /**
    * provides status of all components in the workspace.
    */
-  status() {}
+  async getComponentStatus(component: Component): Promise<ComponentStatus> {
+    const status = await this.consumer.getComponentStatusById(component.id._legacy);
+    return ComponentStatus.fromLegacy(status);
+  }
 
   /**
    * list all workspace components.
    */
-  async list(): Promise<Component[]> {
+  async list(filter?: { offset: number; limit: number }): Promise<Component[]> {
     const consumerComponents = await this.componentList.getAuthoredAndImportedFromFS();
     const ids = consumerComponents.map((component) => ComponentID.fromLegacy(component.id));
-    return this.getMany(ids);
+    return this.getMany(filter && filter.limit ? slice(ids, filter.offset, filter.offset + filter.limit) : ids);
   }
 
   /**
@@ -145,11 +169,20 @@ export default class Workspace implements ComponentFactory {
     return this.getMany(componentIds);
   }
 
-  async createNetwork(seeders: string[], opts?: {}): Promise<Network> {
-    legacyLogger.debug(`workspaceExt, createNetwork ${seeders.join(', ')}`);
+  /**
+   * get all workspace component-ids, include vendor components.
+   * (exclude nested dependencies in case dependencies are saved as components and not packages)
+   */
+  getAllComponentIds(): ComponentID[] {
+    const bitIds = this.consumer.bitMap.getAuthoredAndImportedBitIds();
+    return bitIds.map((id) => new ComponentID(id));
+  }
+
+  async createNetwork(seeders: string[], opts: IsolateComponentsOptions = {}): Promise<Network> {
+    const longProcessLogger = this.logger.createLongProcessLogger('create capsules network');
+    legacyLogger.debug(`workspaceExt, createNetwork ${seeders.join(', ')}. opts: ${JSON.stringify(opts)}`);
     const seedersIds = seeders.map((seeder) => this.consumer.getParsedId(seeder));
     const graph = await buildOneGraphForComponents(seedersIds, this.consumer);
-    opts = Object.assign(opts || {}, { consumer: this.consumer });
     const seederIdsWithVersions = graph.getBitIdsIncludeVersionsFromGraph(seedersIds, graph);
     const seedersStr = seederIdsWithVersions.map((s) => s.toString());
     const compsAndDeps = graph.findSuccessorsInGraph(seedersStr);
@@ -157,7 +190,10 @@ export default class Workspace implements ComponentFactory {
       this.consumer.bitMap.getComponentIfExist(c.id, { ignoreVersion: true })
     );
     const components = await this.getMany(consumerComponents.map((c) => new ComponentID(c.id)));
-    const capsuleList = await this.isolateEnv.isolateComponents(this.consumer.getPath(), components, opts);
+    opts.baseDir = opts.baseDir || this.consumer.getPath();
+    const capsuleList = await this.isolateEnv.isolateComponents(components, opts);
+    longProcessLogger.end();
+    this.logger.consoleSuccess();
     return new Network(
       capsuleList,
       graph,
@@ -208,10 +244,13 @@ export default class Workspace implements ComponentFactory {
       consumerComponent
     );
 
-    if (!component) return this.newComponentFromState(state);
+    if (!component) {
+      return this.executeLoadSlot(this.newComponentFromState(state));
+    }
 
     component.state = state;
-    return this.executeLoadSlot(component);
+    const workspaceComponent = WorkspaceComponent.fromComponent(component, this);
+    return this.executeLoadSlot(workspaceComponent);
   }
 
   private async executeLoadSlot(component: Component) {
@@ -228,13 +267,27 @@ export default class Workspace implements ComponentFactory {
     return component;
   }
 
+  async triggerOnComponentChange(
+    id: ComponentID
+  ): Promise<Array<{ extensionId: string; results: OnComponentChangeResult }>> {
+    const component = await this.get(id);
+    const onChangeEntries = this.onComponentChangeSlot.toArray(); // e.g. [ [ '@teambit/compiler', [Function: bound onComponentChange] ] ]
+    const results: Array<{ extensionId: string; results: OnComponentChangeResult }> = [];
+    await BluebirdPromise.mapSeries(onChangeEntries, async ([extension, onChangeFunc]) => {
+      const onChangeResult = await onChangeFunc(component);
+      results.push({ extensionId: extension, results: onChangeResult });
+    });
+
+    return results;
+  }
+
   private getDataEntry(extension: string, data: { [key: string]: any }): ExtensionDataEntry {
     // TODO: @gilad we need to refactor the extension data entry api.
     return new ExtensionDataEntry(undefined, undefined, extension, undefined, data);
   }
 
   private newComponentFromState(state: State): Component {
-    return new Component(ComponentID.fromLegacy(state._consumer.id), null, state, new TagMap(), this);
+    return new WorkspaceComponent(ComponentID.fromLegacy(state._consumer.id), null, state, new TagMap(), this);
   }
 
   getState(id: ComponentID, hash: string) {
@@ -252,10 +305,9 @@ export default class Workspace implements ComponentFactory {
     const componentId = await this.resolveComponentId(id);
     const component = await this.scope.get(componentId);
     const extensions = component?.config.extensions ?? new ExtensionDataList();
+    // Add the default scope to the extension because we enforce it in config files
+    await this.addDefaultScopeToExtensionsList(extensions);
     const componentDir = this.componentDir(id, { ignoreVersion: true });
-    if (!componentDir) {
-      throw new GeneralError(`the component ${id.toString()} doesn't have a root dir`);
-    }
     const componentConfigFile = new ComponentConfigFile(componentId, extensions, options.propagate);
     await componentConfigFile.write(componentDir, { override: options.override });
     return {
@@ -277,11 +329,13 @@ export default class Workspace implements ComponentFactory {
    */
   async getMany(ids: Array<ComponentID>): Promise<Component[]> {
     const idsWithoutEmpty = compact(ids);
+    const longProcessLogger = this.logger.createLongProcessLogger('loading components', ids.length);
     const componentsP = BluebirdPromise.mapSeries(idsWithoutEmpty, async (id: ComponentID) => {
+      longProcessLogger.logProgress(id.toString());
       return this.get(id);
     });
     const components = await componentsP;
-
+    longProcessLogger.end();
     return components;
   }
 
@@ -316,17 +370,17 @@ export default class Workspace implements ComponentFactory {
     componentId: ComponentID,
     bitMapOptions?: GetBitMapComponentOptions,
     options = { relative: false }
-  ): PathOsBased | undefined {
+  ): PathOsBased {
     const componentMap = this.consumer.bitMap.getComponent(componentId._legacy, bitMapOptions);
     const relativeComponentDir = componentMap.getComponentDir();
+    if (!relativeComponentDir) {
+      throw new NoComponentDir(componentId.toString());
+    }
     if (options.relative) {
       return relativeComponentDir;
     }
 
-    if (relativeComponentDir) {
-      return path.join(this.path, relativeComponentDir);
-    }
-    return undefined;
+    return path.join(this.path, relativeComponentDir);
   }
 
   async componentDefaultScope(componentId: ComponentID): Promise<string | undefined> {
@@ -428,10 +482,6 @@ export default class Workspace implements ComponentFactory {
    */
   private isVendorComponent(componentId: ComponentID): boolean {
     const relativeComponentDir = this.componentDir(componentId, { ignoreVersion: true }, { relative: true });
-    // Shouldn't happen for harmony workspaces
-    if (!relativeComponentDir) {
-      return false;
-    }
     const vendorDir = this.config.vendor?.directory || DEFAULT_VENDOR_DIR;
     if (pathIsInside(relativeComponentDir, vendorDir)) {
       return true;
@@ -571,4 +621,24 @@ export default class Workspace implements ComponentFactory {
     });
     return Promise.all(resolveMergedExtensionsP);
   }
+
+  /**
+   * This will mutate the original extensions list and make sure all extensions has the ids with the scope / default scope
+   *
+   * @param {ExtensionDataList} extensions
+   * @returns {Promise<void[]>}
+   * @memberof Workspace
+   */
+  addDefaultScopeToExtensionsList(extensions: ExtensionDataList): Promise<void[]> {
+    const resolveMergedExtensionsP = extensions.map(async (extensionEntry) => {
+      if (extensionEntry.extensionId && !extensionEntry.extensionId.hasScope()) {
+        const componentId = ComponentID.fromLegacy(extensionEntry.extensionId);
+        const defaultScope = await this.componentDefaultScope(componentId);
+        extensionEntry.extensionId = extensionEntry.extensionId.changeScope(defaultScope);
+      }
+    });
+    return Promise.all(resolveMergedExtensionsP);
+  }
 }
+
+export default Workspace;

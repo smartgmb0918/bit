@@ -8,27 +8,38 @@ import ConsumerComponent from '../../consumer/component';
 import { DependencyResolverExtension } from '../dependency-resolver';
 import { Capsule } from './capsule';
 import writeComponentsToCapsules from './write-components-to-capsules';
-import Consumer from '../../consumer/consumer';
 import CapsuleList from './capsule-list';
 import { BitId, BitIds } from '../../bit-id';
 import PackageJsonFile from '../../consumer/component/package-json-file';
 import componentIdToPackageName from '../../utils/bit/component-id-to-package-name';
 import { symlinkDependenciesToCapsules } from './symlink-dependencies-to-capsules';
-import { CLIExtension } from '../cli';
 import { DEPENDENCIES_FIELDS } from '../../constants';
+import { LoggerExtension, Logger } from '../logger';
+import { PathOsBasedAbsolute } from '../../utils/path';
 
 const CAPSULES_BASE_DIR = path.join(CACHE_ROOT, 'capsules'); // TODO: move elsewhere
 
-export type IsolatorDeps = [DependencyResolverExtension, CLIExtension];
 export type ListResults = {
   workspace: string;
   capsules: string[];
 };
 
-async function createCapsulesFromComponents(components: Component[], baseDir: string, orchOptions): Promise<Capsule[]> {
+export type IsolateComponentsOptions = {
+  baseDir?: string;
+  installPackages?: boolean;
+  packageManager?: string;
+  alwaysNew?: boolean;
+  name?: string;
+};
+
+async function createCapsulesFromComponents(
+  components: Component[],
+  baseDir: string,
+  opts: IsolateComponentsOptions
+): Promise<Capsule[]> {
   const capsules: Capsule[] = await Promise.all(
     map((component: Component) => {
-      return Capsule.createFromComponent(component, baseDir, orchOptions);
+      return Capsule.createFromComponent(component, baseDir, opts);
     }, components)
   );
   return capsules;
@@ -36,26 +47,24 @@ async function createCapsulesFromComponents(components: Component[], baseDir: st
 
 export class IsolatorExtension {
   static id = '@teambit/isolator';
-  static dependencies = [DependencyResolverExtension];
+  static dependencies = [DependencyResolverExtension, LoggerExtension];
   static defaultConfig = {};
-  static async provide([dependencyResolver]: IsolatorDeps) {
-    const isolator = new IsolatorExtension(dependencyResolver);
+  static async provide([dependencyResolver, loggerExtension]: [DependencyResolverExtension, LoggerExtension]) {
+    const logger = loggerExtension.createLogger(IsolatorExtension.id);
+    const isolator = new IsolatorExtension(dependencyResolver, logger);
     return isolator;
   }
-  constructor(private dependencyResolver: DependencyResolverExtension) {}
+  constructor(private dependencyResolver: DependencyResolverExtension, private logger: Logger) {}
 
-  public async isolateComponents(baseDir: string, components: Component[], opts?: {}): Promise<CapsuleList> {
+  public async isolateComponents(components: Component[], opts: IsolateComponentsOptions): Promise<CapsuleList> {
     const config = Object.assign(
-      {},
       {
         installPackages: true,
-        packageManager: undefined,
       },
       opts
     );
-    const capsulesDir = path.join(CAPSULES_BASE_DIR, hash(baseDir)); // TODO: move this logic elsewhere
+    const capsulesDir = this.getCapsulesRootDir(opts.baseDir as string); // TODO: move this logic elsewhere
     const capsules = await createCapsulesFromComponents(components, capsulesDir, config);
-
     const capsuleList = new CapsuleList(
       ...capsules.map((c) => {
         const id = c.component.id;
@@ -77,7 +86,7 @@ export class IsolatorExtension {
         })
         .map((capsuleWithPackageData) => capsuleWithPackageData.capsule);
       await this.dependencyResolver.capsulesInstall(capsulesToInstall, { packageManager: config.packageManager });
-      await symlinkDependenciesToCapsules(capsulesToInstall, capsuleList);
+      await symlinkDependenciesToCapsules(capsulesToInstall, capsuleList, this.logger);
     }
     // rewrite the package-json with the component dependencies in it. the original package.json
     // that was written before, didn't have these dependencies in order for the package-manager to
@@ -92,10 +101,9 @@ export class IsolatorExtension {
     return capsuleList;
   }
 
-  async list(consumer: Consumer): Promise<ListResults> {
-    const workspacePath = consumer.getPath();
+  async list(workspacePath: string): Promise<ListResults> {
     try {
-      const workspaceCapsuleFolder = path.join(CAPSULES_BASE_DIR, hash(workspacePath));
+      const workspaceCapsuleFolder = this.getCapsulesRootDir(workspacePath);
       const capsules = await fs.readdir(workspaceCapsuleFolder);
       const capsuleFullPaths = capsules.map((c) => path.join(workspaceCapsuleFolder, c));
       return {
@@ -108,6 +116,10 @@ export class IsolatorExtension {
       }
       throw e;
     }
+  }
+
+  getCapsulesRootDir(baseDir: string): PathOsBasedAbsolute {
+    return path.join(CAPSULES_BASE_DIR, hash(baseDir));
   }
 }
 
