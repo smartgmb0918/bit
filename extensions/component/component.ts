@@ -11,7 +11,7 @@ import { State } from './state';
 // eslint-disable-next-line import/no-cycle
 import { Snap } from './snap';
 // import { Author } from './types';
-import { capitalize } from '@bit/bit.core.utils';
+import { capitalize } from '@teambit/utils';
 
 /**
  * in-memory representation of a component.

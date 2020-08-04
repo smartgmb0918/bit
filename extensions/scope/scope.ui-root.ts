@@ -1,4 +1,4 @@
-import { UIRoot } from '@bit/bit.core.ui';
+import { UIRoot } from '@teambit/ui';
 import { ScopeExtension } from './scope.extension';
 
 export class ScopeUIRoot implements UIRoot {

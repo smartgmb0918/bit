@@ -1,5 +1,5 @@
 import React from 'react';
-import { Section } from '@bit/bit.core.component';
+import { Section } from '@teambit/component';
 import { CompositionsUI } from './compositions.ui';
 import { Compositions } from './compositions';
 

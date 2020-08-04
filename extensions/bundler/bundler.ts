@@ -1,4 +1,4 @@
-import { ComponentID } from '@bit/bit.core.component';
+import { ComponentID } from '@teambit/component';
 
 export interface DevServer {
   start();

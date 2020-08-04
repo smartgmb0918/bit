@@ -8,7 +8,7 @@ import { BitId } from 'bit-bin/bit-id';
 import { BIT_VERSION, STARTED_WATCHING_MSG, WATCHER_COMPLETED_MSG } from 'bit-bin/constants';
 import { pathNormalizeToLinux } from 'bit-bin/utils';
 import { Consumer } from 'bit-bin/consumer';
-import { ComponentID } from '@bit/bit.core.component';
+import { ComponentID } from '@teambit/component';
 import logger from 'bit-bin/logger/logger';
 import { build } from 'bit-bin/api/consumer';
 

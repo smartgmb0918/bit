@@ -1,5 +1,5 @@
-import { Environments } from '@bit/bit.core.environments';
-import { PkgExtension } from '@bit/bit.core.pkg';
+import { Environments } from '@teambit/environments';
+import { PkgExtension } from '@teambit/pkg';
 import { DefaultEnv } from './default-env.env';
 
 export class DefaultEnvExtension {

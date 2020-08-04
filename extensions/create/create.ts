@@ -2,7 +2,7 @@
 import path from 'path';
 import Vinyl from 'vinyl';
 import { ExtensionManifest, Harmony } from '@teambit/harmony';
-import { Workspace } from '@bit/bit.core.workspace';
+import { Workspace } from '@teambit/workspace';
 import { BitId } from 'bit-bin/bit-id';
 import { composeComponentPath } from 'bit-bin/utils/bit/compose-component-path';
 import DataToPersist from 'bit-bin/consumer/component/sources/data-to-persist';

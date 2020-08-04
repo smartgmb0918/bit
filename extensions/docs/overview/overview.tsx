@@ -1,6 +1,6 @@
 import React, { useContext } from 'react';
-import { ComponentContext } from '@bit/bit.core.component';
-import { ComponentPreview } from '@bit/bit.core.preview';
+import { ComponentContext } from '@teambit/component';
+import { ComponentPreview } from '@teambit/preview';
 
 export function Overview() {
   const component = useContext(ComponentContext);

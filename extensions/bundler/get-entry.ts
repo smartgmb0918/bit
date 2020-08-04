@@ -1,9 +1,9 @@
 import { join } from 'path';
 import { BrowserRuntimeSlot } from './bundler.extension';
-import { ExecutionContext } from '@bit/bit.core.environments';
+import { ExecutionContext } from '@teambit/environments';
 import { PathOsBased } from 'bit-bin/utils/path';
 import { GetBitMapComponentOptions } from 'bit-bin/consumer/bit-map/bit-map';
-import { ComponentID } from '@bit/bit.core.component';
+import { ComponentID } from '@teambit/component';
 
 export type ComponentDir = {
   componentDir?: (

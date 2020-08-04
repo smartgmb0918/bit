@@ -1,8 +1,8 @@
 import React from 'react';
 import classNames from 'classnames';
-import { Icon } from '@bit/bit.evangelist.elements.icon';
-import { Separator } from '@bit/bit.test-scope.ui.separator';
-import { NavLink } from '@bit/bit.core.react-router';
+import { Icon } from '@teambit/evangelist-temp.elements.icon';
+import { Separator } from '@teambit/documenter-temp.ui.separator';
+import { NavLink } from '@teambit/react-router';
 import { hoverable } from 'bit-bin/../to-eject/css-components/hoverable';
 import { clickable } from 'bit-bin/../to-eject/css-components/clickable';
 

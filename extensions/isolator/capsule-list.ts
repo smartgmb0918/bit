@@ -1,5 +1,5 @@
 import { Capsule } from './capsule';
-import { ComponentID } from '@bit/bit.core.component';
+import { ComponentID } from '@teambit/component';
 
 // @todo: it can be improved by extending only Array<Capsule> and the Capsule should have
 // ComponentId member

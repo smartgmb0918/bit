@@ -1,7 +1,7 @@
-import { Component } from '@bit/bit.core.component';
-import { ExecutionContext } from '@bit/bit.core.environments';
-import { ComponentMap } from '@bit/bit.core.component';
-import { PreviewExtension } from '@bit/bit.core.preview/preview.extension';
+import { Component } from '@teambit/component';
+import { ExecutionContext } from '@teambit/environments';
+import { ComponentMap } from '@teambit/component';
+import { PreviewExtension } from '@teambit/preview/preview.extension';
 import { DocsPreviewDefinition } from './docs.preview-definition';
 import { AbstractVinyl } from 'bit-bin/consumer/component/sources';
 

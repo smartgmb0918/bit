@@ -1,8 +1,8 @@
 import { ExtensionManifest } from '@teambit/harmony';
 import { provide } from './graph.provider';
-import { WorkspaceExt } from '@bit/bit.core.workspace';
-import { ScopeExtension } from '@bit/bit.core.scope';
-import { ComponentFactoryExt } from '@bit/bit.core.component';
+import { WorkspaceExt } from '@teambit/workspace';
+import { ScopeExtension } from '@teambit/scope';
+import { ComponentFactoryExt } from '@teambit/component';
 
 export default {
   name: 'graph',

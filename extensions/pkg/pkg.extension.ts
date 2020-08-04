@@ -1,18 +1,18 @@
 import { SlotRegistry, Slot } from '@teambit/harmony';
-// import { BitCli as CLI, BitCliExt as CLIExtension } from '@bit/bit.core.cli';
-import { ScopeExtension } from '@bit/bit.core.scope';
+// import { BitCli as CLI, BitCliExt as CLIExtension } from '@teambit/cli';
+import { ScopeExtension } from '@teambit/scope';
 import { PackCmd } from './pack.cmd';
 import { PublishCmd } from './publish.cmd';
 import { Packer, PackResult, PackOptions } from './pack';
 import { ExtensionDataList } from 'bit-bin/consumer/config/extension-data';
 import ConsumerComponent from 'bit-bin/consumer/component';
-import { Environments } from '@bit/bit.core.environments';
-import { CLIExtension } from '@bit/bit.core.cli';
-import { IsolatorExtension } from '@bit/bit.core.isolator';
+import { Environments } from '@teambit/environments';
+import { CLIExtension } from '@teambit/cli';
+import { IsolatorExtension } from '@teambit/isolator';
 import { Publisher } from './publisher';
-import { LoggerExtension } from '@bit/bit.core.logger';
+import { LoggerExtension } from '@teambit/logger';
 import { PublishDryRunTask } from './publish-dry-run.task';
-import { WorkspaceExt, Workspace } from '@bit/bit.core.workspace';
+import { WorkspaceExt, Workspace } from '@teambit/workspace';
 
 export interface PackageJsonProps {
   [key: string]: any;

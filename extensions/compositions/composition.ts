@@ -1,4 +1,4 @@
-import { capitalize } from '@bit/bit.core.utils';
+import { capitalize } from '@teambit/utils';
 
 export type CompositionProps = {
   identifier: string;

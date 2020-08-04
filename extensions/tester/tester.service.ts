@@ -1,8 +1,8 @@
 import { join } from 'path';
-import { EnvService, ExecutionContext } from '@bit/bit.core.environments';
+import { EnvService, ExecutionContext } from '@teambit/environments';
 import { Tester, TestResults } from './tester';
 import { detectTestFiles } from './utils';
-import { Workspace } from '@bit/bit.core.workspace';
+import { Workspace } from '@teambit/workspace';
 
 export class TesterService implements EnvService {
   constructor(

@@ -1,9 +1,9 @@
 import { Harmony } from '@teambit/harmony';
-import { Workspace } from '@bit/bit.core.workspace';
+import { Workspace } from '@teambit/workspace';
 import { CreateCmd } from './create.cmd';
 import { Create, Registry } from './create';
 import { CreateExtConfig } from './types';
-import { CLIExtension } from '@bit/bit.core.cli';
+import { CLIExtension } from '@teambit/cli';
 
 export type CreateConfig = {};
 

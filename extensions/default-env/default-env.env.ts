@@ -1,6 +1,6 @@
-import { Environment } from '@bit/bit.core.environments';
-import { BuildTask } from '@bit/bit.core.builder';
-import { PkgExtension } from '@bit/bit.core.pkg';
+import { Environment } from '@teambit/environments';
+import { BuildTask } from '@teambit/builder';
+import { PkgExtension } from '@teambit/pkg';
 
 /**
  * default environment for components that don't belong to any other environment

@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { Box, Color, Text } from 'ink';
 // import { EnvConsole } from './components';
 // make sure to update eslint to read JSX.
-import { Command } from '@bit/bit.core.cli';
+import { Command } from '@teambit/cli';
 import { UIExtension } from './ui.extension';
 import { EnvConsole } from './env-console';
 

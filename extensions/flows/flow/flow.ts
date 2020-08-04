@@ -3,7 +3,7 @@
 /* eslint-disable max-len */
 import { Subject, ReplaySubject } from 'rxjs';
 import { executeTask } from '../task';
-import { Capsule } from '@bit/bit.core.isolator';
+import { Capsule } from '@teambit/isolator';
 import logger from 'bit-bin/logger/logger';
 
 export class Flow {

@@ -1,10 +1,10 @@
-import { Environment } from '@bit/bit.core.environments';
-import { Tester } from '@bit/bit.core.tester';
-import { BuildTask } from '@bit/bit.core.builder';
-import { Compiler, CompilerExtension } from '@bit/bit.core.compiler';
-import { DevServer, DevServerContext } from '@bit/bit.core.bundler';
+import { Environment } from '@teambit/environments';
+import { Tester } from '@teambit/tester';
+import { BuildTask } from '@teambit/builder';
+import { Compiler, CompilerExtension } from '@teambit/compiler';
+import { DevServer, DevServerContext } from '@teambit/bundler';
 import { StencilExtension } from './stencil.extension';
-import { WebpackExtension } from '@bit/bit.core.webpack';
+import { WebpackExtension } from '@teambit/webpack';
 import webpackConfig from './webpack/webpack.config';
 
 /**

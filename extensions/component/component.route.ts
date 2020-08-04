@@ -1,7 +1,7 @@
-import { Route, Request, Response } from '@bit/bit.core.express';
+import { Route, Request, Response } from '@teambit/express';
 import { ComponentExtension } from './component.extension';
 import { ComponentID } from './id';
-import { NextFunction } from '@bit/bit.core.express/types';
+import { NextFunction } from '@teambit/express/types';
 
 export class ComponentRoute implements Route {
   constructor(private registerRoute: Route, private componentExtension: ComponentExtension) {}

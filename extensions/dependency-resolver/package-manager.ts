@@ -5,11 +5,11 @@ import path, { join } from 'path';
 import fs from 'fs-extra';
 import pMapSeries from 'p-map-series';
 import execa from 'execa';
-import { Capsule } from '@bit/bit.core.isolator';
+import { Capsule } from '@teambit/isolator';
 import { pipeOutput } from 'bit-bin/utils/child_process';
 import createSymlinkOrCopy from 'bit-bin/utils/fs/create-symlink-or-copy';
 import { installOpts } from './types';
-import { Logger } from '@bit/bit.core.logger';
+import { Logger } from '@teambit/logger';
 
 export default class PackageManager {
   constructor(readonly packageManagerName: string, readonly logger: Logger) {}

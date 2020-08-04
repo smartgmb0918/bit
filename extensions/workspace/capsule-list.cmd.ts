@@ -1,6 +1,6 @@
 import chalk from 'chalk';
-import { Command, CommandOptions } from '@bit/bit.core.cli';
-import { IsolatorExtension } from '@bit/bit.core.isolator/isolator.extension';
+import { Command, CommandOptions } from '@teambit/cli';
+import { IsolatorExtension } from '@teambit/isolator/isolator.extension';
 import { Workspace } from './workspace';
 
 export class CapsuleListCmd implements Command {

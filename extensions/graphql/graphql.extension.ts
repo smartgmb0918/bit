@@ -8,7 +8,7 @@ import { Slot, SlotRegistry, Harmony } from '@teambit/harmony';
 import { GraphQLModule } from '@graphql-modules/core';
 import { SubscriptionServer } from 'subscriptions-transport-ws';
 import { Schema } from './schema';
-import { LoggerExtension, Logger } from '@bit/bit.core.logger';
+import { LoggerExtension, Logger } from '@teambit/logger';
 
 export type GraphQLConfig = {
   port: number;

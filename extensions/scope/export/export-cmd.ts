@@ -9,7 +9,7 @@ import GeneralError from 'bit-bin/error/general-error';
 import { Lane } from 'bit-bin/scope/models';
 import { throwForUsingLaneIfDisabled } from 'bit-bin/api/consumer/lib/feature-toggle';
 import { PublishResults } from 'bit-bin/scope/component-ops/publish-during-export';
-import { Command, CommandOptions } from '@bit/bit.core.cli';
+import { Command, CommandOptions } from '@teambit/cli';
 
 type ExportResults = {
   componentsIds: BitId[];

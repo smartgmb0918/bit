@@ -1,10 +1,10 @@
 import { Slot, SlotRegistry, Harmony } from '@teambit/harmony';
-import { Component, ComponentExtension } from '@bit/bit.core.component';
+import { Component, ComponentExtension } from '@teambit/component';
 import { Environment } from './environment';
 import { EnvRuntime, Runtime } from './runtime';
 import { ExtensionDataList, ExtensionDataEntry } from 'bit-bin/consumer/config/extension-data';
 import { environmentsSchema } from './environments.graphql';
-import { GraphQLExtension } from '@bit/bit.core.graphql';
+import { GraphQLExtension } from '@teambit/graphql';
 
 export type EnvsRegistry = SlotRegistry<Environment>;
 

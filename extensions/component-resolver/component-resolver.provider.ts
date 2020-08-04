@@ -1,5 +1,5 @@
-import { Workspace } from '@bit/bit.core.workspace';
-import { ScopeExtension } from '@bit/bit.core.scope';
+import { Workspace } from '@teambit/workspace';
+import { ScopeExtension } from '@teambit/scope';
 import ComponentResolver from './component-resolver';
 
 export type ComponentResolverDeps = [Workspace, ScopeExtension];

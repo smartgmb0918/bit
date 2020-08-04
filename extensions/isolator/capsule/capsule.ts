@@ -5,7 +5,7 @@ import { realpathSync } from 'fs';
 import { Capsule as CapsuleTemplate, Exec, Console, State } from '@teambit/capsule';
 import { NodeFS } from '@teambit/any-fs';
 import FsContainer, { BitExecOption } from './container';
-import { Component } from '@bit/bit.core.component';
+import { Component } from '@teambit/component';
 import ContainerExec from './container-exec';
 
 export default class Capsule extends CapsuleTemplate<Exec, NodeFS> {

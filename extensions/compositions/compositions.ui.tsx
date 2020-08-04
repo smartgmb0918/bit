@@ -1,4 +1,4 @@
-import { ComponentUI } from '@bit/bit.core.component/component.ui';
+import { ComponentUI } from '@teambit/component/component.ui';
 import { CompositionsSection } from './composition.section';
 
 export class CompositionsUI {

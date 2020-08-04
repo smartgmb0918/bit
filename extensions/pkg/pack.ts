@@ -4,12 +4,12 @@ import fs from 'fs-extra';
 import LegacyScope from 'bit-bin/scope/scope';
 // @ts-ignore (for some reason the tsc -w not found this)
 import { ScopeNotFound } from './exceptions/scope-not-found';
-import { IsolatorExtension } from '@bit/bit.core.isolator';
+import { IsolatorExtension } from '@teambit/isolator';
 import GeneralError from 'bit-bin/error/general-error';
 import IsolatedEnvironment from 'bit-bin/environment';
-import { ComponentID } from '@bit/bit.core.component';
+import { ComponentID } from '@teambit/component';
 import { Consumer } from 'bit-bin/consumer';
-import { Workspace } from '@bit/bit.core.workspace';
+import { Workspace } from '@teambit/workspace';
 
 export type PackResult = {
   pkgJson: Record<any, string>;

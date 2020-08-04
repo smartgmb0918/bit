@@ -4,7 +4,7 @@ import { v1 } from 'uuid';
 import { NotificationApi, MessageLevel } from './notification-api';
 import { NotificationCenter, NotificationCenterProps } from './ui/notification-center';
 import { NotificationContext } from './ui/notification-context';
-import { UIRuntimeExtension } from '@bit/bit.core.ui/ui.ui';
+import { UIRuntimeExtension } from '@teambit/ui/ui.ui';
 import { NotificationAction, notificationReducer } from './notification-reducer';
 
 /**

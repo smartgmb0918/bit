@@ -1,11 +1,11 @@
 import webpack from 'webpack';
 import WebpackDevServer, { Configuration } from 'webpack-dev-server';
 import merge from 'webpack-merge';
-import { DevServer, BundlerContext, BundlerExtension, DevServerContext } from '@bit/bit.core.bundler';
-import { WorkspaceExt, Workspace } from '@bit/bit.core.workspace';
+import { DevServer, BundlerContext, BundlerExtension, DevServerContext } from '@teambit/bundler';
+import { WorkspaceExt, Workspace } from '@teambit/workspace';
 import configFactory from './config/webpack.dev.config';
 import { WebpackBundler } from './webpack.bundler';
-import { LoggerExtension, Logger } from '@bit/bit.core.logger';
+import { LoggerExtension, Logger } from '@teambit/logger';
 
 export class WebpackExtension {
   constructor(

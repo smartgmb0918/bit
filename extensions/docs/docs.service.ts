@@ -1,4 +1,4 @@
-import { EnvService, ExecutionContext } from '@bit/bit.core.environments';
+import { EnvService, ExecutionContext } from '@teambit/environments';
 
 export class DocsService implements EnvService {
   async run(context: ExecutionContext) {

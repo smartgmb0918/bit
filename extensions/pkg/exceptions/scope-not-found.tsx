@@ -1,4 +1,4 @@
-import { PaperError } from '@bit/bit.core.cli';
+import { PaperError } from '@teambit/cli';
 
 export class ScopeNotFound extends PaperError {
   constructor(readonly scopePath?: string) {

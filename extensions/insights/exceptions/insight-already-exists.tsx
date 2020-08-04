@@ -1,4 +1,4 @@
-import { PaperError } from '@bit/bit.core.cli';
+import { PaperError } from '@teambit/cli';
 
 export default class InsightAlreadyExists extends PaperError {
   constructor(readonly insightName: string) {

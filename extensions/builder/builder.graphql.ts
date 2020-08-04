@@ -1,5 +1,5 @@
 import gql from 'graphql-tag';
-import { Component } from '@bit/bit.core.component';
+import { Component } from '@teambit/component';
 import { BuilderExtension } from './builder.extension';
 
 export function builderSchema(builder: BuilderExtension) {

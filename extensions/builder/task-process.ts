@@ -4,8 +4,8 @@ import path from 'path';
 import { BuildTask, BuildResults, BuildContext } from './types';
 import GeneralError from 'bit-bin/error/general-error';
 import { ExtensionDataEntry } from 'bit-bin/consumer/config/extension-data';
-import { Component } from '@bit/bit.core.component';
-import { Capsule } from '@bit/bit.core.isolator';
+import { Component } from '@teambit/component';
+import { Capsule } from '@teambit/isolator';
 import { Artifact } from 'bit-bin/consumer/component/sources/artifact';
 
 export class TaskProcess {

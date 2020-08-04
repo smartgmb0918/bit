@@ -4,17 +4,17 @@ import getPort from 'get-port';
 import fs from 'fs-extra';
 import WebpackDevServer from 'webpack-dev-server';
 import webpack from 'webpack';
-import { CLIExtension } from '@bit/bit.core.cli';
+import { CLIExtension } from '@teambit/cli';
 import { StartCmd } from './start.cmd';
-import { Environments } from '@bit/bit.core.environments';
-import { GraphQLExtension } from '@bit/bit.core.graphql';
+import { Environments } from '@teambit/environments';
+import { GraphQLExtension } from '@teambit/graphql';
 import { createWebpackConfig } from './webpack/webpack.config';
-import { BundlerExtension } from '@bit/bit.core.bundler/bundler.extension';
+import { BundlerExtension } from '@teambit/bundler/bundler.extension';
 import { UIRoot } from './ui-root';
 import { UnknownUI } from './exceptions';
 import { createRoot } from './create-root';
 import { sha1 } from 'bit-bin/utils';
-import { ExpressExtension } from '@bit/bit.core.express';
+import { ExpressExtension } from '@teambit/express';
 
 export type UIDeps = [CLIExtension, Environments, GraphQLExtension, BundlerExtension, ExpressExtension];
 

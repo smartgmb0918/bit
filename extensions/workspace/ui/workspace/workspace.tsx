@@ -5,11 +5,12 @@ import 'reset-css';
 import styles from './workspace.module.scss';
 import { Workspace as WorkspaceModel } from './workspace-model';
 import { WorkspaceProvider } from './workspace-provider';
-import { RouteSlot, SlotRouter } from '@bit/bit.core.react-router/slot-router';
-import { useDataQuery } from '@bit/bit.core.ui/ui/data/use-data-query';
+import { RouteSlot, SlotRouter } from '@teambit/react-router/slot-router';
+import { useDataQuery } from '@teambit/ui/ui/data/use-data-query';
 import { FullLoader } from 'bit-bin/../to-eject/full-loader';
-import { Corner } from '@bit/bit.core.stage-components';
-import { SideBar } from '@bit/bit.core.stage-components';
+import { Corner } from '@teambit/stage-components';
+import { SideBar } from '@teambit/stage-components';
+import { TopBar } from '@teambit/stage-components';
 import { WorkspaceOverview } from './workspace-overview';
 
 const WORKSPACE = gql`
@@ -48,12 +49,13 @@ const WORKSPACE = gql`
 
 export type WorkspaceProps = {
   routeSlot: RouteSlot;
+  menuSlot: RouteSlot;
 };
 
 /**
  * main workspace component.
  */
-export function Workspace({ routeSlot }: WorkspaceProps) {
+export function Workspace({ routeSlot, menuSlot }: WorkspaceProps) {
   const { data } = useDataQuery(WORKSPACE);
 
   if (!data) {
@@ -69,7 +71,7 @@ export function Workspace({ routeSlot }: WorkspaceProps) {
   return (
     <WorkspaceProvider workspace={workspace}>
       <div className={styles.workspace}>
-        <Corner name={workspace.name} />
+        <TopBar Corner={() => <Corner name={workspace.name} />} menu={menuSlot} />
         <SideBar className={styles.sideBar} components={workspace.components} />
         <div className={styles.main}>
           <SlotRouter slot={routeSlot} />

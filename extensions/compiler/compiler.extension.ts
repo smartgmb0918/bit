@@ -1,7 +1,7 @@
-import { WorkspaceExt } from '@bit/bit.core.workspace';
-import { Environments } from '@bit/bit.core.environments';
-import { Workspace } from '@bit/bit.core.workspace';
-import { CLIExtension } from '@bit/bit.core.cli';
+import { WorkspaceExt } from '@teambit/workspace';
+import { Environments } from '@teambit/environments';
+import { Workspace } from '@teambit/workspace';
+import { CLIExtension } from '@teambit/cli';
 import { CompileCmd } from './compiler.cmd';
 import { WorkspaceCompiler } from './workspace-compiler';
 import { CompilerTask } from './compiler.task';

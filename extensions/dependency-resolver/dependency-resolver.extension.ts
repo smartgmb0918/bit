@@ -8,11 +8,11 @@ import {
 } from './types';
 import { DependenciesOverridesData } from 'bit-bin/consumer/config/component-overrides';
 import { ExtensionDataList } from 'bit-bin/consumer/config/extension-data';
-import { Environments } from '@bit/bit.core.environments';
-import { LoggerExtension } from '@bit/bit.core.logger';
+import { Environments } from '@teambit/environments';
+import { LoggerExtension } from '@teambit/logger';
 import PackageManager from './package-manager';
 // TODO: it's weird we take it from here.. think about it../workspace/utils
-import { Capsule } from '@bit/bit.core.isolator';
+import { Capsule } from '@teambit/isolator';
 import ConsumerComponent from 'bit-bin/consumer/component';
 
 export type PoliciesRegistry = SlotRegistry<DependenciesPolicy>;

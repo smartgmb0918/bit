@@ -6,8 +6,8 @@ import { isString } from 'bit-bin/utils';
 import { DEFAULT_BIT_RELEASE_TYPE, BASE_DOCS_DOMAIN, WILDCARD_HELP } from 'bit-bin/constants';
 import GeneralError from 'bit-bin/error/general-error';
 import hasWildcard from 'bit-bin/utils/string/has-wildcard';
-import { Command, CommandOptions } from '@bit/bit.core.cli';
-import { Logger } from '@bit/bit.core.logger';
+import { Command, CommandOptions } from '@teambit/cli';
+import { Logger } from '@teambit/logger';
 
 type TagOptions = {
   message?: string;

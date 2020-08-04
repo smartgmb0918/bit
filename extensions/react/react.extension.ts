@@ -1,15 +1,15 @@
-import { Environments } from '@bit/bit.core.environments';
+import { Environments } from '@teambit/environments';
 import { ReactEnv } from './react.env';
-import { JestExtension } from '@bit/bit.core.jest';
-import { TypescriptExtension } from '@bit/bit.core.typescript';
-import { CompilerExtension } from '@bit/bit.core.compiler';
-import { WebpackExtension } from '@bit/bit.core.webpack';
-import { Component } from '@bit/bit.core.component';
-import { WorkspaceExt, Workspace } from '@bit/bit.core.workspace';
-import { GraphQLExtension } from '@bit/bit.core.graphql';
+import { JestExtension } from '@teambit/jest';
+import { TypescriptExtension } from '@teambit/typescript';
+import { CompilerExtension } from '@teambit/compiler';
+import { WebpackExtension } from '@teambit/webpack';
+import { Component } from '@teambit/component';
+import { WorkspaceExt, Workspace } from '@teambit/workspace';
+import { GraphQLExtension } from '@teambit/graphql';
 import { reactSchema } from './react.graphql';
-import { PkgExtension } from '@bit/bit.core.pkg';
-import { TesterExtension } from '@bit/bit.core.tester';
+import { PkgExtension } from '@teambit/pkg';
+import { TesterExtension } from '@teambit/tester';
 
 type ReactDeps = [
   Environments,

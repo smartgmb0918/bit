@@ -1,5 +1,5 @@
-import { Component } from '@bit/bit.core.component';
-import { ComponentDir } from '@bit/bit.core.bundler/get-entry';
+import { Component } from '@teambit/component';
+import { ComponentDir } from '@teambit/bundler/get-entry';
 
 // TODO: remove this extends "ComponentDir", this should be part of the workspace alone since scope
 // would never have componentDir and as it has nothing to do with `UIRoot`.

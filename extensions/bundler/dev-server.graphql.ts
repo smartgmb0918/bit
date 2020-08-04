@@ -1,7 +1,7 @@
 import gql from 'graphql-tag';
-import { Schema } from '@bit/bit.core.graphql';
+import { Schema } from '@teambit/graphql';
 import { BundlerExtension } from './bundler.extension';
-import { Component } from '@bit/bit.core.component';
+import { Component } from '@teambit/component';
 
 export function devServerSchema(bundler: BundlerExtension): Schema {
   return {

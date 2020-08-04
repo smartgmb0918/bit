@@ -1,5 +1,5 @@
 import { AbstractVinyl } from 'bit-bin/consumer/component/sources';
-import { ExtensionDescriptor } from '@bit/bit.core.core';
+import { ExtensionDescriptor } from '@teambit/core';
 
 export class ExtensionArtifact {
   constructor(readonly files: AbstractVinyl[], readonly extensionDescriptor: ExtensionDescriptor) {}

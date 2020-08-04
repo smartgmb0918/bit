@@ -5,8 +5,8 @@ import ConsumerComponent from 'bit-bin/consumer/component';
 import { BitId } from 'bit-bin/bit-id';
 import componentIdToPackageName from 'bit-bin/utils/bit/component-id-to-package-name';
 import Symlink from 'bit-bin/links/symlink';
-import { ComponentID } from '@bit/bit.core.component';
-import { Logger } from '@bit/bit.core.logger';
+import { ComponentID } from '@teambit/component';
+import { Logger } from '@teambit/logger';
 
 export async function symlinkDependenciesToCapsules(capsules: Capsule[], capsuleList: CapsuleList, logger: Logger) {
   logger.debug(`symlinkDependenciesToCapsules, ${capsules.length} capsules`);

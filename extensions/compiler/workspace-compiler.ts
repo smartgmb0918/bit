@@ -1,7 +1,7 @@
 /* eslint-disable max-classes-per-file */
 import path from 'path';
 import BluebirdPromise from 'bluebird';
-import { Workspace } from '@bit/bit.core.workspace';
+import { Workspace } from '@teambit/workspace';
 import { DEFAULT_DIST_DIRNAME } from 'bit-bin/constants';
 import ConsumerComponent from 'bit-bin/consumer/component';
 import { BitId, BitIds } from 'bit-bin/bit-id';
@@ -10,12 +10,12 @@ import logger from 'bit-bin/logger/logger';
 import loader from 'bit-bin/cli/loader';
 import { Dist, SourceFile } from 'bit-bin/consumer/component/sources';
 import componentIdToPackageName from 'bit-bin/utils/bit/component-id-to-package-name';
-import { Environments } from '@bit/bit.core.environments';
+import { Environments } from '@teambit/environments';
 import { Compiler } from './types';
-import { ComponentID } from '@bit/bit.core.component';
-import { Component } from '@bit/bit.core.component';
+import { ComponentID } from '@teambit/component';
+import { Component } from '@teambit/component';
 import { PathOsBasedAbsolute, PathOsBasedRelative } from 'bit-bin/utils/path';
-import { OnComponentChangeResult } from '@bit/bit.core.workspace/on-component-change';
+import { OnComponentChangeResult } from '@teambit/workspace/on-component-change';
 import { ConsumerNotFound } from 'bit-bin/consumer/exceptions';
 
 type BuildResult = { component: string; buildResults: string[] | null | undefined };

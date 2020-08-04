@@ -3,9 +3,9 @@ import hash from 'object-hash';
 import fs from 'fs-extra';
 import { map, equals } from 'ramda';
 import { CACHE_ROOT, PACKAGE_JSON } from 'bit-bin/constants';
-import { Component } from '@bit/bit.core.component';
+import { Component } from '@teambit/component';
 import ConsumerComponent from 'bit-bin/consumer/component';
-import { DependencyResolverExtension } from '@bit/bit.core.dependency-resolver';
+import { DependencyResolverExtension } from '@teambit/dependency-resolver';
 import { Capsule } from './capsule';
 import writeComponentsToCapsules from './write-components-to-capsules';
 import CapsuleList from './capsule-list';
@@ -14,7 +14,7 @@ import PackageJsonFile from 'bit-bin/consumer/component/package-json-file';
 import componentIdToPackageName from 'bit-bin/utils/bit/component-id-to-package-name';
 import { symlinkDependenciesToCapsules } from './symlink-dependencies-to-capsules';
 import { DEPENDENCIES_FIELDS } from 'bit-bin/constants';
-import { LoggerExtension, Logger } from '@bit/bit.core.logger';
+import { LoggerExtension, Logger } from '@teambit/logger';
 import { PathOsBasedAbsolute } from 'bit-bin/utils/path';
 
 const CAPSULES_BASE_DIR = path.join(CACHE_ROOT, 'capsules'); // TODO: move elsewhere

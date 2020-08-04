@@ -1,12 +1,12 @@
 import { TranspileOptions } from '@stencil/core/compiler';
 import { StencilCompiler } from './stencil.compiler';
-import { Environments } from '@bit/bit.core.environments';
+import { Environments } from '@teambit/environments';
 import { StencilEnv } from './stencil.env';
-import { CompilerExtension } from '@bit/bit.core.compiler';
+import { CompilerExtension } from '@teambit/compiler';
 import { StencilTester } from './stencil.tester';
-import { WorkspaceExt, Workspace } from '@bit/bit.core.workspace';
+import { WorkspaceExt, Workspace } from '@teambit/workspace';
 // import { StencilDevServer } from './stencil.dev-server';
-import { WebpackExtension } from '@bit/bit.core.webpack';
+import { WebpackExtension } from '@teambit/webpack';
 
 export class StencilExtension {
   static id = '@teambit/stencil';

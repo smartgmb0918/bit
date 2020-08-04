@@ -1,7 +1,7 @@
-import { Workspace } from '@bit/bit.core.workspace';
-import { ScopeExtension } from '@bit/bit.core.scope';
+import { Workspace } from '@teambit/workspace';
+import { ScopeExtension } from '@teambit/scope';
 import { BitId as ComponentId } from 'bit-bin/bit-id';
-import { Component } from '@bit/bit.core.component';
+import { Component } from '@teambit/component';
 
 /**
  * A facade to resolve a component from the correct host

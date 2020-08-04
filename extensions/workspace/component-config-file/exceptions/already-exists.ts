@@ -1,6 +1,6 @@
 // import { PaperError } from './paper-error';
 
-import { PaperError } from '@bit/bit.core.cli';
+import { PaperError } from '@teambit/cli';
 
 export class AlreadyExistsError extends PaperError {
   constructor(filePath: string) {

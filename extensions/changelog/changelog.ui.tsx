@@ -1,15 +1,13 @@
 import React from 'react';
-
-import { versionsArray } from './ui/changelog.data';
 import { ChangeLogPage } from './ui/change-log-page';
-import { ComponentUI } from '@bit/bit.core.component/component.ui';
+import { ComponentUI } from '@teambit/component/component.ui';
 import { ChangelogSection } from './changelog.section';
 
 export class ChangeLogUI {
   static dependencies = [ComponentUI];
 
   ChangeLog = () => {
-    return <ChangeLogPage versions={versionsArray} />;
+    return <ChangeLogPage />;
   };
 
   static async provider([component]: [ComponentUI]) {

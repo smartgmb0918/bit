@@ -6,7 +6,7 @@ import { merge } from 'lodash';
 import { difference } from 'ramda';
 import { compact } from 'ramda-adjunct';
 import { Consumer, loadConsumer } from 'bit-bin/consumer';
-import { ScopeExtension } from '@bit/bit.core.scope';
+import { ScopeExtension } from '@teambit/scope';
 import {
   Component,
   ComponentID,
@@ -15,32 +15,32 @@ import {
   ComponentFactory,
   ComponentFS,
   TagMap,
-} from '@bit/bit.core.component';
+} from '@teambit/component';
 import ComponentsList from 'bit-bin/consumer/component/components-list';
 import { BitId } from 'bit-bin/bit-id';
-import { IsolatorExtension, Network } from '@bit/bit.core.isolator';
-import { ResolvedComponent } from '@bit/bit.core.utils/resolved-component/resolved-component';
+import { IsolatorExtension, Network } from '@teambit/isolator';
+import { ResolvedComponent } from '@teambit/utils/resolved-component/resolved-component';
 import AddComponents from 'bit-bin/consumer/component-ops/add-components';
 import { PathOsBasedRelative, PathOsBased } from 'bit-bin/utils/path';
 import { AddActionResults } from 'bit-bin/consumer/component-ops/add-components/add-components';
-import { DependencyResolverExtension } from '@bit/bit.core.dependency-resolver';
+import { DependencyResolverExtension } from '@teambit/dependency-resolver';
 import { WorkspaceExtConfig } from './types';
-import { Logger } from '@bit/bit.core.logger';
-import { loadResolvedExtensions } from '@bit/bit.core.utils';
-import { Variants } from '@bit/bit.core.variants';
-import { ComponentScopeDirMap } from '@bit/bit.core.config/workspace-config';
+import { Logger } from '@teambit/logger';
+import { loadResolvedExtensions } from '@teambit/utils';
+import { Variants } from '@teambit/variants';
+import { ComponentScopeDirMap } from '@teambit/config/workspace-config';
 import legacyLogger from 'bit-bin/logger/logger';
 import { removeExistingLinksInNodeModules, symlinkCapsulesInNodeModules } from './utils';
 import { ComponentConfigFile } from './component-config-file';
 import { ExtensionDataList, ExtensionDataEntry } from 'bit-bin/consumer/config/extension-data';
 import { GetBitMapComponentOptions } from 'bit-bin/consumer/bit-map/bit-map';
 import { pathIsInside } from 'bit-bin/utils';
-import Config from '@bit/bit.core.component/config';
+import Config from '@teambit/component/config';
 import { buildOneGraphForComponents } from 'bit-bin/scope/graph/components-graph';
 import { OnComponentLoadSlot, OnComponentChangeSlot } from './workspace.provider';
 import { OnComponentLoad } from './on-component-load';
 import { OnComponentChange, OnComponentChangeResult } from './on-component-change';
-import { IsolateComponentsOptions } from '@bit/bit.core.isolator/isolator.extension';
+import { IsolateComponentsOptions } from '@teambit/isolator/isolator.extension';
 import { ComponentStatus } from './workspace-component/component-status';
 import { WorkspaceComponent } from './workspace-component';
 import { NoComponentDir } from 'bit-bin/consumer/component/exceptions/no-component-dir';
@@ -205,7 +205,8 @@ export class Workspace implements ComponentFactory {
     return new Network(
       capsuleList,
       graph,
-      seederIdsWithVersions.map((s) => new ComponentID(s))
+      seederIdsWithVersions.map((s) => new ComponentID(s)),
+      this.isolateEnv.getCapsulesRootDir(this.path)
     );
   }
 

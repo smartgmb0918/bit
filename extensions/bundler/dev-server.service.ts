@@ -1,12 +1,12 @@
 import { AddressInfo } from 'net';
-import { EnvService, ExecutionContext } from '@bit/bit.core.environments';
+import { EnvService, ExecutionContext } from '@teambit/environments';
 import { DevServer } from './dev-server';
 import { selectPort } from './select-port';
 import { ComponentServer } from './component-server';
 import { BindError } from './exceptions';
 import { BrowserRuntimeSlot } from './bundler.extension';
 import { DevServerContext } from './dev-server-context';
-import { UIRoot } from '@bit/bit.core.ui';
+import { UIRoot } from '@teambit/ui';
 import { getEntry } from './get-entry';
 
 export class DevServerService implements EnvService {

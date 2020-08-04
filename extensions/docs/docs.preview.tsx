@@ -1,5 +1,5 @@
-import { Preview } from '@bit/bit.core.preview/preview.preview';
-import { GraphQlUI } from '@bit/bit.core.graphql/graphql.ui';
+import { Preview } from '@teambit/preview/preview.preview';
+import { GraphQlUI } from '@teambit/graphql/graphql.ui';
 
 export class DocsPreview {
   static id = '@teambit/docs';

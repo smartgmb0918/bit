@@ -1,13 +1,13 @@
 import { join } from 'path';
 import { flatten } from 'lodash';
-import { BuildTask, BuildContext, BuildResults } from '@bit/bit.core.builder';
-import { BundlerExtension, Bundler, BundlerContext, Target } from '@bit/bit.core.bundler';
-import { ComponentMap } from '@bit/bit.core.component';
+import { BuildTask, BuildContext, BuildResults } from '@teambit/builder';
+import { BundlerExtension, Bundler, BundlerContext, Target } from '@teambit/bundler';
+import { ComponentMap } from '@teambit/component';
 import { PreviewExtension } from './preview.extension';
 import { PreviewDefinition } from './preview-definition';
-import { Capsule } from '@bit/bit.core.isolator';
+import { Capsule } from '@teambit/isolator';
 import { AbstractVinyl } from 'bit-bin/consumer/component/sources';
-import { Compiler } from '@bit/bit.core.compiler';
+import { Compiler } from '@teambit/compiler';
 
 export class PreviewTask implements BuildTask {
   constructor(

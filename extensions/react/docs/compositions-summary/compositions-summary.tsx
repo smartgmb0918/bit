@@ -1,7 +1,7 @@
 import React from 'react';
-import { Section } from '@bit/bit.test-scope.ui.section';
-import { LinkedHeading } from '@bit/bit.test-scope.ui.linked-heading';
-import { CompositionsOverview } from '@bit/bit.core.compositions';
+import { Section } from '@teambit/documenter-temp.ui.section';
+import { LinkedHeading } from '@teambit/documenter-temp.ui.linked-heading';
+import { CompositionsOverview } from '@teambit/compositions';
 
 export type CompositionsSummaryProps = {
   compositions: {};

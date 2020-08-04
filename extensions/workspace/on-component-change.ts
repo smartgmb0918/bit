@@ -1,4 +1,4 @@
-import { Component } from '@bit/bit.core.component';
+import { Component } from '@teambit/component';
 
 export type OnComponentChangeResult = { results: any; toString: () => string };
 

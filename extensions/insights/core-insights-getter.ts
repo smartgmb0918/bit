@@ -1,4 +1,4 @@
-import { GraphBuilder } from '@bit/bit.core.graph';
+import { GraphBuilder } from '@teambit/graph';
 import FindCycles from './all-insights/find-cycles';
 import DuplicateDependencies from './all-insights/duplicate-dependencies';
 

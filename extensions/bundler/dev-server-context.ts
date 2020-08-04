@@ -1,6 +1,6 @@
-import { BuildContext } from '@bit/bit.core.builder';
-import { Capsule } from '@bit/bit.core.isolator';
-import { ExecutionContext } from '@bit/bit.core.environments';
+import { BuildContext } from '@teambit/builder';
+import { Capsule } from '@teambit/isolator';
+import { ExecutionContext } from '@teambit/environments';
 
 export type Target = {
   /**

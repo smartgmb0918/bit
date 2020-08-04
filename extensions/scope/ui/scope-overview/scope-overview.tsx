@@ -1,7 +1,7 @@
 import React, { useContext } from 'react';
-import { ComponentGrid } from '@bit/bit.explorer.ui.component-grid';
-import { ComponentCard } from '@bit/bit.explorer.ui.component-card';
-import { ComponentComposition } from '@bit/bit.core.compositions';
+import { ComponentGrid } from '@teambit/explorer-temp.ui.component-grid';
+import { ComponentCard } from '@teambit/explorer-temp.ui.component-card';
+import { ComponentComposition } from '@teambit/compositions';
 import { ScopeContext } from '../scope-context';
 import styles from './scope-overview.module.scss';
 

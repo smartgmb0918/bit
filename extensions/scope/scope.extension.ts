@@ -15,18 +15,18 @@ import {
   ComponentFS,
   Tag,
   TagMap,
-} from '@bit/bit.core.component';
+} from '@teambit/component';
 import { loadScopeIfExist } from 'bit-bin/scope/scope-loader';
 import { Version, ModelComponent } from 'bit-bin/scope/models';
-import Config from '@bit/bit.core.component/config';
+import Config from '@teambit/component/config';
 import { Ref } from 'bit-bin/scope/objects';
 import { ExtensionDataList } from 'bit-bin/consumer/config';
 import { ComponentNotFound } from './exceptions';
-import { UIExtension } from '@bit/bit.core.ui';
+import { UIExtension } from '@teambit/ui';
 import { ScopeUIRoot } from './scope.ui-root';
-import { GraphQLExtension } from '@bit/bit.core.graphql';
+import { GraphQLExtension } from '@teambit/graphql';
 import { scopeSchema } from './scope.graphql';
-import { CLIExtension } from '@bit/bit.core.cli';
+import { CLIExtension } from '@teambit/cli';
 import { ExportCmd } from './export/export-cmd';
 
 type TagRegistry = SlotRegistry<OnTag>;

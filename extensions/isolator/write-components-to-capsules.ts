@@ -1,7 +1,7 @@
 import ConsumerComponent from 'bit-bin/consumer/component';
 import CapsuleList from './capsule-list';
 import { BitIds } from 'bit-bin/bit-id';
-import { ComponentID } from '@bit/bit.core.component';
+import { ComponentID } from '@teambit/component';
 import ComponentWriter, { ComponentWriterProps } from 'bit-bin/consumer/component-ops/component-writer';
 import BitMap from 'bit-bin/consumer/bit-map';
 

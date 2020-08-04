@@ -1,8 +1,8 @@
 import { TypescriptCompiler } from './typescript.compiler';
-import { SchemaExtension } from '@bit/bit.core.schema';
+import { SchemaExtension } from '@teambit/schema';
 import { TypeScriptParser } from './typescript.parser';
 import { TypeScriptCompilerOptions } from './compiler-options';
-import { Compiler } from '@bit/bit.core.compiler';
+import { Compiler } from '@teambit/compiler';
 
 export class TypescriptExtension {
   /**

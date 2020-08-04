@@ -1,13 +1,13 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable max-classes-per-file */
 import { EventEmitter } from 'events';
-import { Workspace } from '@bit/bit.core.workspace';
+import { Workspace } from '@teambit/workspace';
 import { Network, GetFlow } from './network';
-import { ComponentID } from '@bit/bit.core.component';
+import { ComponentID } from '@teambit/component';
 import { Flow } from './flow/flow';
 import { ExecutionOptions } from './network/options';
 import { BitId } from 'bit-bin/bit-id';
-import { Capsule } from '@bit/bit.core.isolator';
+import { Capsule } from '@teambit/isolator';
 import { PostFlow, getWorkspaceGraph } from './network/network';
 import { getExecutionCache } from './cache';
 import logger from 'bit-bin/logger/logger';

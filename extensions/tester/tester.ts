@@ -1,7 +1,7 @@
-import { Component } from '@bit/bit.core.component';
-import { Workspace } from '@bit/bit.core.workspace';
-import { ExecutionContext } from '@bit/bit.core.environments';
-import { ConcreteService } from '@bit/bit.core.environments/services/concrete-service';
+import { Component } from '@teambit/component';
+import { Workspace } from '@teambit/workspace';
+import { ExecutionContext } from '@teambit/environments';
+import { ConcreteService } from '@teambit/environments/services/concrete-service';
 
 export type TestResults = {
   total: number;

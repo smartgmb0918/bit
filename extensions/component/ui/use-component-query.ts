@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { gql } from 'apollo-boost';
 import { ComponentModel } from './component-model';
-import { useDataQuery } from '@bit/bit.core.ui/ui/data/use-data-query';
+import { useDataQuery } from '@teambit/ui/ui/data/use-data-query';
 
 const GET_COMPONENT = gql`
   query Component($id: String!, $extensionId: String!) {

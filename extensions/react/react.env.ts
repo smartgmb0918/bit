@@ -1,17 +1,17 @@
 import { resolve } from 'path';
-import { Environment } from '@bit/bit.core.environments';
-import { Tester, TesterExtension } from '@bit/bit.core.tester';
-import { JestExtension } from '@bit/bit.core.jest';
-import { TypescriptExtension } from '@bit/bit.core.typescript';
-import { BuildTask } from '@bit/bit.core.builder';
-import { Compiler, CompilerExtension } from '@bit/bit.core.compiler';
-import { WebpackExtension } from '@bit/bit.core.webpack';
-import { DevServer, BundlerContext, DevServerContext } from '@bit/bit.core.bundler';
+import { Environment } from '@teambit/environments';
+import { Tester, TesterExtension } from '@teambit/tester';
+import { JestExtension } from '@teambit/jest';
+import { TypescriptExtension } from '@teambit/typescript';
+import { BuildTask } from '@teambit/builder';
+import { Compiler, CompilerExtension } from '@teambit/compiler';
+import { WebpackExtension } from '@teambit/webpack';
+import { DevServer, BundlerContext, DevServerContext } from '@teambit/bundler';
 import webpackConfigFactory from './webpack/webpack.config';
 import previewConfigFactory from './webpack/webpack.preview.config';
-import { Workspace } from '@bit/bit.core.workspace';
-import { PkgExtension } from '@bit/bit.core.pkg';
-import { Bundler } from '@bit/bit.core.bundler/bundler';
+import { Workspace } from '@teambit/workspace';
+import { PkgExtension } from '@teambit/pkg';
+import { Bundler } from '@teambit/bundler/bundler';
 import { pathNormalizeToLinux } from 'bit-bin/utils';
 
 /**

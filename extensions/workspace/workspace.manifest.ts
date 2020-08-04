@@ -1,16 +1,16 @@
 import { ExtensionManifest, Slot } from '@teambit/harmony';
 import workspaceProvider from './workspace.provider';
-import { ScopeExtension } from '@bit/bit.core.scope';
-import { ComponentExtension } from '@bit/bit.core.component';
-import { IsolatorExtension } from '@bit/bit.core.isolator';
-import { LoggerExtension } from '@bit/bit.core.logger';
-import { DependencyResolverExtension } from '@bit/bit.core.dependency-resolver';
-import { VariantsExt } from '@bit/bit.core.variants';
+import { ScopeExtension } from '@teambit/scope';
+import { ComponentExtension } from '@teambit/component';
+import { IsolatorExtension } from '@teambit/isolator';
+import { LoggerExtension } from '@teambit/logger';
+import { DependencyResolverExtension } from '@teambit/dependency-resolver';
+import { VariantsExt } from '@teambit/variants';
 import { EXT_NAME } from './constants';
-import { GraphQLExtension } from '@bit/bit.core.graphql';
-import { CLIExtension } from '@bit/bit.core.cli';
-import { UIExtension } from '@bit/bit.core.ui';
-import { BundlerExtension } from '@bit/bit.core.bundler';
+import { GraphQLExtension } from '@teambit/graphql';
+import { CLIExtension } from '@teambit/cli';
+import { UIExtension } from '@teambit/ui';
+import { BundlerExtension } from '@teambit/bundler';
 import { OnComponentLoad } from './on-component-load';
 import { OnComponentChange } from './on-component-change';
 

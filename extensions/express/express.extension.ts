@@ -4,7 +4,7 @@ import cors from 'cors';
 import { Slot, SlotRegistry } from '@teambit/harmony';
 import { Route, Middleware, Request, Response } from './types';
 import { errorHandle, notFound, catchErrors } from './middlewares';
-import { LoggerExtension, Logger } from '@bit/bit.core.logger';
+import { LoggerExtension, Logger } from '@teambit/logger';
 
 export type ExpressConfig = {
   port: number;

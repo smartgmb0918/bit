@@ -1,4 +1,4 @@
-import { Command, CommandOptions } from '@bit/bit.core.cli';
+import { Command, CommandOptions } from '@teambit/cli';
 import { Watcher } from './watcher';
 
 export class WatchCommand implements Command {

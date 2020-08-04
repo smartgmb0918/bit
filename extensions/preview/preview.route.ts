@@ -1,5 +1,5 @@
 import mime from 'mime';
-import { Route, Request, Response } from '@bit/bit.core.express';
+import { Route, Request, Response } from '@teambit/express';
 import { PreviewExtension } from './preview.extension';
 
 export class PreviewRoute implements Route {

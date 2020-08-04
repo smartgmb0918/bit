@@ -1,5 +1,5 @@
-import { Component } from '@bit/bit.core.component';
-import { EnvRuntime } from '@bit/bit.core.environments';
+import { Component } from '@teambit/component';
+import { EnvRuntime } from '@teambit/environments';
 
 export class ComponentServer {
   constructor(

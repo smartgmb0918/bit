@@ -1,11 +1,11 @@
 import { flatten } from 'lodash';
 /* eslint-disable max-classes-per-file */
 import { Slot, SlotRegistry } from '@teambit/harmony';
-import { GraphQLExtension } from '@bit/bit.core.graphql';
+import { GraphQLExtension } from '@teambit/graphql';
 import { componentSchema } from './component.graphql';
 import { ComponentFactory } from './component-factory';
 import { HostNotFound } from './exceptions';
-import { Route, ExpressExtension } from '@bit/bit.core.express';
+import { Route, ExpressExtension } from '@teambit/express';
 import { ComponentRoute } from './component.route';
 
 export type ComponentHostSlot = SlotRegistry<ComponentFactory>;

@@ -1,7 +1,7 @@
 import gql from 'graphql-tag';
-import { Schema } from '@bit/bit.core.graphql';
+import { Schema } from '@teambit/graphql';
 import { DeprecationExtension } from './deprecation.extension';
-import { Component } from '@bit/bit.core.component';
+import { Component } from '@teambit/component';
 
 export function deprecationSchema(deprecation: DeprecationExtension): Schema {
   return {

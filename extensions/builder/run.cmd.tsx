@@ -1,8 +1,8 @@
 import chalk from 'chalk';
-import { Command, CommandOptions } from '@bit/bit.core.cli';
-import { Workspace } from '@bit/bit.core.workspace';
+import { Command, CommandOptions } from '@teambit/cli';
+import { Workspace } from '@teambit/workspace';
 import { BuilderExtension } from './builder.extension';
-import { Logger } from '@bit/bit.core.logger';
+import { Logger } from '@teambit/logger';
 import { ConsumerNotFound } from 'bit-bin/consumer/exceptions';
 
 export class BuilderCmd implements Command {

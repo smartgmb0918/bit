@@ -1,14 +1,14 @@
 import React from 'react';
 import gql from 'graphql-tag';
 import { Route } from 'react-router-dom';
-import { RouteSlot, SlotRouter } from '@bit/bit.core.react-router/slot-router';
+import { RouteSlot, SlotRouter } from '@teambit/react-router/slot-router';
 import { ScopeOverview } from './scope-overview';
 import { FullLoader } from 'bit-bin/to-eject/full-loader';
 import { ScopeModel } from './scope-model';
-import { useDataQuery } from '@bit/bit.core.ui/ui/data/use-data-query';
-import { Corner } from '@bit/bit.core.stage-components';
+import { useDataQuery } from '@teambit/ui/ui/data/use-data-query';
+import { Corner } from '@teambit/stage-components';
 import { ScopeProvider } from './scope-provider';
-import { SideBar } from '@bit/bit.core.stage-components';
+import { SideBar } from '@teambit/stage-components';
 import styles from './scope.module.scss';
 
 export type ScopeProps = {

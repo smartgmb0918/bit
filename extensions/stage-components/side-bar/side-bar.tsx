@@ -1,13 +1,13 @@
 import React, { useMemo, useCallback } from 'react';
 import { useHistory } from 'react-router-dom';
-import { Icon } from '@bit/bit.evangelist.elements.icon';
-import { Input } from '@bit/bit.evangelist.input.input';
+import { Icon } from '@teambit/evangelist-temp.elements.icon';
+import { Input } from '@teambit/evangelist-temp.input.input';
 import { ComponentTree } from './component-tree';
 import styles from './styles.module.scss';
-import { ComponentID } from '@bit/bit.core.component';
+import { ComponentID } from '@teambit/component';
 import { OverviewLink } from './overview-link/overview-link';
-import { Descriptor } from '@bit/bit.core.environments/environments.extension';
-import { DeprecationInfo } from '@bit/bit.core.deprecation/deprecation.extension';
+import { Descriptor } from '@teambit/environments/environments.extension';
+import { DeprecationInfo } from '@teambit/deprecation/deprecation.extension';
 
 export type Component = {
   id: ComponentID;

@@ -1,5 +1,5 @@
 import chalk from 'chalk';
-import { PaperError } from '@bit/bit.core.cli';
+import { PaperError } from '@teambit/cli';
 
 export default class InvalidConfigFile extends PaperError {
   showDoctorMessage: boolean;

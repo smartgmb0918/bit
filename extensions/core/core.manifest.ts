@@ -1,9 +1,9 @@
 import { ExtensionManifest } from '@teambit/harmony';
-import { WorkspaceExt } from '@bit/bit.core.workspace';
-import { ScopeExtension } from '@bit/bit.core.scope';
+import { WorkspaceExt } from '@teambit/workspace';
+import { ScopeExtension } from '@teambit/scope';
 import provideCore from './core.provider';
-import { LoggerExtension } from '@bit/bit.core.logger';
-import { ConfigExt } from '@bit/bit.core.config';
+import { LoggerExtension } from '@teambit/logger';
+import { ConfigExt } from '@teambit/config';
 
 export default {
   name: 'core',

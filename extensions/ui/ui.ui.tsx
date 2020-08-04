@@ -3,8 +3,8 @@ import ReactDOM from 'react-dom';
 import { Slot, SlotRegistry } from '@teambit/harmony';
 
 import { UIRoot } from './ui-root.ui';
-import { GraphQlUI } from '@bit/bit.core.graphql/graphql.ui';
-import { ReactRouterUI } from '@bit/bit.core.react-router/react-router.ui';
+import { GraphQlUI } from '@teambit/graphql/graphql.ui';
+import { ReactRouterUI } from '@teambit/react-router/react-router.ui';
 import { ClientContext } from './ui/client-context';
 import { Compose } from './compose';
 

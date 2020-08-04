@@ -1,14 +1,14 @@
-import { Component, ComponentFactoryExt } from '@bit/bit.core.component';
-import { ExecutionContext } from '@bit/bit.core.environments';
-import { ComponentMap } from '@bit/bit.core.component';
-import { PreviewExtension } from '@bit/bit.core.preview/preview.extension';
+import { Component, ComponentFactoryExt } from '@teambit/component';
+import { ExecutionContext } from '@teambit/environments';
+import { ComponentMap } from '@teambit/component';
+import { PreviewExtension } from '@teambit/preview/preview.extension';
 import { Composition } from './composition';
 import { compositionsSchema } from './compositions.graphql';
-import { GraphQLExtension } from '@bit/bit.core.graphql';
+import { GraphQLExtension } from '@teambit/graphql';
 import { AbstractVinyl } from 'bit-bin/consumer/component/sources';
-import { Workspace, WorkspaceExt } from '@bit/bit.core.workspace';
-import { SchemaExtension } from '@bit/bit.core.schema';
-import { ExtensionData } from '@bit/bit.core.workspace/on-component-load';
+import { Workspace, WorkspaceExt } from '@teambit/workspace';
+import { SchemaExtension } from '@teambit/schema';
+import { ExtensionData } from '@teambit/workspace/on-component-load';
 import { CompositionPreviewDefinition } from './compositions.preview-definition';
 
 export type CompositionsConfig = {

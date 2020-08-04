@@ -1,6 +1,6 @@
-import { Workspace } from '@bit/bit.core.workspace';
-import { ScopeExtension } from '@bit/bit.core.scope';
-import { ComponentFactory } from '@bit/bit.core.component';
+import { Workspace } from '@teambit/workspace';
+import { ScopeExtension } from '@teambit/scope';
+import { ComponentFactory } from '@teambit/component';
 import { GraphBuilder } from './graph-builder';
 
 export type GraphDeps = [Workspace, ScopeExtension, ComponentFactory];

@@ -1,6 +1,6 @@
-import { GraphQLExtension } from '@bit/bit.core.graphql';
+import { GraphQLExtension } from '@teambit/graphql';
 import { deprecationSchema } from './deprecation.graphql';
-import { Component, ComponentExtension } from '@bit/bit.core.component';
+import { Component, ComponentExtension } from '@teambit/component';
 
 export type DeprecationInfo = {
   isDeprecate: boolean;

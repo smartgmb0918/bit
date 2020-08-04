@@ -1,6 +1,6 @@
 import { ExtensionManifest } from '@teambit/harmony';
 import { Flows } from './flows';
-import { WorkspaceExt, Workspace } from '@bit/bit.core.workspace';
+import { WorkspaceExt, Workspace } from '@teambit/workspace';
 
 type ScriptDeps = [Workspace];
 

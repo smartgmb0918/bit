@@ -1,5 +1,5 @@
 import { Variants, Patterns } from './variants';
-import { Config } from '@bit/bit.core.config';
+import { Config } from '@teambit/config';
 
 export type VariantsDeps = [Config];
 

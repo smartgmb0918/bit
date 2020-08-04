@@ -1,7 +1,7 @@
 import { ExtensionManifest } from '@teambit/harmony';
-import { WorkspaceExt } from '@bit/bit.core.workspace';
+import { WorkspaceExt } from '@teambit/workspace';
 import { provideCreate } from './create.provider';
-import { CLIExtension } from '@bit/bit.core.cli';
+import { CLIExtension } from '@teambit/cli';
 
 export default {
   name: '@teambit/create',

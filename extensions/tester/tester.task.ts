@@ -1,6 +1,6 @@
 import { join } from 'path';
-import { BuildContext } from '@bit/bit.core.builder';
-import { BuildTask, BuildResults } from '@bit/bit.core.builder';
+import { BuildContext } from '@teambit/builder';
+import { BuildTask, BuildResults } from '@teambit/builder';
 import { Tester } from './tester';
 import { CACHE_ROOT } from 'bit-bin/constants';
 import { detectTestFiles } from './utils';

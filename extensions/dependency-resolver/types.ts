@@ -1,4 +1,4 @@
-import { ComponentFS, ComponentConfig } from '@bit/bit.core.component';
+import { ComponentFS, ComponentConfig } from '@teambit/component';
 import { PathLinux } from 'bit-bin/utils/path';
 /**
  * Allowed values are valid semver values and the "-" sign.

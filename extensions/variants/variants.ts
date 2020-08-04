@@ -1,9 +1,9 @@
 import R from 'ramda';
 import ConsumerOverrides from 'bit-bin/consumer/config/consumer-overrides';
-import { Config } from '@bit/bit.core.config';
+import { Config } from '@teambit/config';
 import { ExtensionDataList } from 'bit-bin/consumer/config/extension-data';
-import { WorkspaceComponentConfig } from '@bit/bit.core.workspace/types'; // todo: change to "import type" once babel supports it
-import { ComponentID } from '@bit/bit.core.component';
+import { WorkspaceComponentConfig } from '@teambit/workspace/types'; // todo: change to "import type" once babel supports it
+import { ComponentID } from '@teambit/component';
 
 export type Patterns = { [pattern: string]: Record<string, any> };
 

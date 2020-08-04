@@ -1,9 +1,9 @@
-import { GraphBuilder } from '@bit/bit.core.graph';
+import { GraphBuilder } from '@teambit/graph';
 import getCoreInsights from './core-insights-getter';
 import { InsightManager } from './insight-manager';
 import { Insight } from './insight';
 import InsightsCmd from './insights.cmd';
-import { CLIExtension } from '@bit/bit.core.cli';
+import { CLIExtension } from '@teambit/cli';
 
 export type InsightDeps = [GraphBuilder, CLIExtension];
 

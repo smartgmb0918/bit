@@ -1,10 +1,10 @@
 import { Harmony } from '@teambit/harmony';
-import { Workspace } from '@bit/bit.core.workspace';
-import { ScopeExtension } from '@bit/bit.core.scope';
-import { Config } from '@bit/bit.core.config';
-import { Logger } from '@bit/bit.core.logger';
+import { Workspace } from '@teambit/workspace';
+import { ScopeExtension } from '@teambit/scope';
+import { Config } from '@teambit/config';
+import { Logger } from '@teambit/logger';
 import { ExtensionDataList } from 'bit-bin/consumer/config';
-import { ComponentHost } from '@bit/bit.core.types';
+import { ComponentHost } from '@teambit/types';
 import { ExtensionDescriptor } from './extension-descriptor';
 
 export default class Core {

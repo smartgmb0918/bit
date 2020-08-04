@@ -1,8 +1,8 @@
 import { Harmony } from '@teambit/harmony';
-import { Workspace } from '@bit/bit.core.workspace';
-import { ScopeExtension } from '@bit/bit.core.scope';
-import { Config } from '@bit/bit.core.config';
-import { LoggerExtension } from '@bit/bit.core.logger';
+import { Workspace } from '@teambit/workspace';
+import { ScopeExtension } from '@teambit/scope';
+import { Config } from '@teambit/config';
+import { LoggerExtension } from '@teambit/logger';
 
 import Core from './core';
 

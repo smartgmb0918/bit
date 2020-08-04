@@ -1,10 +1,15 @@
 import CapsuleList from './capsule-list';
 import Graph from 'bit-bin/scope/graph/graph';
-import { ComponentID } from '@bit/bit.core.component';
+import { ComponentID } from '@teambit/component';
 import { Capsule } from './capsule';
 
 export class Network {
-  constructor(public capsules: CapsuleList, public components: Graph, public seedersIds: ComponentID[]) {}
+  constructor(
+    public capsules: CapsuleList,
+    public components: Graph,
+    public seedersIds: ComponentID[],
+    public capsulesRootDir: string
+  ) {}
 
   get seedersCapsules(): Capsule[] {
     return this.seedersIds.map((seederId) => {

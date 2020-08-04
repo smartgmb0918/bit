@@ -1,10 +1,10 @@
-// import { ComponentMeta } from '@bit/bit.core.component/component.ui';
-import { ComponentID } from '@bit/bit.core.component/id';
+// import { ComponentMeta } from '@teambit/component/component.ui';
+import { ComponentID } from '@teambit/component/id';
 import { ComponentStatus } from 'bit-bin/workspace-component/component-status';
-import { DeprecationInfo } from '@bit/bit.core.deprecation/deprecation.extension';
-import { Descriptor } from '@bit/bit.core.environments/environments.extension';
-import { ComponentModel } from '@bit/bit.core.component/ui';
-import { ComponentModelProps } from '@bit/bit.core.component/ui/component-model/component-model';
+import { DeprecationInfo } from '@teambit/deprecation/deprecation.extension';
+import { Descriptor } from '@teambit/environments/environments.extension';
+import { ComponentModel } from '@teambit/component/ui';
+import { ComponentModelProps } from '@teambit/component/ui/component-model/component-model';
 
 export type Component = {
   id: ComponentID;

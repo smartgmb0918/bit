@@ -1,7 +1,7 @@
 import pMapSeries from 'p-map-series';
 import { TaskProcess } from './task-process';
 import { BuildTask, BuildContext } from './types';
-import { Logger } from '@bit/bit.core.logger';
+import { Logger } from '@teambit/logger';
 
 export class BuildPipe {
   constructor(

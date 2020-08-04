@@ -1,10 +1,10 @@
-import { UIRoot } from '@bit/bit.core.ui';
-import { Component, ComponentID } from '@bit/bit.core.component';
+import { UIRoot } from '@teambit/ui';
+import { Component, ComponentID } from '@teambit/component';
 import { Workspace } from '.';
 import { PathOsBased } from 'bit-bin/utils/path';
 import { GetBitMapComponentOptions } from 'bit-bin/consumer/bit-map/bit-map';
-import { BundlerExtension } from '@bit/bit.core.bundler';
-import { PostStartOptions } from '@bit/bit.core.ui/ui-root';
+import { BundlerExtension } from '@teambit/bundler';
+import { PostStartOptions } from '@teambit/ui/ui-root';
 
 export class WorkspaceUIRoot implements UIRoot {
   constructor(
@@ -31,7 +31,7 @@ export class WorkspaceUIRoot implements UIRoot {
       require.resolve('./workspace.ui'),
       require.resolve('../tester/tester.ui'),
       require.resolve('../changelog/changelog.ui'),
-      require.resolve('@bit/bit.core.component/component.ui'),
+      require.resolve('@teambit/component/component.ui'),
       require.resolve('../compositions/compositions.ui'),
       require.resolve('../docs/docs.ui'),
       require.resolve('../notifications/notification.ui'),

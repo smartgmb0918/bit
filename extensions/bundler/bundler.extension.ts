@@ -1,12 +1,12 @@
 import { Slot, SlotRegistry } from '@teambit/harmony';
-import { Component, ComponentExtension } from '@bit/bit.core.component';
+import { Component, ComponentExtension } from '@teambit/component';
 import { DevServerService } from './dev-server.service';
-import { Environments } from '@bit/bit.core.environments';
-import { GraphQLExtension } from '@bit/bit.core.graphql';
+import { Environments } from '@teambit/environments';
+import { GraphQLExtension } from '@teambit/graphql';
 import { devServerSchema } from './dev-server.graphql';
 import { ComponentServer } from './component-server';
 import { BrowserRuntime } from './browser-runtime';
-import { UIRoot } from '@bit/bit.core.ui';
+import { UIRoot } from '@teambit/ui';
 import { BundlerContext } from './dev-server-context';
 
 export type BrowserRuntimeSlot = SlotRegistry<BrowserRuntime>;

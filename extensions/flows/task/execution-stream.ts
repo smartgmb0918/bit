@@ -1,5 +1,5 @@
 import { ReplaySubject, Subject } from 'rxjs';
-import { ContainerExec } from '@bit/bit.core.isolator';
+import { ContainerExec } from '@teambit/isolator';
 import logger from 'bit-bin/logger/logger';
 
 export function listenToExecutionStream(exec: ContainerExec, id: string, time: Date = new Date()): Subject<unknown> {

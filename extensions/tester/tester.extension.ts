@@ -1,10 +1,10 @@
 import { TestCmd } from './test.cmd';
-import { Environments } from '@bit/bit.core.environments';
-import { WorkspaceExt, Workspace } from '@bit/bit.core.workspace';
+import { Environments } from '@teambit/environments';
+import { WorkspaceExt, Workspace } from '@teambit/workspace';
 import { TesterService } from './tester.service';
-import { Component } from '@bit/bit.core.component';
+import { Component } from '@teambit/component';
 import { TesterTask } from './tester.task';
-import { CLIExtension } from '@bit/bit.core.cli';
+import { CLIExtension } from '@teambit/cli';
 
 export type TesterExtensionConfig = {
   /**

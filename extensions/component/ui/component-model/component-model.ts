@@ -1,4 +1,4 @@
-import { Composition, CompositionProps } from '@bit/bit.core.compositions/composition';
+import { Composition, CompositionProps } from '@teambit/compositions/composition';
 import { ComponentID } from 'bit-bin/id';
 import { TagMap } from 'bit-bin/tag-map';
 import { Tag } from 'bit-bin/tag';
@@ -11,6 +11,7 @@ export type ComponentModelProps = {
   displayName: string;
   packageName: string;
   compositions: CompositionProps[];
+  // TODO - @guy, why is this of type any?
   tags: any[];
 };
 

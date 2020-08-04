@@ -1,6 +1,6 @@
 import gql from 'graphql-tag';
 import { ScopeExtension } from './scope.extension';
-import { ComponentID } from '@bit/bit.core.component';
+import { ComponentID } from '@teambit/component';
 
 export function scopeSchema(scopeExtension: ScopeExtension) {
   return {

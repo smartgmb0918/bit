@@ -7,7 +7,7 @@ import { ExtensionDataList } from 'bit-bin/consumer/config/extension-data';
 import { COMPONENT_CONFIG_FILE_NAME } from 'bit-bin/constants';
 import { PathOsBasedAbsolute } from 'bit-bin/utils/path';
 import { AlreadyExistsError } from './exceptions';
-import { ComponentID } from '@bit/bit.core.component';
+import { ComponentID } from '@teambit/component';
 
 interface ComponentConfigFileOptions {
   indent: number;

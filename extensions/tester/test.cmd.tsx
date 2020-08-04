@@ -2,9 +2,9 @@
 import React, { useState, useEffect } from 'react';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { Box, Color } from 'ink';
-import { Command } from '@bit/bit.core.cli';
+import { Command } from '@teambit/cli';
 import { TesterExtension } from './tester.extension';
-import { Workspace } from '@bit/bit.core.workspace';
+import { Workspace } from '@teambit/workspace';
 import { ConsumerNotFound } from 'bit-bin/consumer/exceptions';
 
 export class TestCmd implements Command {

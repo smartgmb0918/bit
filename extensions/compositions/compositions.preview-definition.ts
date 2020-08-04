@@ -1,6 +1,6 @@
-import { PreviewDefinition } from '@bit/bit.core.preview/preview-definition';
-import { ComponentMap, Component } from '@bit/bit.core.component';
-import { ExecutionContext } from '@bit/bit.core.environments';
+import { PreviewDefinition } from '@teambit/preview/preview-definition';
+import { ComponentMap, Component } from '@teambit/component';
+import { ExecutionContext } from '@teambit/environments';
 import { CompositionsExtension } from './compositions.extension';
 import { AbstractVinyl } from 'bit-bin/consumer/component/sources';
 

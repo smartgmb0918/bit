@@ -1,10 +1,10 @@
 import path from 'path';
 import fs from 'fs-extra';
 import ts from 'typescript';
-import { Compiler } from '@bit/bit.core.compiler';
-import { Network } from '@bit/bit.core.isolator';
-import { BuildResults } from '@bit/bit.core.builder';
-import { TranspileOpts, TranspileOutput } from '@bit/bit.core.compiler/types';
+import { Compiler } from '@teambit/compiler';
+import { Network } from '@teambit/isolator';
+import { BuildResults } from '@teambit/builder';
+import { TranspileOpts, TranspileOutput } from '@teambit/compiler/types';
 
 export class TypescriptCompiler implements Compiler {
   constructor(

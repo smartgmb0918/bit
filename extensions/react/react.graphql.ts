@@ -1,4 +1,4 @@
-import { Workspace } from '@bit/bit.core.workspace';
+import { Workspace } from '@teambit/workspace';
 import { ReactExtension } from './react.extension';
 
 export function reactSchema(react: ReactExtension) {

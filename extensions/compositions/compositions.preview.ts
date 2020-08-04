@@ -1,4 +1,4 @@
-import { Preview } from '@bit/bit.core.preview/preview.preview';
+import { Preview } from '@teambit/preview/preview.preview';
 
 export class CompositionsPreview {
   static id = '@teambit/compositions';
